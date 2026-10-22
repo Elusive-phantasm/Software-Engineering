@@ -1,0 +1,46 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="系统上下文图 —— 校园二手交易与物品流转平台" id="02_系统上下文图">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1520" pageHeight="1010" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+    <mxCell id="boundary" value="系统边界" style="rounded=0;dashed=1;dashPattern=7 5;fillColor=none;strokeColor=#777777;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;html=1;fontSize=13;fontColor=#777777;" vertex="1" parent="1">
+      <mxGeometry x="480" y="352" width="540" height="296" as="geometry" />
+    </mxCell>
+    <mxCell id="sys" value="校园二手交易与物品流转平台" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=21;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="510" y="380" width="480" height="240" as="geometry" />
+    </mxCell>
+    <mxCell id="auth" value="学校统一身份认证&lt;br&gt;（外部系统）" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=18;fontStyle=0;" vertex="1" parent="1">
+      <mxGeometry x="620" y="80" width="260" height="110" as="geometry" />
+    </mxCell>
+    <mxCell id="student" value="学生&lt;br&gt;（参与者）" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=18;fontStyle=0;" vertex="1" parent="1">
+      <mxGeometry x="90" y="440" width="230" height="110" as="geometry" />
+    </mxCell>
+    <mxCell id="admin" value="管理员&lt;br&gt;（参与者）" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=18;fontStyle=0;" vertex="1" parent="1">
+      <mxGeometry x="90" y="740" width="230" height="110" as="geometry" />
+    </mxCell>
+    <mxCell id="pay" value="第三方支付&lt;br&gt;（外部系统）" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=18;fontStyle=0;" vertex="1" parent="1">
+      <mxGeometry x="90" y="150" width="230" height="110" as="geometry" />
+    </mxCell>
+    <mxCell id="pickup" value="校内自提点&lt;br&gt;（外部组织）&lt;br&gt;仅线下交付场所&lt;br&gt;无系统接口" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=18;fontStyle=0;" vertex="1" parent="1">
+      <mxGeometry x="1180" y="440" width="260" height="130" as="geometry" />
+    </mxCell>
+    <mxCell id="note" value="边界声明&lt;br&gt;&lt;br&gt;本平台不托管资金、不提供物流。资金由买卖双方通过第三方支付&lt;br&gt;直接结算，交付在线下（见面 / 自提点）完成。平台只记录交易状态。&lt;br&gt;自提点值守人不是平台角色，到件与取件由学生本人在系统内确认。" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=15;fontStyle=0;" vertex="1" parent="1">
+      <mxGeometry x="440" y="790" width="620" height="170" as="geometry" />
+    </mxCell>
+    <mxCell id="e1" value="发布、下单、标记付款、&lt;br&gt;约定交付、确认收货、评价、举报" style="endArrow=block;html=1;strokeWidth=1.5;fontSize=12;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="student" target="sys">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e2" value="审核商品、处理举报" style="endArrow=block;html=1;strokeWidth=1.5;fontSize=12;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="admin" target="sys">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e3" value="身份核验&lt;br&gt;（返回学号）" style="endArrow=block;html=1;strokeWidth=1.5;fontSize=12;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="sys" target="auth">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e4" value="直接转账&lt;br&gt;（平台不参与）" style="endArrow=block;html=1;strokeWidth=1.5;fontSize=12;labelBackgroundColor=#FFFFFF;dashed=1;" edge="1" parent="1" source="student" target="pay">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
