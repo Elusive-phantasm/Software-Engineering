@@ -43,8 +43,8 @@
     <mxCell id="g3c" value="借用" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=16;fontStyle=0;" vertex="1" parent="1">
       <mxGeometry x="700" y="940" width="340" height="70" as="geometry" />
     </mxCell>
-    <mxCell id="note" value="主要成功指标&lt;br&gt;&lt;br&gt;G-01  注册并完成认证的学生数&lt;br&gt;         目标：首学期 500 人&lt;br&gt;&lt;br&gt;G-02  每月成功交易笔数&lt;br&gt;         目标：300 笔/月&lt;br&gt;&lt;br&gt;G-03  违规商品平均处置时长&lt;br&gt;         目标：24 小时内&lt;br&gt;&lt;br&gt;（均为「分析推导」的候选值，待确认）" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=15;fontStyle=0;" vertex="1" parent="1">
-      <mxGeometry x="1120" y="360" width="450" height="330" as="geometry" />
+    <mxCell id="note" value="主要成功指标&lt;br&gt;&lt;br&gt;G-01  注册并完成认证的学生数&lt;br&gt;         目标：首学期 500 人&lt;br&gt;&lt;br&gt;G-02  每月成功交易笔数&lt;br&gt;         目标：300 笔/月&lt;br&gt;&lt;br&gt;G-03  违规商品平均处置时长&lt;br&gt;         目标：24 小时内" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=15;fontStyle=0;" vertex="1" parent="1">
+      <mxGeometry x="1120" y="375" width="450" height="260" as="geometry" />
     </mxCell>
     <mxCell id="e1" value="" style="endArrow=block;html=1;strokeWidth=1.5;fontSize=12;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="root" target="g1">
       <mxGeometry relative="1" as="geometry" />
