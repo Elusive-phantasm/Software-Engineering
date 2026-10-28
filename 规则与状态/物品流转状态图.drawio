@@ -21,7 +21,7 @@
           <mxGeometry as="geometry" x="70" y="1280" width="120" height="38" />
         </mxCell>
         <mxCell id="g0" value="" style="ellipse;fillColor=#182d37;strokeColor=#182d37;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="50" y="350" width="22" height="22" />
+          <mxGeometry as="geometry" x="50" y="324" width="22" height="22" />
         </mxCell>
         <mxCell id="g1" value="待入库" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
           <mxGeometry as="geometry" x="200" y="300" width="180" height="70" />
@@ -39,7 +39,7 @@
           <mxGeometry as="geometry" x="500" y="560" width="180" height="70" />
         </mxCell>
         <mxCell id="l0" value="" style="ellipse;fillColor=#182d37;strokeColor=#182d37;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="50" y="900" width="22" height="22" />
+          <mxGeometry as="geometry" x="50" y="874" width="22" height="22" />
         </mxCell>
         <mxCell id="l1" value="申请中" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
           <mxGeometry as="geometry" x="200" y="850" width="180" height="70" />
@@ -57,7 +57,7 @@
           <mxGeometry as="geometry" x="200" y="1120" width="180" height="70" />
         </mxCell>
         <mxCell id="r0" value="" style="ellipse;fillColor=#182d37;strokeColor=#182d37;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="50" y="1480" width="22" height="22" />
+          <mxGeometry as="geometry" x="50" y="1454" width="22" height="22" />
         </mxCell>
         <mxCell id="r1" value="申请中" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
           <mxGeometry as="geometry" x="200" y="1430" width="180" height="70" />
@@ -83,31 +83,31 @@
         <mxCell id="edge3" source="g3" target="g4" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=1.0;exitY=0.5;entryX=0.0;entryY=0.5;strokeColor=#435962;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge4" source="g1" target="g5" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.5;exitY=1.0;entryX=0.0;entryY=0.0;strokeColor=#435962;">
+        <mxCell id="edge4" source="g1" target="g5" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.5;exitY=1.0;entryX=0.16666666666666666;entryY=0.0;strokeColor=#435962;">
           <mxGeometry as="geometry" relative="1">
             <Array as="points">
               <mxPoint x="290" y="525" />
-              <mxPoint x="500" y="525" />
+              <mxPoint x="530" y="525" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="edge5" source="g2" target="g5" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.5;exitY=1.0;entryX=0.5;entryY=0.0;strokeColor=#435962;">
+        <mxCell id="edge5" source="g2" target="g5" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.6666666666666666;exitY=1.0;entryX=0.6666666666666666;entryY=0.0;strokeColor=#435962;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge6" source="g3" target="g5" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.5;exitY=1.0;entryX=0.0;entryY=0.5;strokeColor=#435962;">
+        <mxCell id="edge6" source="g3" target="g5" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.5;exitY=1.0;entryX=1.0;entryY=0.5;strokeColor=#435962;">
           <mxGeometry as="geometry" relative="1">
             <Array as="points">
               <mxPoint x="890" y="500" />
-              <mxPoint x="680" y="500" />
-              <mxPoint x="680" y="595" />
+              <mxPoint x="710" y="500" />
+              <mxPoint x="710" y="595" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="edge7" source="g3" target="g2" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.0;exitY=1.0;entryX=1.0;entryY=0.0;strokeColor=#435962;">
+        <mxCell id="edge7" source="g3" target="g2" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.3333333333333333;exitY=0.0;entryX=0.8333333333333334;entryY=0.0;strokeColor=#435962;">
           <mxGeometry as="geometry" relative="1">
             <Array as="points">
-              <mxPoint x="800" y="220" />
-              <mxPoint x="680" y="220" />
+              <mxPoint x="860" y="220" />
+              <mxPoint x="650" y="220" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -159,8 +159,12 @@
         <mxCell id="edge18" source="r2" target="r3" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=1.0;exitY=0.5;entryX=0.0;entryY=0.5;strokeColor=#435962;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge19" source="r1" target="r4" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.5;exitY=1.0;entryX=-1.1666666666666667;entryY=0.0;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1" />
+        <mxCell id="edge19" source="r1" target="r4" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.5;exitY=1.0;entryX=0.0;entryY=0.5;strokeColor=#435962;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="290" y="1735" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="edge20" source="r2" target="r4" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.5;exitY=1.0;entryX=0.5;entryY=0.0;strokeColor=#435962;">
           <mxGeometry as="geometry" relative="1" />
@@ -184,7 +188,7 @@
           <mxGeometry as="geometry" x="510" y="455" width="480" height="75" />
         </mxCell>
         <mxCell id="label6" value="FT-04 已预约后关闭" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="760" y="510" width="480" height="75" />
+          <mxGeometry as="geometry" x="735" y="510" width="480" height="75" />
         </mxCell>
         <mxCell id="label7" value="FT-15 逾期未取或损坏 [重新开放]" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
           <mxGeometry as="geometry" x="560" y="180" width="480" height="75" />
@@ -223,7 +227,7 @@
           <mxGeometry as="geometry" x="655" y="1350" width="480" height="75" />
         </mxCell>
         <mxCell id="label19" value="FT-13 申请阶段取消" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="300" y="1575" width="480" height="75" />
+          <mxGeometry as="geometry" x="310" y="1575" width="480" height="75" />
         </mxCell>
         <mxCell id="label20" value="FT-13 受理后取消或拒收" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
           <mxGeometry as="geometry" x="600" y="1590" width="480" height="75" />
