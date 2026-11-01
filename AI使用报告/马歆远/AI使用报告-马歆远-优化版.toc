@@ -1,6 +1,0 @@
-\contentsline {section}{一、AI 工具版本及具体使用情况}{3}{section.1}%
-\contentsline {section}{二、典型人机交互记录}{4}{section.2}%
-\contentsline {section}{三、智能体任务约束与执行记录}{24}{section.3}%
-\contentsline {section}{四、关键结论的性质与核验}{26}{section.4}%
-\contentsline {section}{五、证据索引}{27}{section.5}%
-\contentsline {section}{六、总结与责任说明}{28}{section.6}%
