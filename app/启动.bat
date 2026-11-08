@@ -1,33 +1,66 @@
 @echo off
 chcp 65001 >nul
-title 拾光二手 · 校园二手交易平台
+title Shiguang Campus Reuse Platform
 cd /d "%~dp0"
 
-if not exist node_modules (
-  echo [1/3] 首次运行，正在安装依赖...
-  call npm install --cache ".\.npm-cache" --no-audit --no-fund || goto :err
+echo ==========================================================
+echo   Shiguang Second-hand Platform  (Campus Reuse)   V2.1
+echo   Student : http://127.0.0.1:3081/
+echo   Admin   : http://127.0.0.1:3081/admin
+echo ==========================================================
+echo.
+
+rem ---------------- 1) Node.js check ----------------
+where node >nul 2>nul
+if errorlevel 1 (
+  echo [X] Node.js was not found in PATH.
+  echo     Please install Node.js 22.5 or newer: https://nodejs.org
+  goto :failed
+)
+for /f "delims=" %%v in ('node -v') do set NODEVER=%%v
+echo [1/4] Node.js %NODEVER%  ^(requires v22.5+^)
+
+rem ---------------- 2) dependencies ----------------
+if exist "node_modules\express\package.json" (
+  echo [2/4] Dependencies OK, skip npm install
 ) else (
-  echo [1/3] 依赖已存在，跳过安装
+  echo [2/4] Installing dependencies, please wait ...
+  call npm install --cache ".\.npm-cache" --no-audit --no-fund
+  if errorlevel 1 goto :failed
 )
 
-if not exist data\platform.db (
-  echo [2/3] 首次运行，正在灌入演示数据...
-  call node --no-warnings src\seed\seed.js --reset || goto :err
+rem ---------------- 3) database ----------------
+if exist "data\platform.db" (
+  echo [3/4] Database found, keep existing demo data
 ) else (
-  echo [2/3] 数据库已存在，保留现有数据
+  echo [3/4] Creating database and demo data ...
+  call node --no-warnings src\seed\seed.js --reset
+  if errorlevel 1 goto :failed
 )
 
-echo [3/3] 启动服务...
-echo   学生端： http://127.0.0.1:3081/
-echo   管理端： http://127.0.0.1:3081/admin  （ADM-001 / Admin@12345）
-echo   演示账号： lin@campus.edu / zhao@campus.edu / ma@campus.edu / guo@campus.edu，密码 Test@12345
-echo   按 Ctrl+C 停止服务
+rem ---------------- 4) port check ----------------
+set PORTNUM=3081
+set BUSYPID=
+for /f "tokens=5" %%p in ('netstat -ano ^| findstr /R /C:":%PORTNUM% .*LISTENING"') do set BUSYPID=%%p
+if defined BUSYPID (
+  echo [4/4] Port %PORTNUM% is already in use by PID %BUSYPID%
+  echo.
+  echo   A server seems to be running already. Just open in your browser:
+  echo       http://127.0.0.1:%PORTNUM%/
+  echo   To stop the running instance, run stop-server.bat
+  goto :failed
+)
+
+echo [4/4] Starting server on port %PORTNUM% ...
 echo.
 node --no-warnings src\server.js
-goto :eof
-
-:err
 echo.
-echo 启动失败，请检查 Node.js 版本是否 >= 22.5（当前：）
-node -v
+echo Server stopped.
 pause
+exit /b 0
+
+:failed
+echo.
+echo Startup aborted. Read the messages above.
+pause
+exit /b 1
