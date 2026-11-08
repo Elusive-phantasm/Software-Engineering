@@ -1,5 +1,5 @@
 /**
- * 一键跑全部验收测试：冒烟 → UC 级回归 → 场景走查（SC-01～SC-13）。
+ * 一键跑全部验收测试：冒烟 → UC 级回归 → 场景走查（SC-01～SC-13）→ 前端渲染检查。
  * 前置条件：服务已启动（npm start，默认 127.0.0.1:3081）。
  *
  * 用 stdio:'inherit' 串行执行子进程，便于在受限环境（无法使用管道）中运行。
@@ -12,7 +12,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const suites = [
   ['冒烟测试', 'smoke.js'],
   ['UC 级回归', 'uc/run-uc.js'],
-  ['场景走查 SC-01～SC-13', 'sc/run-sc.js']
+  ['场景走查 SC-01～SC-13', 'sc/run-sc.js'],
+  ['前端渲染检查（jsdom 执行 student.js / admin.js）', 'ui/run-ui.js']
 ];
 
 const results = [];

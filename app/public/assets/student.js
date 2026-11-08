@@ -148,8 +148,17 @@ function shell(content) {
   mount(app(), header(), content, devFab());
 }
 
-function page(children, opts = {}) {
-  return h('main', { class: 'wrap', style: { paddingBottom: '60px', paddingTop: opts.padTop || '22px' } }, children);
+/**
+ * 页面容器。注意：必须接收**可变数量**的 children——所有视图都是
+ * page(标题区, 内容卡片, 列表…) 这样多段拼装的；早先写成 page(children) 只取第一个参数，
+ * 导致除首块以外的内容（搜索栏、商品网格、列表）全部丢失，页面看起来像空白。
+ */
+function page(...children) {
+  return h(
+    'main',
+    { class: 'wrap', style: { paddingBottom: '60px', paddingTop: '22px' } },
+    children
+  );
 }
 
 /* ============================================================ 开发工具浮层 */

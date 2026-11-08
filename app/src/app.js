@@ -24,7 +24,16 @@ export function createApp() {
   app.use(attachActor);
 
   /* ------------------------------------------------------------ 静态资源 */
-  app.use('/assets', express.static(path.join(ROOT, 'public', 'assets'), { maxAge: '1h' }));
+  // 前端资源不设强缓存：本地演示与改码后避免浏览器命中旧的 student.js，导致“修好了却看不到”
+  app.use(
+    '/assets',
+    express.static(path.join(ROOT, 'public', 'assets'), {
+      etag: true,
+      lastModified: true,
+      maxAge: 0,
+      setHeaders: (res) => res.setHeader('Cache-Control', 'no-cache')
+    })
+  );
   app.get('/', (req, res) => res.sendFile(path.join(ROOT, 'public', 'index.html')));
   app.get(['/admin', '/admin/', '/admin.html'], (req, res) =>
     res.sendFile(path.join(ROOT, 'public', 'admin.html'))

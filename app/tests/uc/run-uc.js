@@ -119,12 +119,13 @@ async function uc0203() {
   await admin.postOk(`/api/admin/verifications/${app.id}/reject`, { reason: '证件照片模糊，请重新拍摄' });
   const afterReject = await lv.getOk('/api/verifications/mine');
   a.equal(afterReject.certStatus, '已驳回', '驳回后认证状态转「已驳回」（AT-04）');
-  a.equal(afterReject.resubmitCount, 1, '驳回后核验重提次数 +1（BR-17）');
+  a.equal(afterReject.resubmitCount, 0, '驳回本身不增加「累计重提次数」（§6.2.1：计数在重提成功时 +1）');
   await lv.postFail('/api/orders', { productId: 'PRD-001' }, 'PERMISSION_DENIED');
   a.ok(true, '已驳回状态下单被拒并提示修改后重提');
 
   const sub2 = await lv.postOk('/api/verifications', { studentNo: '20230201', image: TINY_PNG });
   a.equal(sub2.student.certStatus, '待审核', '修改后重新提交转「待审核」（AT-05）');
+  a.equal((await lv.getOk('/api/verifications/mine')).resubmitCount, 1, '第 1 次重新提交后累计重提次数 = 1');
 
   await admin.postOk('/api/dev/time-shift', { hours: 25 });
   await admin.postOk('/api/dev/scheduler/run');
@@ -159,6 +160,41 @@ async function uc0203() {
   await forger.client.postFail('/api/products', { title: 't', description: 'd', price: '1', condition: '全新', categoryId: 'CAT-01', images: [TINY_PNG] }, 'PERMISSION_DENIED');
   a.ok(true, '被封禁账号发布被拒（BR-10）');
   a.ok(!!studentDetail, '取证：处置前学生详情可读');
+}
+
+/* ================================================== BR-17 核验重提上限（3 次） */
+async function br17() {
+  a.group('BR-17 核验重提上限：允许重提 3 次，第 4 次拒绝');
+  const c = new Client();
+  const email = `retry${Date.now().toString(36)}@campus.edu`;
+  await c.postOk('/api/auth/send-code', { email });
+  const code = await latestCode(admin, email);
+  await c.postOk('/api/auth/register', {
+    email, code, nickname: '重提同学', realName: '重提同学', password: PASSWORD, agree: true
+  });
+  await c.postOk('/api/auth/login', { email, password: PASSWORD });
+  await c.postOk('/api/verifications', { studentNo: '20259301', image: TINY_PNG });
+  a.equal((await c.getOk('/api/verifications/mine')).resubmitCount, 0, '首次提交不计入累计重提次数');
+
+  for (let i = 1; i <= 3; i++) {
+    const pending = await admin.getOk('/api/admin/verifications?status=待审核');
+    const app = pending.find((x) => x.declaredNo === '20259301');
+    a.ok(!!app, `第 ${i} 轮：存在待审核申请`);
+    await admin.postOk(`/api/admin/verifications/${app.id}/reject`, { reason: `第 ${i} 次驳回：照片不清晰` });
+    a.equal((await c.getOk('/api/verifications/mine')).certStatus, '已驳回', `第 ${i} 次驳回后为「已驳回」`);
+    const resub = await c.postOk('/api/verifications', { studentNo: '20259301', image: TINY_PNG });
+    a.equal(resub.student.certStatus, '待审核', `第 ${i} 次重新提交成功（BR-17 允许 3 次）`);
+    a.equal((await c.getOk('/api/verifications/mine')).resubmitCount, i, `累计重提次数 = ${i}`);
+  }
+
+  // 第 3 次重提后再被驳回 → 第 4 次重提必须被拒
+  const last = (await admin.getOk('/api/admin/verifications?status=待审核')).find((x) => x.declaredNo === '20259301');
+  await admin.postOk(`/api/admin/verifications/${last.id}/reject`, { reason: '仍然不清晰' });
+  const done = await c.getOk('/api/verifications/mine');
+  a.equal(done.resubmitCount, 3, '累计重提次数达上限 3');
+  a.equal(done.canSubmit, false, '达到上限后 canSubmit 为 false');
+  const blocked = await c.postFail('/api/verifications', { studentNo: '20259301', image: TINY_PNG }, 'STATE_REJECTED');
+  a.includes(blocked.message, '上限', '第 4 次重提被拒并提示已达上限');
 }
 
 /* ================================================== UC-04 管理员登录与权限 */
@@ -797,6 +833,8 @@ await fresh();
 await uc01();
 await fresh();
 await uc0203();
+await fresh();
+await br17();
 await fresh();
 await uc04();
 await fresh();

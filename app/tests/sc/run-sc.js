@@ -279,9 +279,10 @@ async function sc08() {
   await admin.postOk(`/api/admin/verifications/${app.id}/reject`, { reason: '照片模糊，请重新拍摄' });
   const rejected = await c.getOk('/api/verifications/mine');
   a.equal(rejected.certStatus, '已驳回', '驳回后转「已驳回」');
-  a.equal(rejected.resubmitCount, 1, '重提次数 +1');
+  a.equal(rejected.resubmitCount, 0, '驳回不增加累计重提次数（§6.2.1）');
 
   await c.postOk('/api/verifications', { studentNo: '20259001', image: TINY_PNG });
+  a.equal((await c.getOk('/api/verifications/mine')).resubmitCount, 1, '第 1 次重新提交后累计重提次数 = 1（BR-17）');
   await admin.postOk('/api/dev/time-shift', { hours: 25 });
   await admin.postOk('/api/dev/scheduler/run');
   a.equal((await c.getOk('/api/verifications/mine')).certStatus, '待审核', '超 24 小时保持「待审核」，不自动通过（AT-06）');

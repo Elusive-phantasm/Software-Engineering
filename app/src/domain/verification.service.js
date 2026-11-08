@@ -28,8 +28,11 @@ export function submitVerification(actor, { studentNo, image }) {
 
   if (student.cert_status === CERT.CERTIFIED) throw E.state(M.CERT_ALREADY);
   if (student.cert_status === CERT.PENDING) throw E.state(M.CERT_PENDING);
-  // 未提交 或 已驳回 可提交；已驳回须未达重提上限（BR-17）
-  if (student.cert_status === CERT.REJECTED && Number(student.resubmit_count) >= RESUBMIT_LIMIT) {
+  // 未提交 或 已驳回 可提交。
+  // BR-17：驳回后「最多重新提交 3 次」；§6.2.1 把该计数定义为「累计重新提交核验的次数」，
+  // 因此计数在**重提成功时** +1（见下方 tx），此处允许 count < 3 的重提，第 4 次才拒绝。
+  const isResubmit = student.cert_status === CERT.REJECTED;
+  if (isResubmit && Number(student.resubmit_count) >= RESUBMIT_LIMIT) {
     throw E.state(M.CERT_NO_REUPLOAD);
   }
   const declaredNo = validateStudentNo(studentNo);
@@ -57,6 +60,14 @@ export function submitVerification(actor, { studentNo, image }) {
       appId, student.id, declaredNo, path, now, '待审核'
     );
     run('UPDATE students SET cert_status=? WHERE id=?', CERT.PENDING, student.id);
+    if (isResubmit) {
+      // 重新提交成功 → 累计重提次数 +1（上限 3，BR-17 / §6.2.1）
+      run(
+        'UPDATE students SET resubmit_count=? WHERE id=?',
+        Math.min(RESUBMIT_LIMIT, Number(student.resubmit_count) + 1),
+        student.id
+      );
+    }
 
     notify({
       recipientId: student.id,
@@ -189,14 +200,16 @@ export function rejectApplication(actor, id, { reason, forgery = false }) {
       'UPDATE certification_applications SET review_status=?, reviewer_id=?, reviewed_at=?, reject_reason=?, forgery_flag=? WHERE id=?',
       '已驳回', admin.id, now, note, forgery ? 1 : 0, id
     );
-    const nextCount = Math.min(RESUBMIT_LIMIT, Number(student.resubmit_count) + 1);
-    run('UPDATE students SET cert_status=?, resubmit_count=? WHERE id=?', CERT.REJECTED, nextCount, student.id);
+    // 注意：计数口径为「累计重新提交次数」（§6.2.1），在重提成功时才 +1（AT-05）；
+    // 驳回只改变认证状态，不再 +1——否则 BR-17「最多重提 3 次」实际只能重提 2 次。
+    // 与 AT-04「驳回时重提次数 +1」的字面差异见 docs/06-实现与需求一致性说明.md §2.6。
+    run('UPDATE students SET cert_status=? WHERE id=?', CERT.REJECTED, student.id);
 
     notify({
       recipientId: student.id,
       msgType: '核验',
       title: '学生证核验未通过',
-      content: `核验未通过。原因：${note}。修改后可重新提交（剩余重提次数 ${RESUBMIT_LIMIT - nextCount} 次）。`,
+      content: `核验未通过。原因：${note}。修改后可重新提交（剩余重提次数 ${RESUBMIT_LIMIT - Number(student.resubmit_count)} 次）。`,
       relatedKind: 'cert',
       relatedId: id
     });
