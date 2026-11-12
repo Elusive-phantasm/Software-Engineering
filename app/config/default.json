@@ -1,0 +1,85 @@
+{
+  "$comment": "业务参数集中配置。凡需求文档标注『建议值，待确认』的值，一律在此处可改，代码不硬编码。",
+  "server": {
+    "port": 3081,
+    "host": "127.0.0.1",
+    "sessionTtlHours": 168,
+    "enableDevTools": true
+  },
+  "brand": {
+    "name": "拾光二手",
+    "subtitle": "CAMPUS REUSE"
+  },
+  "limits": {
+    "maxOnSalePerStudent": 5,
+    "priceMinYuan": 0.01,
+    "priceMaxYuan": 50000,
+    "priceDecimals": 2,
+    "titleMaxLen": 50,
+    "descMaxLen": 1000,
+    "imagesMin": 1,
+    "imagesMax": 9,
+    "imageMaxBytes": 5242880,
+    "nicknameMaxLen": 20,
+    "realNameMaxLen": 20,
+    "phonePattern": "^1[3-9]\\d{9}$",
+    "dormMaxLen": 100,
+    "favoriteLimit": 100,
+    "reviewContentMaxLen": 500,
+    "reportReasonMaxLen": 500,
+    "rejectReasonMaxLen": 200,
+    "certRejectReasonMaxLen": 200,
+    "handleResultMaxLen": 500,
+    "messageMaxLen": 500,
+    "notificationTitleMaxLen": 30,
+    "notificationContentMaxLen": 500
+  },
+  "credit": {
+    "initial": 100,
+    "min": 0,
+    "max": 150,
+    "publishThreshold": 60,
+    "orderThreshold": 40,
+    "reviewBonus": 2,
+    "violationPenalty": -10,
+    "noReviewPenalty": -1,
+    "cancelPenalty": -2
+  },
+  "deadlines": {
+    "$comment": "§4.1.1 时间期限统一口径：自起算事件起算的连续时长，左闭右开。",
+    "reviewWindowHours": 168,
+    "noReviewPenaltyAfterHours": 168,
+    "certSubmitWindowHours": 168,
+    "certReviewTimeoutHours": 24,
+    "productReviewTimeoutHours": 24,
+    "reportHandleTimeoutHours": 24,
+    "cancelJudgementWindowHours": 168
+  },
+  "certification": {
+    "resubmitLimit": 3
+  },
+  "security": {
+    "loginFailLimit": 5,
+    "lockMinutes": 15,
+    "codeLength": 6,
+    "codeTtlMinutes": 10,
+    "codeResendSeconds": 60,
+    "codeDailyLimit": 10,
+    "codeMaxFails": 5,
+    "codeRetentionDays": 7
+  },
+  "retention": {
+    "orderYears": 3,
+    "notificationDays": 90
+  },
+  "mail": {
+    "transport": "local",
+    "$comment": "transport=local 时验证码写入 data/mailbox.jsonl 并可在 /api/dev/mailbox 查看；改为 smtp 并从 config/mail.json 读取真实 SMTP 凭据即可真实发信。",
+    "from": "拾光二手 <no-reply@campus-reuse.local>",
+    "devMailboxVisible": true
+  },
+  "features": {
+    "$comment": "BR-15 要求「登录成功」发站内通知，而 §6.2.1 的消息类型是六值闭集、不含账号类。此为需求内部不一致：默认按 BR-15 实现并新增 `账号` 类型；如需严格限定六值，置为 false 即可关闭该通知。",
+    "loginSuccessNotification": true
+  }
+}

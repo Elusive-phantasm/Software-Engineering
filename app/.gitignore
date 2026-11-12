@@ -1,0 +1,6 @@
+node_modules/
+.npm-cache/
+data/
+config/mail.json
+*.log
+.DS_Store
