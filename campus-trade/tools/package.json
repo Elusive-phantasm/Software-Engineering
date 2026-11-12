@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "autocannon": "^9.0.0",
+    "mermaid": "^12.3.0",
     "puppeteer-core": "^23.6.0"
   }
 }
