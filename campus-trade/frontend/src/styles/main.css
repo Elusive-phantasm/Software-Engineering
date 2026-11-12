@@ -1,0 +1,253 @@
+/* ============================================================================
+   设计令牌：对齐墨刀原型（深绿 #165c46 / 陶土橙 #c65b2e / 米白 #f7f7f3）
+   ========================================================================== */
+:root {
+  --brand: #165c46;
+  --brand-dark: #124b39;
+  --brand-deep: #17483a;
+  --brand-soft: #e5eee8;
+  --brand-softer: #edf3ef;
+  --brand-tint: #ecfdf5;
+
+  --accent: #c65b2e;
+  --accent-soft: #f4efe3;
+  --amber: #f3b45f;
+
+  --bg: #f7f7f3;
+  --surface: #ffffff;
+  --surface-header: rgba(251, 251, 248, 0.95);
+  --ink: #17201c;
+  --ink-heading: #173d31;
+  --muted: #78716c;
+  --faint: #a8a29e;
+  --line: #e7e5e4;
+  --line-soft: #f1f0ee;
+
+  --radius-card: 16px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+  --shadow-sm: 0 4px 18px rgba(37, 54, 47, 0.04);
+  --shadow-md: 0 8px 28px rgba(37, 54, 47, 0.05);
+  --shadow-lg: 0 12px 30px rgba(23, 72, 58, 0.16);
+}
+
+/* ---- Element Plus 主题覆盖：把默认蓝换成原型的深绿 ---- */
+:root {
+  --el-color-primary: #165c46;
+  --el-color-primary-light-3: #4f8574;
+  --el-color-primary-light-5: #8aab9f;
+  --el-color-primary-light-7: #bdd1c9;
+  --el-color-primary-light-8: #d3e1dc;
+  --el-color-primary-light-9: #e9f0ee;
+  --el-color-primary-dark-2: #124b39;
+
+  --el-color-success: #2f7d61;
+  --el-color-success-light-9: #e9f3ef;
+  --el-color-warning: #c98a3f;
+  --el-color-warning-light-9: #fbf3e8;
+  --el-color-danger: #b4432a;
+  --el-color-danger-light-9: #fbeeea;
+  --el-color-info: #78716c;
+  --el-color-info-light-9: #f4f3f1;
+
+  --el-text-color-primary: #17201c;
+  --el-text-color-regular: #44403c;
+  --el-border-color: #e7e5e4;
+  --el-border-color-light: #f1f0ee;
+  --el-border-radius-base: 10px;
+  --el-border-radius-small: 8px;
+  --el-border-radius-round: 9999px;
+  --el-font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif;
+  --el-box-shadow-light: 0 4px 18px rgba(37, 54, 47, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--el-font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--brand);
+  text-decoration: none;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink-heading);
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.faint {
+  color: var(--faint);
+  font-size: 12px;
+}
+
+.price {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 21px;
+  line-height: 1;
+}
+
+.price small {
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 1px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 1100px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 820px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .grid { grid-template-columns: 1fr; }
+  .page { padding: 20px 14px 48px; }
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mt8 { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mt16 { margin-top: 16px; }
+.mt24 { margin-top: 24px; }
+
+/* 胶囊按钮（原型里的分类筛选） */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  background: #fff;
+  color: #57534e;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.16s;
+  white-space: nowrap;
+}
+
+.pill:hover {
+  border-color: #a7c4b7;
+  color: var(--brand);
+}
+
+.pill.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 顶部小徽章 */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.chip-soft {
+  background: var(--brand-softer);
+  color: var(--brand);
+}
+
+.chip-stone {
+  background: var(--line-soft);
+  color: var(--muted);
+}
+
+.chip-dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+}
+
+/* Element Plus 细节对齐原型 */
+.el-button {
+  font-weight: 500;
+}
+
+.el-button--large {
+  border-radius: 12px;
+}
+
+.el-card,
+.el-dialog {
+  border-radius: var(--radius-card);
+}
+
+.el-table th.el-table__cell {
+  background: #fafaf7;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.el-tag {
+  border-radius: 6px;
+}
+
+.el-menu-item.is-active {
+  background: var(--brand-softer) !important;
+  color: var(--brand) !important;
+  font-weight: 600;
+}
+
+.empty-tip {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--muted);
+}

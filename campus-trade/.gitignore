@@ -1,0 +1,26 @@
+# 构建产物
+backend/target/
+frontend/dist/
+frontend/node_modules/
+
+# 运行期数据（数据库、上传图片、开发发件箱）
+backend/data/
+backend/logs/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# ǰ�˱��ػ�������ʱĿ¼
+frontend/.npm-cache/
+frontend/.tmp/
+tools/node_modules/
+
+# 本机 MySQL 数据目录（勿提交）
+.mysql/
