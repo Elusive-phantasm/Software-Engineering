@@ -1,0 +1,112 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: campus-trade
+  autoconfigure:
+    # 不使用表单登录，关闭默认的内置用户，避免启动时打印随机密码
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/campus_trade?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false&rewriteBatchedStatements=true
+    username: campus
+    password: Campus@2026
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 2
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+      encoding: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 50MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+      logic-delete-field: null
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    com.campus.trade: info
+    org.springframework.jdbc: warn
+
+app:
+  # 业务参数（对应需求文档中大量「建议值，待确认」的条目，集中在此便于调整）
+  limits:
+    max-on-sale-per-student: 5
+    price-max-yuan: 50000
+    images-min: 1
+    images-max: 9
+    favorite-limit: 100
+    title-max: 50
+    desc-max: 1000
+    message-max: 500
+    review-max: 500
+    nickname-max: 20
+    report-reason-max: 200
+  credit:
+    initial: 100
+    min: 0
+    max: 150
+    publish-threshold: 60
+    order-threshold: 40
+    review-bonus: 2
+    violation-penalty: -10
+    no-review-penalty: -1
+    cancel-penalty: -2
+  deadlines:
+    review-window-hours: 168
+    no-review-penalty-hours: 168
+    cancel-judgement-hours: 168
+    cert-submit-hours: 168
+    cert-review-timeout-hours: 24
+    product-review-timeout-hours: 24
+    report-handle-timeout-hours: 24
+  certification:
+    resubmit-limit: 3
+  security:
+    login-fail-limit: 5
+    lock-minutes: 15
+    code-length: 6
+    code-ttl-minutes: 10
+    code-resend-seconds: 60
+    code-daily-limit: 10
+    code-max-fails: 5
+    session-ttl-hours: 72
+  mail:
+    transport: local          # local | smtp
+    from: 拾光二手 <no-reply@campus-reuse.local>
+  storage:
+    upload-dir: ./data/uploads
+    public-prefix: /uploads
+  retention:
+    notification-days: 90
+  features:
+    login-success-notification: true
+    enable-dev-tools: true

@@ -1,0 +1,15 @@
+{
+  "name": "campus-trade-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "项目工具链：后端冒烟测试与浏览器端冒烟测试",
+  "scripts": {
+    "smoke": "node smoke.mjs",
+    "e2e": "node e2e.mjs"
+  },
+  "devDependencies": {
+    "autocannon": "^9.0.0",
+    "puppeteer-core": "^23.6.0"
+  }
+}
