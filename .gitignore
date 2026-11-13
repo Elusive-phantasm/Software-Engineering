@@ -1,0 +1,31 @@
+# 依赖与构建产物
+node_modules/
+.npm-cache/
+target/
+dist/
+__pycache__/
+*.py[cod]
+*.class
+
+# 运行期数据（本地数据库、上传图片、开发邮箱、日志）
+data/
+logs/
+*.log
+*.db
+*.db-wal
+*.db-shm
+
+# 本机 MySQL 实例（体积大且含本机数据，勿提交）
+.mysql/
+
+# IDE 与操作系统
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# 临时文件与压缩包
+*.zip
+*.tmp
+~$*

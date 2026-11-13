@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-15",
+  "source": "马歆远-数据与权限.md",
+  "source_sha256": "7cf948e0068fbe3963d0f69f593f395ca7a0728738b2bbf83683136451289722",
+  "classes": 8,
+  "attributes": 52,
+  "associations": 13,
+  "base_permission_cells": 36,
+  "nfr_definitions": 8,
+  "png_pixels": [
+    4200,
+    3750
+  ],
+  "checks": "离线结构和一致性断言已执行；编辑器打开与真实系统测试未执行",
+  "files": [
+    {
+      "file": "01_UML类图/校园二手交易平台_UML类图.drawio",
+      "bytes": 47628,
+      "sha256": "a1f2da5dab5fd4a49a20ccc5dab35e09a745d9536eedfd3c386fc5b21b0c6c8a"
+    },
+    {
+      "file": "01_UML类图/校园二手交易平台_UML类图.png",
+      "bytes": 706091,
+      "sha256": "55cd1e9f6401b980ff5b175a9450f6d2e06483c9b0e3e76a6c25d641d9b8f487"
+    },
+    {
+      "file": "01_UML类图/类图说明.md",
+      "bytes": 6080,
+      "sha256": "ce091244eed7c1bac4d0d5993945ce25f83cd83ac87d31a70dd48dae8b86f6f4"
+    },
+    {
+      "file": "02_数据字典.md",
+      "bytes": 17812,
+      "sha256": "18639c61dfe50be21d25cf225c84976b572fd6a1bbae72bcb6f4d5fc7ee770f5"
+    },
+    {
+      "file": "03_权限矩阵.md",
+      "bytes": 10156,
+      "sha256": "66771196112d1e55f7351f49a80a07cb1b0c54ec56d07a3d444b4ac2bce219cc"
+    },
+    {
+      "file": "04_非功能性质量需求.md",
+      "bytes": 13926,
+      "sha256": "b4f3682f67726260b0ac6bde226de4f13c5766e44f62420f996b9d70531216f3"
+    },
+    {
+      "file": "05_待组长确认事项.md",
+      "bytes": 7512,
+      "sha256": "589c966cdaaa5f568342235114540faaf5b523a3fdab98b6d8895d9b97f9e68f"
+    },
+    {
+      "file": "06_一致性检查报告.md",
+      "bytes": 5065,
+      "sha256": "ad82e43c5c1fe8724951934022a15f0e886a3447dfef0734df293d03e04f037d"
+    },
+    {
+      "file": "README.md",
+      "bytes": 3736,
+      "sha256": "401ebf0ce3072c6dde37c5537cf516b5e8329a878b85f07e90751e8c25a86f05"
+    },
+    {
+      "file": "数据与权限需求分析_整合初稿.md",
+      "bytes": 55661,
+      "sha256": "69b85c2ec3c321b686470f20cacf19b0e04c9dee2b4182bb5548e5f30feb5a54"
+    },
+    {
+      "file": "辅助文件/生成与检查.py",
+      "bytes": 76219,
+      "sha256": "57ff6d9f282ad1a39dad178a2df6e5db2b057df2bd0cdefdb234f4e64a6b124e"
+    }
+  ]
+}
