@@ -9,7 +9,7 @@
 | [`architecture/`](architecture) | 架构文档组 | `软件架构设计说明书.md`（ADD 主文档）、`架构确认与决策记录.md`（Q + ADR）、`架构分工与接口所有权表.md` |
 | [`design/`](design) | 设计类 | `接口与关键设计说明书.md`（接口契约全集）、`数据库设计.md`（表结构、索引、约束） |
 | [`test/`](test) | 测试与验收 | `验收与测试记录.md`、`走查记录/`（场景与原型走查记录及截图证据） |
-| [`process/`](process) | 流程治理与分工 | `分阶段实现与测试计划.md`、`分工通知/`、`分工成果/`（四名成员的需求阶段成果） |
+| [`tasks/`](tasks) | 任务、分工与阶段计划 | `分阶段实现与测试计划.md`、`分工通知/`、`分工成果/`（四名成员的需求阶段成果） |
 | [`reports/`](reports) | 阶段报告 | A 报告（需求分析质量验证）、B 报告（AI 智能体使用验证）、成员 AI 使用报告 |
 | [`course/`](course) | 课程材料 | 老师下发的模板与操作指引，非项目产出 |
 | [`deployment/`](deployment) | 部署与运维 | 待补，见该目录 README |
@@ -38,7 +38,7 @@
 - `验收与测试记录.md`：冒烟 72 项、浏览器 e2e 20 项、压测抽样结果与执行方式。
 - `走查记录/`：四名成员的 A.5 场景走查、A.6 原型走查记录，以及对应截图证据。
 
-## process
+## tasks
 
 - `分阶段实现与测试计划.md`：S1～S3 阶段目标、准入检查与验收单模板。
 - `分工通知/`：各阶段下发的成员任务说明（含需求文档阶段、走查分工）。
@@ -69,17 +69,17 @@
 |---|---|
 | `需求文档/需求规格说明书_V2.1.md` | `docs/requirements/SRS.md` |
 | `需求文档/` 其余版本与修改说明 | 已移除，`git log` 回溯 |
-| `功能/`（初稿） | 已移除，现用 `docs/process/分工成果/功能/` |
-| `功能 第一次修改版/` | `docs/process/分工成果/功能/` |
-| `规则与状态/` | `docs/process/分工成果/规则与状态/` |
+| `功能/`（初稿） | 已移除，现用 `docs/tasks/分工成果/功能/` |
+| `功能 第一次修改版/` | `docs/tasks/分工成果/功能/` |
+| `规则与状态/` | `docs/tasks/分工成果/规则与状态/` |
 | `数据与权限_需求分析成果/`（第一版） | 已移除 |
-| `数据与权限_需求分析成果 第二次修改版/` | `docs/process/分工成果/数据与权限/` |
-| `目标树、术语表、架构上下文/` | `docs/process/分工成果/目标树、术语表、架构上下文/` |
+| `数据与权限_需求分析成果 第二次修改版/` | `docs/tasks/分工成果/数据与权限/` |
+| `目标树、术语表、架构上下文/` | `docs/tasks/分工成果/目标树、术语表、架构上下文/` |
 | `A报告/` | `docs/reports/A报告/` |
 | `B报告/` | `docs/reports/B报告/` |
 | `AI使用报告/` | `docs/reports/AI使用报告/` |
 | `走查记录/` | `docs/test/走查记录/` |
-| `分工通知/` | `docs/process/分工通知/` |
+| `分工通知/` | `docs/tasks/分工通知/` |
 | `学生需求分析与AI智能体使用验证报告.md` | `docs/course/` |
 | `架构设计后确认与分阶段实现操作指引_学生版.md` | `docs/course/` |
 | `campus-trade/软件架构设计说明书.md` 等架构文档 | `docs/architecture/` |
@@ -87,6 +87,6 @@
 | `campus-trade/docs/数据库设计.md` | `docs/design/数据库设计.md` |
 | `campus-trade/docs/需求覆盖矩阵.md` | `docs/requirements/需求覆盖矩阵.md` |
 | `campus-trade/docs/验收与测试记录.md` | `docs/test/验收与测试记录.md` |
-| `campus-trade/分阶段实现与测试计划.md` | `docs/process/分阶段实现与测试计划.md` |
+| `campus-trade/分阶段实现与测试计划.md` | `docs/tasks/分阶段实现与测试计划.md` |
 | `campus-trade/基线索引.md` | `docs/基线索引.md` |
 | `app/`、`campus-trade/` | `candidates/app/`、`candidates/campus-trade/` |
