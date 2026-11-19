@@ -48,6 +48,6 @@ evidence/
 
 | 来源 | 内容 | 处理 |
 |---|---|---|
-| `../../docs/test/验收与测试记录.md` | 冒烟 72 项、浏览器 20 项、压测抽样 | 复制到 `evidence/S1/` 并补命令与版本 |
-| `docs/压测结果.json` | NFR-01/02 抽样数字 | 复制到 `evidence/S2/`，标注环境 |
+| `docs/test/验收与测试记录.md` | 冒烟 72 项、浏览器 20 项、压测抽样 | 复制到 `evidence/S1/` 并补命令与版本 |
+| `docs/test/压测结果.json` | NFR-01/02 抽样数字 | 复制到 `evidence/S2/`，标注环境 |
 | `tools/smoke.mjs` / `e2e.mjs` / `bench.mjs` | 三套可重跑脚本 | 引用命令，不重复存代码 |

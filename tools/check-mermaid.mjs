@@ -16,7 +16,7 @@ const EDGE = [
 const cwd = process.cwd();
 const files = process.argv.slice(2).length
   ? process.argv.slice(2)
-  : [path.join(cwd, '..', '软件架构设计说明书.md')];
+  : [path.join(cwd, '..', 'docs', 'architecture', '软件架构设计说明书.md')];
 
 const distDir = path.join(cwd, 'node_modules', 'mermaid', 'dist');
 const umd = path.join(distDir, 'mermaid.min.js');

@@ -8,7 +8,7 @@
 | [`requirements/`](requirements) | 需求类 | `SRS.md`（V2.1）、`需求覆盖矩阵.md` |
 | [`architecture/`](architecture) | 架构文档组 | `软件架构设计说明书.md`（ADD 主文档）、`架构确认与决策记录.md`（Q + ADR）、`架构分工与接口所有权表.md` |
 | [`design/`](design) | 设计类 | `接口与关键设计说明书.md`（接口契约全集）、`数据库设计.md`（表结构、索引、约束） |
-| [`test/`](test) | 测试与验收 | `验收与测试记录.md`、`走查记录/`（场景与原型走查记录及截图证据） |
+| [`test/`](test) | 测试与验收 | `验收与测试记录.md`、`压测结果.json`、`screenshots/`、`走查记录/`（场景与原型走查记录及截图证据） |
 | [`tasks/`](tasks) | 任务、分工与阶段计划 | `分阶段实现与测试计划.md`、`分工通知/`、`分工成果/`（四名成员的需求阶段成果） |
 | [`reports/`](reports) | 阶段报告 | A 报告（需求分析质量验证）、B 报告（AI 智能体使用验证）、成员 AI 使用报告 |
 | [`course/`](course) | 课程材料 | 老师下发的模板与操作指引，非项目产出 |
@@ -36,6 +36,7 @@
 ## test
 
 - `验收与测试记录.md`：冒烟 72 项、浏览器 e2e 20 项、压测抽样结果与执行方式。
+- `压测结果.json`、`screenshots/`：NFR-01/02 压测抽样数据与界面截图（2026-11 从 `campus-trade/docs/` 并入）。
 - `走查记录/`：四名成员的 A.5 场景走查、A.6 原型走查记录，以及对应截图证据。
 
 ## tasks
@@ -89,4 +90,5 @@
 | `campus-trade/docs/验收与测试记录.md` | `docs/test/验收与测试记录.md` |
 | `campus-trade/分阶段实现与测试计划.md` | `docs/tasks/分阶段实现与测试计划.md` |
 | `campus-trade/基线索引.md` | `docs/基线索引.md` |
-| `app/`、`campus-trade/` | `candidates/app/`、`candidates/campus-trade/` |
+| `app/`、`campus-trade/` | `candidates/app/`；`campus-trade/` 已于 2026-11 移到仓库根目录（`backend/`、`frontend/`、`tools/`） |
+| `campus-trade/docs/压测结果.json`、`campus-trade/docs/screenshots/` | `docs/test/压测结果.json`、`docs/test/screenshots/` |

@@ -13,7 +13,7 @@ const EDGE = [
 ].filter(Boolean).find((p) => fs.existsSync(p));
 
 const BASE = process.env.WEB_BASE || 'http://localhost:5173';
-const OUT = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..', 'docs', 'screenshots');
+const OUT = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..', 'docs', 'test', 'screenshots');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 fs.mkdirSync(OUT, { recursive: true });

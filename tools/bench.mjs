@@ -99,7 +99,7 @@ async function main() {
   console.log(`\n=== ${nfr02.title} ===`);
   console.log(`有效样本 ${nfr02.samples} 笔 · min ${nfr02.min}ms · p50 ${nfr02.p50}ms · max ${nfr02.max}ms`);
 
-  const out = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '')), '..', 'docs', '压测结果.json');
+  const out = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '')), '..', 'docs', 'test', '压测结果.json');
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, JSON.stringify({ at: new Date().toISOString(), nfr01, nfr02 }, null, 2), 'utf8');
   console.log(`\n结果已写入 ${out}`);

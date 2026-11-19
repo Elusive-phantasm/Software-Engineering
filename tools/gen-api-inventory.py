@@ -8,9 +8,9 @@
   - 同一路径不同动词算不同操作（"操作数"），路径去重后即"路径数"。
 
 用法（在仓库任意位置执行均可）：
-  python candidates/campus-trade/tools/gen-api-inventory.py               # 打印 Markdown 表
-  python candidates/campus-trade/tools/gen-api-inventory.py --write       # 写入文档的生成块
-  python candidates/campus-trade/tools/gen-api-inventory.py --check       # 校验文档与源码一致
+  python tools/gen-api-inventory.py               # 打印 Markdown 表
+  python tools/gen-api-inventory.py --write       # 写入文档的生成块
+  python tools/gen-api-inventory.py --check       # 校验文档与源码一致
 
 --write / --check 作用的文件：docs/design/接口与关键设计说明书.md
 （按 <!-- API-INVENTORY:BEGIN --> / <!-- API-INVENTORY:END --> 定位，块内内容由本脚本维护）
@@ -20,8 +20,8 @@ import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-REPO = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
-BACKEND = os.path.join(REPO, "candidates", "campus-trade", "backend",
+REPO = os.path.dirname(HERE)
+BACKEND = os.path.join(REPO, "backend",
                        "src", "main", "java", "com", "campus", "trade")
 DOC = os.path.join(REPO, "docs", "design", "接口与关键设计说明书.md")
 
@@ -169,7 +169,7 @@ def ordered(rows):
 def render(rows):
     paths = {r["path"] for r in rows}
     out = []
-    out.append(BEGIN + f" 由 candidates/campus-trade/tools/gen-api-inventory.py 生成，勿手改；"
+    out.append(BEGIN + f" 由 tools/gen-api-inventory.py 生成，勿手改；"
                        f"共 {len(paths)} 个路径 / {len(rows)} 个操作 -->")
     out.append("")
     out.append("| 编号 | 域 | 方法 | 路径 | 说明 | 冻结 |")
