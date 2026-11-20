@@ -92,6 +92,10 @@ npm run dev
 **常见问题**：
 
 - 提示 3307 未运行：先双击 `启动数据库.bat`，或确认自己的 MySQL 监听 3307。
+- **市场里只有林同学的商品 / 数据像被测试弄乱**：管理端「看板」页底部点「重置演示数据」，或执行
+  `curl -X POST http://127.0.0.1:8080/api/dev/reset`。重置后是 **5 件在售、来自 3 个卖家**（林 2 件、赵 1 件、低信用 2 件）。
+- **改过 Java 源码后行为没变**：`启动后端.bat` 优先运行 `backend/target` 里的 jar；改完源码要
+  `cd backend && mvn package -DskipTests` 重新打包，否则跑的还是旧包。
 - 8080 / 5173 已被占用：脚本会检测并跳过已在运行的服务；若是其他程序占用，先关掉它。
 - `npm install` 慢或失败：改用 `npm.cmd install --registry=https://registry.npmmirror.com`。
 - 想改脚本：`.bat` 文件必须保持 **GBK / ANSI 编码**（VS Code 右下角选 `GBK`）。存成 UTF-8 会让 cmd 解析错位，出现 `'[OK]' 不是内部或外部命令` 之类的怪错。

@@ -38,6 +38,7 @@ if errorlevel 1 (
   exit /b 1
 )
 echo [OK] MySQL 3307 可用
+echo [提示] 本脚本优先运行 backend\target 里的 jar；改过 Java 源码请先重新打包（mvn package -DskipTests）。
 
 rem ---------- 3. 找 jar 或 Maven ----------
 if not exist "%ROOT%backend\pom.xml" (

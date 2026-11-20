@@ -268,6 +268,7 @@ public class MessageService {
         }
         String kind = user.subjectType();
         Long me = user.subjectId();
+        Product product = productMapper.selectById(productId);
         List<ChatMessage> candidates = messageMapper.selectList(Wrappers.<ChatMessage>lambdaQuery()
                 .eq(ChatMessage::getProductId, productId)
                 .and(w -> w.and(x -> x.eq(ChatMessage::getSenderType, kind).eq(ChatMessage::getSenderId, me))
@@ -281,9 +282,30 @@ public class MessageService {
                         && peerId.equals(m.getSenderId())))
                 .toList();
         if (rows.isEmpty()) {
-            throw BizException.permission("非本人参与的会话");
+            // 首次联系卖家时还没有任何消息，应允许打开一个空会话；
+            // 能否真正发送由 send() 按 BR-20 再校验（认证、商品状态、封禁）。
+            boolean canStart = false;
+            if ("student".equals(kind) && product != null && product.getDeletedAt() == null
+                    && !product.getSellerId().equals(me)
+                    && product.getSellerId().equals(peerId)) {
+                if (ProductStatus.SOLD.equals(product.getStatus())) {
+                    canStart = orderMapper.selectCount(Wrappers.<TradeOrder>lambdaQuery()
+                            .eq(TradeOrder::getProductId, productId)
+                            .eq(TradeOrder::getStatus, OrderStatus.VALID)
+                            .eq(TradeOrder::getBuyerId, me)) > 0;
+                    if (!canStart) {
+                        throw BizException.state("该商品已售出");
+                    }
+                } else if (ProductStatus.ON_SALE.equals(product.getStatus())) {
+                    canStart = true;
+                } else {
+                    throw BizException.state("该商品暂不可沟通");
+                }
+            }
+            if (!canStart) {
+                throw BizException.permission("非本人参与的会话");
+            }
         }
-        Product product = productMapper.selectById(productId);
         if (kind.equals("admin") && product != null
                 && !OffShelfReason.ADMIN_OFF.equals(product.getOffShelfReason())) {
             throw BizException.permission("管理员仅可查看处置异议会话");
