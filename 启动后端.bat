@@ -1,86 +1,104 @@
 @echo off
-chcp 65001 >nul
-setlocal enabledelayedexpansion
-cd /d "%~dp0"
+chcp 936 >nul
+rem ×¢Òâ£º±¾ÎÄ¼þÇë±£³Ö GBK / ANSI ±àÂë£¬Îð´æ³É UTF-8£¨·ñÔò cmd »á½âÎö´íÎ»£©¡£
+setlocal EnableExtensions
+set "ROOT=%~dp0"
+cd /d "%ROOT%"
+set "NO_PAUSE=0"
+if /i "%~1"=="nopause" set "NO_PAUSE=1"
 
 echo ============================================
-echo   æ‹¾å…‰äºŒæ‰‹ - å¯åŠ¨åŽç«¯ (Spring Boot)
+echo   Ê°¹â¶þÊÖ - Æô¶¯ºó¶Ë (Spring Boot)
 echo ============================================
 echo.
 
-rem ---------- 1. æŒ‘ä¸€ä¸ª JDK 17+ ----------
+rem ---------- 1. ÕÒ JDK 17+ ----------
 set "JAVA_EXE="
-for %%P in (
-  "%JAVA_HOME%\bin\java.exe"
-  "C:\Program Files\Java\jdk-24\bin\java.exe"
-  "C:\Program Files\Java\jdk-23\bin\java.exe"
-  "C:\Program Files\Java\jdk-22\bin\java.exe"
-  "C:\Program Files\Java\jdk-21\bin\java.exe"
-  "C:\Program Files\Java\jdk-20\bin\java.exe"
-  "C:\Program Files\Java\jdk-19\bin\java.exe"
-  "C:\Program Files\Java\jdk-18\bin\java.exe"
-  "C:\Program Files\Java\jdk-17\bin\java.exe"
-) do (
-  if not defined JAVA_EXE if exist "%%~P" call :try_java "%%~P"
-)
+if defined JAVA_HOME call :try_java "%JAVA_HOME%\bin\java.exe"
+if not defined JAVA_EXE for /d %%D in ("%ProgramFiles%\Java\jdk-*") do if not defined JAVA_EXE call :try_java "%%~fD\bin\java.exe"
+if not defined JAVA_EXE for /d %%D in ("%ProgramFiles%\Eclipse Adoptium\jdk-*") do if not defined JAVA_EXE call :try_java "%%~fD\bin\java.exe"
+if not defined JAVA_EXE for /d %%D in ("%ProgramFiles%\Microsoft\jdk-*") do if not defined JAVA_EXE call :try_java "%%~fD\bin\java.exe"
+if not defined JAVA_EXE for /d %%D in ("%ProgramFiles%\Amazon Corretto\jdk*") do if not defined JAVA_EXE call :try_java "%%~fD\bin\java.exe"
+if not defined JAVA_EXE for /f "delims=" %%J in ('where java 2^>nul') do if not defined JAVA_EXE call :try_java "%%J"
 
 if not defined JAVA_EXE (
-  for /f "delims=" %%J in ('where java 2^>nul') do (
-    if not defined JAVA_EXE call :try_java "%%J"
-  )
-)
-
-if not defined JAVA_EXE (
-  echo [é”™è¯¯] æœªæ‰¾åˆ° JDK 17+ã€‚
-  echo        å½“å‰ JAVA_HOME=%JAVA_HOME%
-  echo        è¯·å®‰è£… JDK 17 æˆ–ä»¥ä¸Šï¼ˆæœ¬é¡¹ç›®åœ¨ JDK 24 ä¸ŠéªŒè¯ï¼‰ï¼Œ
-  echo        æˆ–æŠŠ JAVA_HOME æŒ‡å‘ JDK 17+ åŽé‡æ–°è¿è¡Œã€‚
-  pause
+  echo [´íÎó] Î´ÕÒµ½ JDK 17 »òÒÔÉÏ¡£
+  echo        Çë°²×° JDK 17+£¨±¾ÏîÄ¿ÔÚ 24 ÉÏÑéÖ¤£©£¬²¢ÉèÖÃ JAVA_HOME »ò°Ñ java ¼ÓÈë PATH¡£
+  if "%NO_PAUSE%"=="0" pause
   exit /b 1
 )
 echo [OK] JDK: %JAVA_EXE%
 
-rem ---------- 2. æ£€æŸ¥ MySQL 3307 ----------
-powershell -NoProfile -Command "if (Test-NetConnection 127.0.0.1 -Port 3307 -InformationLevel Quiet -WarningAction SilentlyContinue) { exit 0 } else { exit 1 }"
+rem ---------- 2. ¼ì²é MySQL 3307 ----------
+call :port_open 3307
 if errorlevel 1 (
-  echo [é”™è¯¯] MySQL æœªåœ¨ 127.0.0.1:3307 è¿è¡Œã€‚
-  if exist ".mysql\data" (
-    echo        å¯å…ˆåŒå‡»åŒç›®å½•çš„ã€Œå¯åŠ¨æ•°æ®åº“.batã€ï¼Œå†è¿è¡Œæœ¬è„šæœ¬ã€‚
-  ) else (
-    echo        è¯·æŒ‰ README åˆå§‹åŒ– MySQL 8ï¼Œå¹¶è®©åº“ campus_trade ç›‘å¬ 3307ã€‚
-  )
-  pause
+  echo [´íÎó] MySQL Î´ÔÚ 127.0.0.1:3307 ÔËÐÐ¡£
+  echo        ÇëÏÈÔËÐÐ¡¸Æô¶¯Êý¾Ý¿â.bat¡¹£¬»òÖ±½ÓË«»÷¡¸Ò»¼üÆô¶¯.bat¡¹¡£
+  if "%NO_PAUSE%"=="0" pause
   exit /b 1
 )
-echo [OK] MySQL 3307 å¯ç”¨
+echo [OK] MySQL 3307 ¿ÉÓÃ
 
-rem ---------- 3. å¯åŠ¨ ----------
-if exist "backend\target\campus-trade-backend-1.0.0.jar" (
-  echo [INFO] ä½¿ç”¨å·²æž„å»ºçš„ jar å¯åŠ¨ï¼ˆ8080ï¼‰
-  echo [INFO] æŽ¥å£æ–‡æ¡£ http://127.0.0.1:8080/swagger-ui.html
-  echo.
-  cd backend
-  "%JAVA_EXE%" -jar "target\campus-trade-backend-1.0.0.jar"
-) else (
-  where mvn >nul 2>nul
-  if errorlevel 1 (
-    echo [é”™è¯¯] æœªæ‰¾åˆ° jarï¼Œä¹Ÿæœªå®‰è£… Mavenã€‚
-    echo        è¯·å…ˆæ‰§è¡Œï¼šcd backend ^&^& mvn package -DskipTests
-    pause
-    exit /b 1
-  )
-  echo [INFO] ä½¿ç”¨ Maven å¯åŠ¨ï¼ˆ8080ï¼‰
-  cd backend
-  call mvn spring-boot:run
+rem ---------- 3. ÕÒ jar »ò Maven ----------
+if not exist "%ROOT%backend\pom.xml" (
+  echo [´íÎó] Î´ÕÒµ½ backend\pom.xml£¬Çë°Ñ±¾½Å±¾·ÅÔÚ²Ö¿â¸ùÄ¿Â¼¡£
+  if "%NO_PAUSE%"=="0" pause
+  exit /b 1
 )
 
-echo.
-echo [æç¤º] åŽç«¯å·²é€€å‡ºã€‚è‹¥ä¸ºå¼‚å¸¸é€€å‡ºï¼Œè¯·æŸ¥çœ‹ä¸Šæ–¹æ—¥å¿—ã€‚
-pause
-exit /b 0
+set "JAR="
+for /f "delims=" %%J in ('dir /b "%ROOT%backend\target\campus-trade-backend-*.jar" 2^>nul') do set "JAR=%ROOT%backend\target\%%J"
 
-rem ---------- å­ç¨‹åºï¼šæ£€æŸ¥æŸä¸ª java æ˜¯å¦ >= 17 ----------
+set "MVN="
+for /f "delims=" %%M in ('where mvn 2^>nul') do if not defined MVN set "MVN=%%M"
+if not defined MVN if exist "%ROOT%mvnw.cmd" set "MVN=%ROOT%mvnw.cmd"
+
+if not defined JAR if not defined MVN (
+  echo [´íÎó] Ã»ÓÐÒÑ¹¹½¨µÄ jar£¬Ò²Ã»ÓÐÕÒµ½ Maven¡£
+  echo        Çë°²×° Maven ºóÖ´ÐÐ£ºcd backend ^&^& mvn package -DskipTests
+  echo        »òÖ±½ÓÓÃ IDEA / Eclipse Æô¶¯ CampusTradeApplication¡£
+  if "%NO_PAUSE%"=="0" pause
+  exit /b 1
+)
+
+rem ---------- 4. Æô¶¯ ----------
+pushd "%ROOT%backend"
+if defined JAR (
+  echo [INFO] Ê¹ÓÃÒÑ¹¹½¨µÄ jar Æô¶¯£¨8080£©
+  echo [INFO] ½Ó¿ÚÎÄµµ http://127.0.0.1:8080/swagger-ui.html
+  echo.
+  "%JAVA_EXE%" -jar "%JAR%"
+) else (
+  echo [INFO] Ê¹ÓÃ Maven Æô¶¯£¨8080£©
+  echo [INFO] ½Ó¿ÚÎÄµµ http://127.0.0.1:8080/swagger-ui.html
+  echo.
+  call "%MVN%" spring-boot:run
+)
+set "RC=%errorlevel%"
+popd
+echo.
+echo [ÌáÊ¾] ºó¶ËÒÑÍË³ö£¨ÍË³öÂë %RC%£©¡£ÈôÎªÒì³£ÍË³ö£¬Çë²é¿´ÉÏ·½ÈÕÖ¾¡£
+if "%NO_PAUSE%"=="0" pause
+exit /b %RC%
+
 :try_java
-powershell -NoProfile -Command "$v=(& '%~1' -version 2>&1 | Out-String); if($v -match 'version \"?(\d+)'){ if([int]$Matches[1] -ge 17){ exit 0 } }; exit 1"
-if not errorlevel 1 set "JAVA_EXE=%~1"
+if not exist "%~1" goto :eof
+set "JVER="
+set "JVERFILE=%TEMP%\campus-jver-%RANDOM%.txt"
+"%~1" -version 2>"%JVERFILE%"
+for /f "tokens=3" %%V in ('findstr /i "version" "%JVERFILE%" 2^>nul') do set "JVER=%%~V"
+if exist "%JVERFILE%" del "%JVERFILE%" >nul 2>nul
+if not defined JVER goto :eof
+set "JV=%JVER:"=%"
+set "MAJOR="
+for /f "tokens=1 delims=._-" %%A in ("%JV%") do set "MAJOR=%%A"
+if "%MAJOR%"=="1" for /f "tokens=2 delims=._-" %%A in ("%JV%") do set "MAJOR=%%A"
+if not defined MAJOR goto :eof
+if %MAJOR% LSS 17 goto :eof
+set "JAVA_EXE=%~1"
 goto :eof
+
+:port_open
+netstat -ano -p tcp | findstr /c:":%1 " | findstr /i "LISTENING" >nul 2>nul
+if errorlevel 1 exit /b 1
+exit /b 0

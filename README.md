@@ -71,13 +71,30 @@ npm run dev
 
 ### 5. Windows 一键启动
 
-根目录三个脚本，按顺序双击即可（都按脚本所在目录定位，不依赖当前路径）：
+双击根目录的 **`一键启动.bat`**：它会按「数据库 → 后端 → 前端」的顺序拉起，等端口就绪后自动打开浏览器。
+也可以分步双击下面几个脚本（都按自身所在目录定位，移动整个文件夹不受影响）：
 
 | 脚本 | 作用 |
 |---|---|
+| `一键启动.bat` | 依次启动数据库、后端、前端，并打开 <http://localhost:5173/> |
 | `启动数据库.bat` | 用 `.mysql/` 启动 MySQL 8（3307），关闭窗口即停止 |
-| `启动后端.bat` | 自动挑 JDK 17+，优先用已构建 jar，否则 `mvn spring-boot:run`（8080） |
+| `启动后端.bat` | 自动查找 JDK 17+，优先用已构建 jar，否则用 Maven（8080） |
 | `启动前端.bat` | 首次自动 `npm install`，然后 `npm run dev`（5173） |
+
+脚本**不写死盘符和安装路径**：JDK、Node、MySQL 都会从 `JAVA_HOME`、`PATH`、`Program Files` 等常见位置自动查找；数据库的 `datadir` 也按脚本所在目录动态传入。
+
+**换一台电脑运行**需要三样环境：
+
+- JDK 17+、Node.js 18+；
+- MySQL 8（3307）：仓库不带 `.mysql/` 数据目录。按上面「2. 数据库」建好库和账号即可，后端首次启动会自动建表并灌演示数据；
+- 后端 jar 不在仓库里（`target/` 被忽略）：装 Maven 后执行 `cd backend && mvn package -DskipTests`，或用 IDEA / Eclipse 直接启动。
+
+**常见问题**：
+
+- 提示 3307 未运行：先双击 `启动数据库.bat`，或确认自己的 MySQL 监听 3307。
+- 8080 / 5173 已被占用：脚本会检测并跳过已在运行的服务；若是其他程序占用，先关掉它。
+- `npm install` 慢或失败：改用 `npm.cmd install --registry=https://registry.npmmirror.com`。
+- 想改脚本：`.bat` 文件必须保持 **GBK / ANSI 编码**（VS Code 右下角选 `GBK`）。存成 UTF-8 会让 cmd 解析错位，出现 `'[OK]' 不是内部或外部命令` 之类的怪错。
 
 ### 6. 演示账号
 
@@ -157,7 +174,7 @@ Software-Engineering/
 ├─ docs/                            项目文档（需求、架构、设计、测试、报告、课程材料）
 ├─ candidates/app/                  第一版 Node 单体（零依赖演示与回退，见其 README）
 ├─ .mysql/                          本机 MySQL 3307 数据目录（不入库）
-├─ 启动数据库.bat / 启动后端.bat / 启动前端.bat
+├─ 一键启动.bat / 启动数据库.bat / 启动后端.bat / 启动前端.bat
 └─ .gitignore
 ```
 

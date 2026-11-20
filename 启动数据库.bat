@@ -1,37 +1,88 @@
 @echo off
-chcp 65001 >nul
-setlocal
-cd /d "%~dp0"
+chcp 936 >nul
+rem ×¢Òâ£º±¾ÎÄ¼þÇë±£³Ö GBK / ANSI ±àÂë£¬Îð´æ³É UTF-8£¨·ñÔò cmd »á½âÎö´íÎ»£©¡£
+setlocal EnableExtensions
+set "ROOT=%~dp0"
+cd /d "%ROOT%"
+set "NO_PAUSE=0"
+if /i "%~1"=="nopause" set "NO_PAUSE=1"
 
 echo ============================================
-echo   æ‹¾å…‰äºŒæ‰‹ - å¯åŠ¨æ•°æ®åº“ (MySQL 8 @ 3307)
+echo   Ê°¹â¶þÊÖ - Æô¶¯Êý¾Ý¿â (MySQL 8 @ 3307)
 echo ============================================
 echo.
 
-if not exist ".mysql\data" (
-  echo [é”™è¯¯] æœªæ‰¾åˆ° .mysql\dataã€‚
-  echo        æœ¬è„šæœ¬åªç”¨äºŽæœ¬é¡¹ç›®è‡ªå¸¦çš„ 3307 å®žä¾‹ï¼›
-  echo        å¦‚æžœæ²¡æœ‰è¯¥ç›®å½•ï¼Œè¯·æŒ‰ README è‡ªè¡Œåˆå§‹åŒ– MySQLï¼Œæˆ–ä»Žå¤‡ä»½æ¢å¤ã€‚
-  pause
-  exit /b 1
-)
-
-powershell -NoProfile -Command "if (Test-NetConnection 127.0.0.1 -Port 3307 -InformationLevel Quiet -WarningAction SilentlyContinue) { exit 0 } else { exit 1 }"
+call :port_open 3307
 if not errorlevel 1 (
-  echo [INFO] 3307 å·²åœ¨è¿è¡Œï¼Œæ— éœ€é‡å¤å¯åŠ¨ã€‚
-  pause
-  exit /b 0
+  echo [OK] 3307 ÒÑÔÚÔËÐÐ£¬ÎÞÐèÖØ¸´Æô¶¯¡£
+  goto :done
 )
 
-if not exist "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqld.exe" (
-  echo [é”™è¯¯] æœªæ‰¾åˆ° mysqld.exeï¼Œè¯·ç¡®è®¤ MySQL 8 å®‰è£…åœ¨é»˜è®¤è·¯å¾„ã€‚
-  pause
+set "DATA=%ROOT%.mysql\data"
+set "INI=%ROOT%.mysql\my.ini"
+
+if not exist "%DATA%" (
+  echo [´íÎó] Î´ÕÒµ½ .mysql\data¡£
+  echo.
+  echo   ²Ö¿â²»´øÊý¾Ý¿âÎÄ¼þ¡£»»µçÄÔÔËÐÐÊ±£¬ÇëÏÈ°²×° MySQL 8£¬²¢°´ README µÄ¡¸Êý¾Ý¿â¡¹Ò»½Ú½¨¿â£º
+  echo     CREATE DATABASE campus_trade CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+  echo     CREATE USER 'campus'@'%%' IDENTIFIED BY 'Campus@2026';
+  echo     GRANT ALL PRIVILEGES ON campus_trade.* TO 'campus'@'%%';
+  echo   È»ºóÈÃ MySQL ¼àÌý 3307£¬ÔÙÔËÐÐ±¾½Å±¾¡£
+  if "%NO_PAUSE%"=="0" pause
+  exit /b 1
+)
+if not exist "%INI%" (
+  echo [´íÎó] Î´ÕÒµ½ .mysql\my.ini£¬ÎÞ·¨Æô¶¯±¾»úÊµÀý¡£
+  if "%NO_PAUSE%"=="0" pause
   exit /b 1
 )
 
-echo [INFO] åœ¨æ–°çª—å£å¯åŠ¨ MySQLï¼ˆå…³é—­è¯¥çª—å£å³åœæ­¢æ•°æ®åº“ï¼‰
-start "MySQL 3307 - å…³é—­æ­¤çª—å£å³åœæ­¢" "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqld.exe" --defaults-file="%~dp0.mysql\my.ini" --console
+set "MYSQLD="
+for /f "delims=" %%M in ('where mysqld 2^>nul') do if not defined MYSQLD set "MYSQLD=%%M"
+if not defined MYSQLD if exist "%ProgramFiles%\MySQL\MySQL Server 8.0\bin\mysqld.exe" set "MYSQLD=%ProgramFiles%\MySQL\MySQL Server 8.0\bin\mysqld.exe"
+if not defined MYSQLD for /d %%D in ("%ProgramFiles%\MySQL\MySQL Server*") do if not defined MYSQLD if exist "%%~fD\bin\mysqld.exe" set "MYSQLD=%%~fD\bin\mysqld.exe"
+if not defined MYSQLD if exist "%ProgramFiles(x86)%\MySQL" for /d %%D in ("%ProgramFiles(x86)%\MySQL\MySQL Server*") do if not defined MYSQLD if exist "%%~fD\bin\mysqld.exe" set "MYSQLD=%%~fD\bin\mysqld.exe"
+if not defined MYSQLD if exist "C:\xampp\mysql\bin\mysqld.exe" set "MYSQLD=C:\xampp\mysql\bin\mysqld.exe"
 
-echo [INFO] ç­‰å¾…ç«¯å£å°±ç»ª...
-powershell -NoProfile -Command "for ($i=0; $i -lt 20; $i++) { Start-Sleep -Milliseconds 700; if (Test-NetConnection 127.0.0.1 -Port 3307 -InformationLevel Quiet -WarningAction SilentlyContinue) { Write-Host '[OK] 3307 å·²å°±ç»ª'; exit 0 } }; Write-Host '[é”™è¯¯] 3307 æœªå°±ç»ªï¼Œè¯·æŸ¥çœ‹æ–°çª—å£æ—¥å¿—'; exit 1"
-pause
+if not defined MYSQLD (
+  echo [´íÎó] Î´ÕÒµ½ mysqld.exe¡£
+  echo        Çë°²×° MySQL 8£¬»ò°Ñ MySQL µÄ bin Ä¿Â¼¼ÓÈë PATH¡£
+  if "%NO_PAUSE%"=="0" pause
+  exit /b 1
+)
+
+for %%I in ("%MYSQLD%") do set "MYSQL_BIN=%%~dpI"
+for %%I in ("%MYSQL_BIN%..") do set "MYSQL_BASE=%%~fI"
+
+echo [INFO] mysqld : %MYSQLD%
+echo [INFO] datadir: %DATA%
+echo [INFO] ÔÚÐÂ´°¿ÚÆô¶¯ MySQL£¬¹Ø±ÕÄÇ¸ö´°¿Ú¼´Í£Ö¹Êý¾Ý¿â¡£
+start "MySQL 3307£¨¹Ø±Õ´Ë´°¿Ú¼´Í£Ö¹£©" "%MYSQLD%" --defaults-file="%INI%" --datadir="%DATA%" --basedir="%MYSQL_BASE%" --console
+
+call :wait_port 3307 30
+if errorlevel 1 (
+  echo [´íÎó] 3307 ÔÚ 30 ÃëÄÚÃ»ÓÐ¾ÍÐ÷¡£
+  echo        Çë²é¿´ÐÂ¿ªµÄ MySQL ´°¿ÚÈÕÖ¾£¬³£¼ûÔ­ÒòÊÇ¶Ë¿Ú±»Õ¼ÓÃ»ò datadir ²»ÍêÕû¡£
+  if "%NO_PAUSE%"=="0" pause
+  exit /b 1
+)
+echo [OK] 3307 ÒÑ¾ÍÐ÷
+goto :done
+
+:port_open
+netstat -ano -p tcp | findstr /c:":%1 " | findstr /i "LISTENING" >nul 2>nul
+if errorlevel 1 exit /b 1
+exit /b 0
+
+:wait_port
+for /l %%I in (1,1,%2) do (
+  call :port_open %1
+  if not errorlevel 1 exit /b 0
+  ping -n 2 127.0.0.1 >nul
+)
+exit /b 1
+
+:done
+if "%NO_PAUSE%"=="0" pause
+exit /b 0

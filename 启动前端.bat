@@ -1,33 +1,60 @@
 @echo off
-chcp 65001 >nul
-cd /d "%~dp0"
+chcp 936 >nul
+rem ×¢Òâ£º±¾ÎÄ¼şÇë±£³Ö GBK / ANSI ±àÂë£¬Îğ´æ³É UTF-8£¨·ñÔò cmd »á½âÎö´íÎ»£©¡£
+setlocal EnableExtensions
+set "ROOT=%~dp0"
+cd /d "%ROOT%"
+set "NO_PAUSE=0"
+if /i "%~1"=="nopause" set "NO_PAUSE=1"
+
 echo ============================================
-echo   æ‹¾å…‰äºŒæ‰‹ - å¯åŠ¨å‰ç«¯ (Vue 3 + Vite)
+echo   Ê°¹â¶şÊÖ - Æô¶¯Ç°¶Ë (Vue 3 + Vite)
 echo ============================================
 echo.
+
 where node >nul 2>nul
 if errorlevel 1 (
-  echo [é”™è¯¯] æœªæ‰¾åˆ° Node.jsï¼Œè¯·å…ˆå®‰è£… Node 18+ å¹¶åŠ å…¥ PATH
-  pause
+  echo [´íÎó] Î´ÕÒµ½ Node.js¡£Çë°²×° Node 18+ ²¢¼ÓÈë PATH¡£
+  if "%NO_PAUSE%"=="0" pause
   exit /b 1
 )
-cd /d "%~dp0frontend"
+where npm.cmd >nul 2>nul
+if errorlevel 1 (
+  echo [´íÎó] Î´ÕÒµ½ npm.cmd¡£ÇëÖØĞÂ°²×° Node.js£¨°²×°Ê±¹´Ñ¡ npm£©¡£
+  if "%NO_PAUSE%"=="0" pause
+  exit /b 1
+)
+
+if not exist "%ROOT%frontend\package.json" (
+  echo [´íÎó] Î´ÕÒµ½ frontend\package.json£¬Çë°Ñ±¾½Å±¾·ÅÔÚ²Ö¿â¸ùÄ¿Â¼¡£
+  if "%NO_PAUSE%"=="0" pause
+  exit /b 1
+)
+
+cd /d "%ROOT%frontend"
 if not exist "node_modules" (
-  echo é¦–æ¬¡è¿è¡Œï¼Œæ­£åœ¨å®‰è£…ä¾èµ–ï¼Œè¯·ç¨å€™...
-  call npm install
+  echo [INFO] Ê×´ÎÔËĞĞ£¬ÕıÔÚ°²×°Ç°¶ËÒÀÀµ£¬ÇëÉÔºò...
+  call npm.cmd install
   if errorlevel 1 (
-    echo [é”™è¯¯] ä¾èµ–å®‰è£…å¤±è´¥ï¼Œè¯·æ£€æŸ¥ç½‘ç»œæˆ–æ”¹ç”¨ npm install --registry=https://registry.npmmirror.com
-    pause
+    echo [´íÎó] ÒÀÀµ°²×°Ê§°Ü¡£¿É¸ÄÓÃ¹úÄÚ¾µÏñÖØÊÔ£º
+    echo        npm.cmd install --registry=https://registry.npmmirror.com
+    if "%NO_PAUSE%"=="0" pause
     exit /b 1
   )
 )
+
 if not exist ".tmp" mkdir ".tmp"
-set "TEMP=%~dp0frontend\.tmp"
-set "TMP=%~dp0frontend\.tmp"
+set "TEMP=%ROOT%frontend\.tmp"
+set "TMP=%ROOT%frontend\.tmp"
+
 echo.
-echo å­¦ç”Ÿç«¯ï¼š http://localhost:5173/
-echo ç®¡ç†ç«¯ï¼š http://localhost:5173/#/admin/login
-echo æç¤ºï¼šè‹¥ 5173 è¢«å ç”¨ï¼ŒVite ä¼šè‡ªåŠ¨æ”¹ç”¨ 5174ï¼Œè¯·ä»¥çª—å£é‡Œæ‰“å°çš„åœ°å€ä¸ºå‡†
+echo Ñ§Éú¶Ë£º http://localhost:5173/
+echo ¹ÜÀí¶Ë£º http://localhost:5173/#/admin/login
+echo ÌáÊ¾£ºÈô 5173 ±»Õ¼ÓÃ£¬Vite »á×Ô¶¯¸ÄÓÃ 5174£¬ÇëÒÔ´°¿ÚÀï´òÓ¡µÄµØÖ·Îª×¼¡£
 echo.
-call npm run dev
-pause
+call npm.cmd run dev
+set "RC=%errorlevel%"
+echo.
+echo [ÌáÊ¾] Ç°¶ËÒÑÍË³ö£¨ÍË³öÂë %RC%£©¡£
+if "%NO_PAUSE%"=="0" pause
+exit /b %RC%
