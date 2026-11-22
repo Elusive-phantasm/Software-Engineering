@@ -70,6 +70,7 @@ app:
     review-max: 500
     nickname-max: 20
     report-reason-max: 200
+    max-active-orders-per-student: 5
   credit:
     initial: 100
     min: 0
@@ -88,6 +89,7 @@ app:
     cert-review-timeout-hours: 24
     product-review-timeout-hours: 24
     report-handle-timeout-hours: 24
+    delivery-window-hours: 168
   certification:
     resubmit-limit: 3
   security:

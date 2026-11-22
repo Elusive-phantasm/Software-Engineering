@@ -6,6 +6,7 @@
   "description": "项目工具链：后端冒烟测试与浏览器端冒烟测试",
   "scripts": {
     "smoke": "node smoke.mjs",
+    "api": "node api-contract.mjs",
     "e2e": "node e2e.mjs"
   },
   "devDependencies": {

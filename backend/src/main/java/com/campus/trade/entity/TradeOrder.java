@@ -27,5 +27,6 @@ public class TradeOrder {
     private String cancelJudgement;
     private LocalDateTime judgementAt;
     private LocalDateTime createdAt;
+    private LocalDateTime deliveryDeadline;
     private LocalDateTime updatedAt;
 }

@@ -70,6 +70,13 @@ public class OrderService {
         if (!ProductStatus.ON_SALE.equals(product.getStatus())) {
             throw BizException.state("该商品不可购买");
         }
+        long activeOrders = orderMapper.selectCount(Wrappers.<TradeOrder>lambdaQuery()
+                .eq(TradeOrder::getBuyerId, buyer.getId())
+                .eq(TradeOrder::getStatus, OrderStatus.VALID));
+        if (activeOrders >= props.getLimits().getMaxActiveOrdersPerStudent()) {
+            throw BizException.state("个人有效订单数已达到上限（"
+                    + props.getLimits().getMaxActiveOrdersPerStudent() + " 笔）");
+        }
 
         // 原子切换：条件更新 + 唯一索引（uk_order_one_valid）双重保证并发只有一笔成功
         int changed = productMapper.update(null, Wrappers.<Product>lambdaUpdate()
@@ -89,6 +96,7 @@ public class OrderService {
         order.setAmountCents(product.getPriceCents());
         order.setStatus(OrderStatus.VALID);
         order.setCreatedAt(timeProvider.now());
+        order.setDeliveryDeadline(timeProvider.now().plusHours(props.getDeadlines().getDeliveryWindowHours()));
         order.setUpdatedAt(timeProvider.now());
         orderMapper.insert(order);
 
@@ -335,7 +343,7 @@ public class OrderService {
                 product == null ? "（商品已删除）" : product.getTitle(),
                 product == null ? null : product.getStatus(),
                 BigDecimal.valueOf(o.getAmountCents(), 2).toPlainString(),
-                o.getStatus(), o.getCreatedAt(), o.getBuyerId(), o.getSellerId(),
+                o.getStatus(), o.getCreatedAt(), o.getDeliveryDeadline(), o.getBuyerId(), o.getSellerId(),
                 Views.PublicStudentVo.of(buyer), Views.PublicStudentVo.of(seller),
                 isBuyer ? "buyer" : isSeller ? "seller" : "admin",
                 peerId, peer == null ? null : peer.getNickname(),

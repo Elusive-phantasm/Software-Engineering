@@ -42,6 +42,7 @@ import java.util.Map;
  *   商品审核 / 举报处理超 24 小时 → 提醒管理员
  *   BR-14 ③ 成交满 7 天未评价 → 未评价方 −1
  *   UC-31 辅事件流 C 撤销满 7 天对方未判定 → 自动置「计违约」，撤销方 −2
+ *   BR-25 交割截止时间到达 → 提醒买卖双方，不改变订单状态
  * 所有时间以服务端 now() 为准，判定区间左闭右开（恰好到点即视为超期）。
  */
 @Slf4j
@@ -85,6 +86,7 @@ public class SchedulerService {
         counts.put("reportTimeouts", reportTimeout(now));
         counts.put("noReviewPenalties", noReviewPenalty(now));
         counts.put("cancelAutoJudgements", cancelJudgeTimeout(now));
+        counts.put("deliveryReminders", deliveryReminders(now));
         counts.values().removeIf(v -> v == 0);
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("at", now.toString());
@@ -235,6 +237,27 @@ public class SchedulerService {
             notificationService.notifyStudent(peerId, NotifyType.DEAL, "撤销免责判定已超时",
                     "你在 7 天内未对这笔撤销作出判定，系统已自动计对方违约。",
                     "order", o.getId(), o.getProductId(), o.getCancelInitiatorId());
+            count++;
+        }
+        return count;
+    }
+
+    private int deliveryReminders(LocalDateTime now) {
+        int count = 0;
+        List<TradeOrder> orders = orderMapper.selectList(Wrappers.<TradeOrder>lambdaQuery()
+                .eq(TradeOrder::getStatus, OrderStatus.VALID)
+                .isNotNull(TradeOrder::getDeliveryDeadline)
+                .le(TradeOrder::getDeliveryDeadline, now));
+        for (TradeOrder o : orders) {
+            if (recentlyNotified("成交", o.getId(), now)) {
+                continue;
+            }
+            notificationService.notifyStudent(o.getBuyerId(), NotifyType.DEAL, "交割时间已到",
+                    "订单 #" + o.getId() + " 已达到交割截止时间，请尽快与卖家完成线下交割或协商处理。",
+                    "order", o.getId(), o.getProductId(), o.getSellerId());
+            notificationService.notifyStudent(o.getSellerId(), NotifyType.DEAL, "交割时间已到",
+                    "订单 #" + o.getId() + " 已达到交割截止时间，请尽快与买家完成线下交割或协商处理。",
+                    "order", o.getId(), o.getProductId(), o.getBuyerId());
             count++;
         }
         return count;

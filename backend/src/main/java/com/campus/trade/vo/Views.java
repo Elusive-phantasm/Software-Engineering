@@ -170,6 +170,7 @@ public final class Views {
             String amount,
             String status,
             LocalDateTime createdAt,
+            LocalDateTime deliveryDeadline,
             Long buyerId,
             Long sellerId,
             PublicStudentVo buyer,

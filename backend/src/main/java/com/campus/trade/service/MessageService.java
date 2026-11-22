@@ -67,7 +67,7 @@ public class MessageService {
 
         if (product.getSellerId().equals(student.getId())) {
             /* 卖家一侧：只能回复既有会话，或就违规下架向管理员提异议 */
-            if (toId == null || toId.equals(student.getId())) {
+            if (toId == null) {
                 throw BizException.state("不能与自己对话");
             }
             Admin targetAdmin = adminMapper.selectById(toId);
@@ -78,6 +78,9 @@ public class MessageService {
                 receiverType = "admin";
                 receiverId = toId;
             } else {
+                if (toId.equals(student.getId())) {
+                    throw BizException.state("不能与自己对话");
+                }
                 if (!hasConversation(productId, student.getId(), toId)) {
                     throw BizException.permission("仅该商品的发布人、沟通过的买家与（违规下架时）管理员可参与");
                 }

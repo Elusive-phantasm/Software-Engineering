@@ -143,6 +143,7 @@ CREATE TABLE IF NOT EXISTS orders (
   cancel_judgement    VARCHAR(10)  NULL,
   judgement_at        DATETIME     NULL,
   created_at          DATETIME     NOT NULL,
+  delivery_deadline   DATETIME     NULL,
   updated_at          DATETIME     NOT NULL,
   valid_product_id    BIGINT GENERATED ALWAYS AS (CASE WHEN status = '有效' THEN product_id ELSE NULL END) STORED,
   PRIMARY KEY (id),
@@ -163,6 +164,8 @@ CREATE TABLE IF NOT EXISTS orders (
         OR (cancel_judgement IN ('已免责','计违约') AND judgement_at IS NOT NULL)))
   )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单（成交记录）';
+
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_deadline DATETIME NULL AFTER created_at;
 
 CREATE TABLE IF NOT EXISTS reviews (
   id          BIGINT       NOT NULL AUTO_INCREMENT,

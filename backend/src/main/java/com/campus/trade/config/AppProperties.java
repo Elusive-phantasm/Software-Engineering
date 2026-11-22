@@ -38,6 +38,7 @@ public class AppProperties {
         private int reviewMax = 500;
         private int nicknameMax = 20;
         private int reportReasonMax = 200;
+        private int maxActiveOrdersPerStudent = 5;
     }
 
     @Getter
@@ -64,6 +65,7 @@ public class AppProperties {
         private int certReviewTimeoutHours = 24;
         private int productReviewTimeoutHours = 24;
         private int reportHandleTimeoutHours = 24;
+        private int deliveryWindowHours = 168;
     }
 
     @Getter
