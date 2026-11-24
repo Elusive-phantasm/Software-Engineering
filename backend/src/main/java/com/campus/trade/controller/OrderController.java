@@ -44,11 +44,11 @@ public class OrderController {
         return ApiResponse.ok(orderService.detail(user, id));
     }
 
-    @Operation(summary = "撤销成交（单方即时生效，不需对方同意）")
+    @Operation(summary = "提交或审批撤销成交（须双方同意）")
     @PostMapping("/orders/{id}/cancel")
     public ApiResponse<Object> cancel(@CurrentUser AuthUser user, @PathVariable Long id,
                                       @Valid @RequestBody TradeDtos.CancelRequest req) {
-        return ApiResponse.ok(orderService.cancel(user, id, req.reason()), "撤销已生效，等待对方在 7 天内判定");
+        return ApiResponse.ok(orderService.cancel(user, id, req.reason()), "撤销申请已提交或审批通过");
     }
 
     @Operation(summary = "免责判定（对方判定：已免责 / 计违约）")

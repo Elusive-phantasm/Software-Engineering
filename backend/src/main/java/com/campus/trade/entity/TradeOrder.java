@@ -24,6 +24,11 @@ public class TradeOrder {
     private Long cancelInitiatorId;
     private String cancelReason;
     private LocalDateTime cancelledAt;
+    private Long cancelRequesterId;
+    private String cancelRequestReason;
+    private LocalDateTime cancelRequestedAt;
+    private Long cancelApproverId;
+    private LocalDateTime cancelApprovedAt;
     private String cancelJudgement;
     private LocalDateTime judgementAt;
     private LocalDateTime createdAt;

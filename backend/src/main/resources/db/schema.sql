@@ -140,6 +140,11 @@ CREATE TABLE IF NOT EXISTS orders (
   cancel_initiator_id BIGINT       NULL,
   cancel_reason       VARCHAR(200) NULL,
   cancelled_at        DATETIME     NULL,
+  cancel_requester_id BIGINT       NULL,
+  cancel_request_reason VARCHAR(200) NULL,
+  cancel_requested_at DATETIME     NULL,
+  cancel_approver_id  BIGINT       NULL,
+  cancel_approved_at  DATETIME     NULL,
   cancel_judgement    VARCHAR(10)  NULL,
   judgement_at        DATETIME     NULL,
   created_at          DATETIME     NOT NULL,
@@ -165,7 +170,6 @@ CREATE TABLE IF NOT EXISTS orders (
   )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单（成交记录）';
 
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_deadline DATETIME NULL AFTER created_at;
 
 CREATE TABLE IF NOT EXISTS reviews (
   id          BIGINT       NOT NULL AUTO_INCREMENT,
@@ -322,3 +326,4 @@ CREATE TABLE IF NOT EXISTS settings (
   updated_at DATETIME     NOT NULL,
   PRIMARY KEY (k)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统设置';
+

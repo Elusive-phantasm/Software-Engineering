@@ -2,7 +2,7 @@
   <div class="page">
     <h2 class="section-title">我的订单</h2>
     <el-alert type="info" :closable="false" class="mb"
-              title="本版订单没有状态机：只有「成交状态（有效/已撤销）」与「撤销免责判定」两个标记。成交仅表示下单成功，不代表已付款或已交货。" />
+              title="订单只有「有效/已撤销」状态。撤销必须由一方发起、另一方审批同意后生效。成交仅表示下单成功，不代表已付款或已交货。" />
 
     <el-tabs v-model="role" @tab-change="load">
       <el-tab-pane label="全部" name="all" />
@@ -35,7 +35,7 @@
         <div class="ops">
           <el-button v-if="o.canReview" size="small" type="primary" @click="openReview(o)">评价</el-button>
           <el-button v-if="o.canCancel" size="small" type="danger" plain @click="openCancel(o)">撤销成交</el-button>
-          <el-button v-if="o.canJudge" size="small" type="warning" @click="openJudge(o)">判定免责 / 违约</el-button>
+              <el-button v-if="o.canJudge" size="small" type="warning" @click="openJudge(o)">撤销审批</el-button>
           <el-button size="small" text @click="openProduct(o)">查看商品</el-button>
           <el-button size="small" text type="danger" @click="openReportUser(o)">举报该用户</el-button>
         </div>
@@ -70,7 +70,7 @@
     <!-- 判定 -->
     <el-dialog v-model="judgeDialog" title="撤销免责判定" width="460px">
       <p>对方撤销了这笔成交。你可以选择同意免责，或判定其违约。</p>
-      <el-alert type="warning" :closable="false" class="mb" title="7 天内未处理，系统自动计违约（撤销方 −2 分）" />
+        <el-alert type="warning" :closable="false" class="mb" title="撤销必须由双方同意，审批通过后才生效。" />
       <template #footer>
         <el-button @click="judgeDialog = false">取消</el-button>
         <el-button @click="submitJudge('已免责')">同意免责</el-button>

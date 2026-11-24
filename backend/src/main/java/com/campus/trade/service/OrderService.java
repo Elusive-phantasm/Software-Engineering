@@ -175,14 +175,40 @@ public class OrderService {
         }
 
         LocalDateTime now = timeProvider.now();
+        if (order.getCancelRequesterId() == null) {
+            int requested = orderMapper.update(null, Wrappers.<TradeOrder>lambdaUpdate()
+                    .eq(TradeOrder::getId, orderId)
+                    .eq(TradeOrder::getStatus, OrderStatus.VALID)
+                    .isNull(TradeOrder::getCancelRequesterId)
+                    .set(TradeOrder::getCancelRequesterId, actor.getId())
+                    .set(TradeOrder::getCancelRequestReason, reasonV.length() > 200 ? reasonV.substring(0, 200) : reasonV)
+                    .set(TradeOrder::getCancelRequestedAt, now)
+                    .set(TradeOrder::getUpdatedAt, now));
+            if (requested == 0) throw BizException.state("撤销申请状态已变化，请刷新后重试");
+            Long peerId = actor.getId().equals(order.getBuyerId()) ? order.getSellerId() : order.getBuyerId();
+            notificationService.notifyStudent(peerId, NotifyType.DEAL, "收到撤销订单审批申请",
+                    "对方申请撤销《" + product.getTitle() + "》，请在订单详情中再次提交以审批同意。",
+                    "order", orderId, product.getId(), actor.getId());
+            auditService.allowed(user, roleOf(actor), "order.cancel.request", "order", orderId,
+                    "reason=" + reasonV);
+            return detail(user, orderId);
+        }
+        if (actor.getId().equals(order.getCancelRequesterId())) {
+            throw BizException.state("撤销申请已提交，须等待对方审批");
+        }
         int changed = orderMapper.update(null, Wrappers.<TradeOrder>lambdaUpdate()
                 .eq(TradeOrder::getId, orderId)
                 .eq(TradeOrder::getStatus, OrderStatus.VALID)
                 .set(TradeOrder::getStatus, OrderStatus.CANCELLED)
-                .set(TradeOrder::getCancelInitiatorId, actor.getId())
-                .set(TradeOrder::getCancelReason, reasonV.length() > 200 ? reasonV.substring(0, 200) : reasonV)
+                .set(TradeOrder::getCancelInitiatorId, order.getCancelRequesterId())
+                .set(TradeOrder::getCancelReason, order.getCancelRequestReason())
                 .set(TradeOrder::getCancelledAt, now)
-                .set(TradeOrder::getCancelJudgement, CancelJudgement.PENDING)
+                .set(TradeOrder::getCancelApproverId, actor.getId())
+                .set(TradeOrder::getCancelApprovedAt, now)
+                .set(TradeOrder::getCancelJudgement, CancelJudgement.EXEMPT)
+                .set(TradeOrder::getCancelRequesterId, null)
+                .set(TradeOrder::getCancelRequestReason, null)
+                .set(TradeOrder::getCancelRequestedAt, null)
                 .set(TradeOrder::getJudgementAt, null)
                 .set(TradeOrder::getUpdatedAt, now));
         if (changed == 0) {
@@ -211,26 +237,27 @@ public class OrderService {
         }
 
         Long peerId = actor.getId().equals(order.getBuyerId()) ? order.getSellerId() : order.getBuyerId();
-        notificationService.notifyStudent(peerId, NotifyType.DEAL, "对方已撤销这笔成交",
-                "对方撤销了《" + product.getTitle() + "》的这笔成交（原因：" + reasonV
-                        + "）。你可选择「同意免责」或「计其违约」；7 天内未处理默认计违约。",
+        notificationService.notifyStudent(peerId, NotifyType.DEAL, "双方已同意撤销成交",
+                "《" + product.getTitle() + "》已通过双方审批，成交已撤销。",
                 "order", orderId, product.getId(), actor.getId());
         notificationService.notifyStudent(actor.getId(), NotifyType.DEAL, "撤销已生效",
                 backToOnSale
-                        ? "《" + product.getTitle() + "》的成交已撤销，商品已回到「在售」。等待对方在 7 天内判定是否计你违约。"
+                        ? "《" + product.getTitle() + "》的成交已撤销，商品已回到「在售」。"
                         : "《" + product.getTitle() + "》的成交已撤销。因卖家账号已封禁，商品转为「已下架（撤销后不可交易）」（ST-11）。",
                 "order", orderId, product.getId(), peerId);
         if (backToOnSale) {
             notifyFavoriters(product.getId(), product.getTitle());
         }
         auditService.allowed(user, roleOf(actor), "order.cancel", "order", orderId,
-                "reason=" + reasonV + ", backToOnSale=" + backToOnSale);
+                "reason=" + order.getCancelRequestReason() + ", approvedBy=" + actor.getId() + ", backToOnSale=" + backToOnSale);
         return detail(user, orderId);
     }
 
     /* -------------------------------------- UC-31 第 5 步 / BR-14 ④ 免责判定 */
     @Transactional
     public Views.OrderVo judge(AuthUser user, Long orderId, String judgement) {
+        throw BizException.state("当前规则要求双方审批撤销，不再支持撤销后的免责/违约判定");
+        /*
         Student actor = permissionService.requireCertifiedStudent(user);
         if (!CancelJudgement.EXEMPT.equals(judgement) && !CancelJudgement.BREACH.equals(judgement)) {
             throw BizException.validate("判定结论只能是「已免责」或「计违约」");
@@ -288,6 +315,7 @@ public class OrderService {
         auditService.allowed(user, roleOf(actor), "order.judgeCancel", "order", orderId,
                 "judgement=" + finalJudgement + ", overdue=" + overdue);
         return detail(user, orderId);
+        */
     }
 
     /* ------------------------------------------------------------- 内部方法 */
@@ -324,13 +352,10 @@ public class OrderService {
                 : o.getCancelledAt().plusHours(props.getDeadlines().getCancelJudgementHours());
         boolean canCancel = (isBuyer || isSeller)
                 && OrderStatus.VALID.equals(o.getStatus())
+                && (o.getCancelRequesterId() == null || !o.getCancelRequesterId().equals(user == null ? null : user.subjectId()))
                 && reviews.isEmpty()
                 && product != null && ProductStatus.SOLD.equals(product.getStatus());
-        boolean canJudge = (isBuyer || isSeller)
-                && OrderStatus.CANCELLED.equals(o.getStatus())
-                && CancelJudgement.PENDING.equals(o.getCancelJudgement())
-                && !o.getCancelInitiatorId().equals(user == null ? null : user.subjectId())
-                && judgeDeadline != null && timeProvider.now().isBefore(judgeDeadline);
+        boolean canJudge = false;
 
         Student peer = peerId == null ? null : studentMapper.selectById(peerId);
         String remaining = null;
