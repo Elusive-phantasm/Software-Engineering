@@ -12,9 +12,9 @@ source = source.replace("textcell('title', name,", "textcell('title', name + 'ï¼
 source = source.replace("textcell(f'label{i}',label,*labelpos,480,75)", "textcell(f'label{i}',label,*labelpos,460,100,16)")
 source = source.replace("    ET.indent(mx)", '''    # Final states terminate the modelled transaction lifecycle, not record retention.
     if name.startswith('SM-01'):
-        terminal_keys = ['e', 'f', 'h']
+        terminal_keys = ['b']
     elif name.startswith('SM-02'):
-        terminal_keys = ['d']
+        terminal_keys = ['c']
     else:
         terminal_keys = ['g4', 'g5', 'l4', 'l5', 'r3', 'r4']
     for key in terminal_keys:
@@ -86,3 +86,5 @@ source = source.replace("        d.line(points, fill='#435962', width=3)", '''  
         edges[i] = (src, dst, label, points, labelpos)
         d.line(points, fill='black', width=2)''')
 exec(compile(source, str(Path(__file__)), 'exec'))
+
+

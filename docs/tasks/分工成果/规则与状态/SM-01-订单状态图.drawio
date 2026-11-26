@@ -1,182 +1,54 @@
 <?xml version='1.0' encoding='utf-8'?>
 <mxfile host="app.diagrams.net">
   <diagram name="SM-01-订单状态图" id="SM-01">
-    <mxGraphModel page="1" pageWidth="1800" pageHeight="1300">
+    <mxGraphModel page="1" pageWidth="1800" pageHeight="900">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="SM-01-订单状态图" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=34;fontFamily=Microsoft YaHei;">
+        <mxCell id="title" value="SM-01-订单状态图（UML 状态机图）" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=34;fontFamily=Microsoft YaHei;">
           <mxGeometry as="geometry" x="60" y="35" width="1680" height="50" />
         </mxCell>
-        <mxCell id="subtitle" value="v0.5 · 订单 · 八个主状态；付款标记记录操作，卖家确认后才进入已支付" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
+        <mxCell id="subtitle" value="V2.1 · 成交 · 仅记录有效、已撤销；平台不记录支付、交付或退款状态" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
           <mxGeometry as="geometry" x="60" y="90" width="1680" height="45" />
         </mxCell>
         <mxCell id="s" value="" style="ellipse;fillColor=#182d37;strokeColor=#182d37;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="40" y="324" width="22" height="22" />
+          <mxGeometry as="geometry" x="50" y="300" width="22" height="22" />
         </mxCell>
-        <mxCell id="a" value="待支付" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="200" y="300" width="180" height="70" />
+        <mxCell id="a" value="有效" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#000000;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="240" y="276" width="180" height="70" />
         </mxCell>
-        <mxCell id="b" value="已支付" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="500" y="300" width="180" height="70" />
+        <mxCell id="b" value="已撤销" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#000000;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="700" y="276" width="180" height="70" />
         </mxCell>
-        <mxCell id="c" value="待交付" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="800" y="300" width="180" height="70" />
-        </mxCell>
-        <mxCell id="d" value="待确认" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="1100" y="300" width="180" height="70" />
-        </mxCell>
-        <mxCell id="e" value="已完成" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="1400" y="300" width="180" height="70" />
-        </mxCell>
-        <mxCell id="f" value="已取消" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="200" y="820" width="180" height="70" />
-        </mxCell>
-        <mxCell id="g" value="退款中" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="760" y="820" width="180" height="70" />
-        </mxCell>
-        <mxCell id="h" value="已退款" style="rounded=1;arcSize=15;whiteSpace=wrap;html=0;fillColor=#edf7f5;strokeColor=#28776b;fontSize=26;fontFamily=Microsoft YaHei;" vertex="1" parent="1">
-          <mxGeometry as="geometry" x="1100" y="820" width="180" height="70" />
-        </mxCell>
-        <mxCell id="edge0" source="s" target="a" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=1.0;exitY=0.5;entryX=0.0;entryY=0.5;strokeColor=#435962;">
+        <mxCell id="edge0" source="s" target="a" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=open;endFill=0;exitX=1.0;exitY=0.5;entryX=0.0;entryY=0.5;strokeColor=#435962;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge1" source="a" target="b" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=1.0;exitY=0.5;entryX=0.0;entryY=0.5;strokeColor=#435962;">
+        <mxCell id="edge1" source="a" target="b" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=open;endFill=0;exitX=1.0;exitY=0.5;entryX=0.0;entryY=0.5;strokeColor=#435962;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge2" source="b" target="c" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=1.0;exitY=0.5;entryX=0.0;entryY=0.5;strokeColor=#435962;">
+        <mxCell id="label0" value="下单成功 [商品为在售且满足下单规则] / 创建唯一成交" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=16;fontFamily=Microsoft YaHei;">
+          <mxGeometry as="geometry" x="75" y="220" width="460" height="100" />
+        </mxCell>
+        <mxCell id="label1" value="双方审批同意撤销 [申请方不能审批自己] / 恢复商品可交易状态" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=16;fontFamily=Microsoft YaHei;">
+          <mxGeometry as="geometry" x="440" y="150" width="460" height="100" />
+        </mxCell>
+        <mxCell id="note0" value="成交创建与商品状态更新在同一事务内完成；同一商品最多一笔有效成交。" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
+          <mxGeometry as="geometry" x="60" y="729" width="1680" height="36" />
+        </mxCell>
+        <mxCell id="note1" value="撤销申请先记录申请并保持有效；对方同意后才进入已撤销。" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
+          <mxGeometry as="geometry" x="60" y="767" width="1680" height="36" />
+        </mxCell>
+        <mxCell id="final_b" value="" vertex="1" parent="1" style="ellipse;fillColor=#ffffff;strokeColor=#000000;">
+          <mxGeometry as="geometry" x="775.0" y="386" width="30" height="30" />
+        </mxCell>
+        <mxCell id="inner_b" value="" vertex="1" parent="final_b" style="ellipse;fillColor=#000000;strokeColor=#000000;">
+          <mxGeometry as="geometry" x="6" y="6" width="18" height="18" />
+        </mxCell>
+        <mxCell id="end_b" source="b" target="final_b" edge="1" parent="1" style="endArrow=open;endFill=0;strokeColor=#000000;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="edge3" source="c" target="d" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=1.0;exitY=0.5;entryX=0.0;entryY=0.5;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1" />
-        </mxCell>
-        <mxCell id="edge4" source="c" target="d" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.3333333333333333;exitY=0.0;entryX=0.5;entryY=0.0;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1">
-            <Array as="points">
-              <mxPoint x="860" y="170" />
-              <mxPoint x="1190" y="170" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="edge5" source="d" target="e" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=1.0;exitY=0.5;entryX=0.0;entryY=0.5;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1" />
-        </mxCell>
-        <mxCell id="edge6" source="d" target="e" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.4444444444444444;exitY=1.0;entryX=0.5;entryY=1.0;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1">
-            <Array as="points">
-              <mxPoint x="1180" y="450" />
-              <mxPoint x="1490" y="450" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="edge7" source="a" target="f" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.5;exitY=1.0;entryX=0.5;entryY=0.0;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1" />
-        </mxCell>
-        <mxCell id="edge8" source="a" target="f" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.0;exitY=0.9285714285714286;entryX=0.0;entryY=0.5;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1">
-            <Array as="points">
-              <mxPoint x="90" y="365" />
-              <mxPoint x="90" y="855" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="edge9" source="a" target="f" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.9444444444444444;exitY=1.0;entryX=0.8333333333333334;entryY=0.0;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1">
-            <Array as="points">
-              <mxPoint x="370" y="430" />
-              <mxPoint x="470" y="430" />
-              <mxPoint x="470" y="780" />
-              <mxPoint x="350" y="780" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="edge10" source="a" target="g" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.7222222222222222;exitY=1.0;entryX=0.2222222222222222;entryY=0.0;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1">
-            <Array as="points">
-              <mxPoint x="330" y="640" />
-              <mxPoint x="800" y="640" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="edge11" source="b" target="g" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.3333333333333333;exitY=1.0;entryX=0.0;entryY=0.5;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1">
-            <Array as="points">
-              <mxPoint x="560" y="760" />
-              <mxPoint x="730" y="760" />
-              <mxPoint x="730" y="855" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="edge12" source="c" target="g" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.3333333333333333;exitY=1.0;entryX=0.5555555555555556;entryY=0.0;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1" />
-        </mxCell>
-        <mxCell id="edge13" source="d" target="g" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=0.3333333333333333;exitY=1.0;entryX=0.8888888888888888;entryY=0.0;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1">
-            <Array as="points">
-              <mxPoint x="1160" y="780" />
-              <mxPoint x="920" y="780" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="edge14" source="g" target="h" parent="1" edge="1" style="edgeStyle=none;rounded=0;endArrow=block;exitX=1.0;exitY=0.5;entryX=0.0;entryY=0.5;strokeColor=#435962;">
-          <mxGeometry as="geometry" relative="1" />
-        </mxCell>
-        <mxCell id="label0" value="ST-01 下单" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="65" y="255" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label1" value="ST-03 卖家确认收款" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="395" y="245" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label2" value="ST-04 双方确认交付安排" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="695" y="245" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label3" value="ST-05 卖家提交线下交付记录" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="985" y="245" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label4" value="ST-30 自提点取货确认" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="875" y="110" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label5" value="ST-06 买家确认收货" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="1285" y="230" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label6" value="ST-34 交付满 7 天自动确认" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="1200" y="400" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label7" value="ST-07 到期自动取消" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="300" y="455" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label8" value="ST-08 买家取消" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="25" y="500" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label9" value="ST-29 违规处置联动取消" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="450" y="690" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label10" value="ST-33 买家取消已标记付款订单" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="350" y="540" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label11" value="ST-10 对方同意取消" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="580" y="500" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label12" value="ST-10 对方同意取消" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="875" y="470" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label13" value="ST-10 对方同意取消" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="940" y="700" width="480" height="75" />
-        </mxCell>
-        <mxCell id="label14" value="ST-32 买家确认收到退款" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="950" y="790" width="480" height="75" />
-        </mxCell>
-        <mxCell id="note0" value="主链：待支付 → 已支付 → 待交付 → 待确认 → 已完成；ST-30 仅用于自提点取货确认。" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="60" y="1053" width="1680" height="36" />
-        </mxCell>
-        <mxCell id="note1" value="ST-02、ST-09、ST-11、ST-12、ST-13、ST-14、ST-31 为状态保持：付款标记、取消申请、终态拒绝、人工处置、重复确认、越权操作、退款标记不单独画成功箭头。" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="60" y="1091" width="1680" height="36" />
-        </mxCell>
-        <mxCell id="note2" value="付款后取消须对方同意：ST-10 进入退款中，ST-32 确认收到后退款完成。" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="60" y="1129" width="1680" height="36" />
-        </mxCell>
-        <mxCell id="note3" value="ST-33 处理已标记付款但卖家满 48 小时未确认；ST-34 在交付满 7 天后自动确认收货。" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=22;fontFamily=Microsoft YaHei;">
-          <mxGeometry as="geometry" x="60" y="1167" width="1680" height="36" />
+        <mxCell id="legend" value="UML：实心圆 = 初始伪状态；靶心圆 = 终止状态；转换 = 事件 [守卫条件] / 效果。" vertex="1" parent="1" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=17;fontFamily=Microsoft YaHei;">
+          <mxGeometry as="geometry" x="60" y="840" width="1480" height="35" />
         </mxCell>
       </root>
     </mxGraphModel>
