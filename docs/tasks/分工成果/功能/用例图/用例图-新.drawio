@@ -1,0 +1,196 @@
+<mxfile host="app.diagrams.net" agent="dsh">
+  <diagram id="uc-v21" name="用例图（SRS V2.1）">
+    <mxGraphModel dx="1535" dy="959" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="2400" background="light-dark(#FFFFFF,#121212)" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;" value="校园二手交易平台 · 用例图（SRS V2.1 · 24 个用例）" vertex="1">
+          <mxGeometry height="30" width="900" x="340" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=2;fontSize=16;verticalAlign=top;align=center;spacingTop=8;" value="校园二手交易平台（SRS V2.1）" vertex="1">
+          <mxGeometry height="1980" width="810" x="340" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-student" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontSize=14;fontStyle=1;" value="学生" vertex="1">
+          <mxGeometry height="60" width="40" x="170" y="1066" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-admin" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontSize=14;fontStyle=1;" value="管理员" vertex="1">
+          <mxGeometry height="60" width="40" x="1210" y="294" as="geometry" />
+        </mxCell>
+        <mxCell id="sec-a" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666666;" value="账号与身份" vertex="1">
+          <mxGeometry height="22" width="270" x="380" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="uc01" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="UC-01 注册与登录" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="uc02" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="UC-02 提交学生证核验申请" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="254" as="geometry" />
+        </mxCell>
+        <mxCell id="uc34" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="UC-34 找回密码" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="338" as="geometry" />
+        </mxCell>
+        <mxCell id="uc33" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="UC-33 查看个人主页" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="422" as="geometry" />
+        </mxCell>
+        <mxCell id="sec-b" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666666;" value="浏览与收藏" vertex="1">
+          <mxGeometry height="22" width="270" x="380" y="514" as="geometry" />
+        </mxCell>
+        <mxCell id="uc07" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" value="UC-07 搜索商品" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="546" as="geometry" />
+        </mxCell>
+        <mxCell id="uc08" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" value="UC-08 按分类浏览商品" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="uc09" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" value="UC-09 收藏商品" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="714" as="geometry" />
+        </mxCell>
+        <mxCell id="sec-c" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666666;" value="发布与维护" vertex="1">
+          <mxGeometry height="22" width="270" x="380" y="806" as="geometry" />
+        </mxCell>
+        <mxCell id="uc05" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" value="UC-05 发布商品" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="838" as="geometry" />
+        </mxCell>
+        <mxCell id="uc32" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" value="UC-32 编辑商品" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="922" as="geometry" />
+        </mxCell>
+        <mxCell id="uc11" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" value="UC-11 下架或删除自己的商品" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1006" as="geometry" />
+        </mxCell>
+        <mxCell id="uc17" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" value="UC-17 查看我的商品" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1090" as="geometry" />
+        </mxCell>
+        <mxCell id="sec-d" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666666;" value="交易与评价" vertex="1">
+          <mxGeometry height="22" width="270" x="380" y="1182" as="geometry" />
+        </mxCell>
+        <mxCell id="uc10" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" value="UC-10 下单成交" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1214" as="geometry" />
+        </mxCell>
+        <mxCell id="uc31" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" value="UC-31 撤销成交" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1298" as="geometry" />
+        </mxCell>
+        <mxCell id="uc14" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" value="UC-14 评价交易" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1382" as="geometry" />
+        </mxCell>
+        <mxCell id="uc16" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" value="UC-16 查看我的订单" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1466" as="geometry" />
+        </mxCell>
+        <mxCell id="sec-e" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666666;" value="沟通与通知" vertex="1">
+          <mxGeometry height="22" width="270" x="380" y="1558" as="geometry" />
+        </mxCell>
+        <mxCell id="uc29" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" value="UC-29 联系卖家与沟通" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1590" as="geometry" />
+        </mxCell>
+        <mxCell id="uc30" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" value="UC-30 查看我的私信" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1674" as="geometry" />
+        </mxCell>
+        <mxCell id="uc18" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" value="UC-18 查看消息通知" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1758" as="geometry" />
+        </mxCell>
+        <mxCell id="sec-f" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666666;" value="信用与举报" vertex="1">
+          <mxGeometry height="22" width="270" x="380" y="1850" as="geometry" />
+        </mxCell>
+        <mxCell id="uc15" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" value="UC-15 查看信用分" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1882" as="geometry" />
+        </mxCell>
+        <mxCell id="uc12" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" value="UC-12 举报违规商品或学生" vertex="1">
+          <mxGeometry height="56" width="270" x="380" y="1966" as="geometry" />
+        </mxCell>
+        <mxCell id="sec-g" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666666;" value="管理员治理" vertex="1">
+          <mxGeometry height="22" width="270" x="800" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="uc04" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" value="UC-04 管理员登录" vertex="1">
+          <mxGeometry height="56" width="270" x="800" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="uc03" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" value="UC-03 审核学生证" vertex="1">
+          <mxGeometry height="56" width="270" x="800" y="254" as="geometry" />
+        </mxCell>
+        <mxCell id="uc06" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" value="UC-06 审核商品" vertex="1">
+          <mxGeometry height="56" width="270" x="800" y="338" as="geometry" />
+        </mxCell>
+        <mxCell id="uc13" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" value="UC-13 处理举报与违规处置" vertex="1">
+          <mxGeometry height="56" width="270" x="800" y="422" as="geometry" />
+        </mxCell>
+        <mxCell id="s01" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s02" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc02">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s03" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s04" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc33">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s05" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc07">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s06" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc08">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s07" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc09">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s08" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc05">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s09" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s10" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s11" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s12" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s13" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s14" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s15" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s16" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s17" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s18" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s19" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s20" edge="1" parent="1" source="actor-student" style="endArrow=none;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#000000;" target="uc12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a04" edge="1" parent="1" source="actor-admin" style="endArrow=none;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;strokeColor=#000000;" target="uc04">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a03" edge="1" parent="1" source="actor-admin" style="endArrow=none;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;strokeColor=#000000;" target="uc03">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a06" edge="1" parent="1" source="actor-admin" style="endArrow=none;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;strokeColor=#000000;" target="uc06">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a13" edge="1" parent="1" source="actor-admin" style="endArrow=none;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;strokeColor=#000000;" target="uc13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a18" edge="1" parent="1" source="actor-admin" style="endArrow=none;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;strokeColor=#000000;" target="uc18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a30" edge="1" parent="1" source="actor-admin" style="endArrow=none;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;strokeColor=#000000;" target="uc30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=11;spacing=2;" value="&lt;b&gt;图例与口径（对齐 SRS V2.1 §3.1）&lt;/b&gt;&lt;br&gt;· 小人 = 参与者；椭圆 = 用例；方框 = 系统边界。全图只有两个参与者：&lt;b&gt;学生&lt;/b&gt;、&lt;b&gt;管理员&lt;/b&gt;&lt;br&gt;· 共 24 个用例：UC-01～UC-18 与 UC-29～UC-34。&lt;b&gt;UC-19～UC-28 有意留空&lt;/b&gt;（与 V1.2.1 旧编号零冲突），不是缺号或笔误&lt;br&gt;· 买家、卖家、举报人、捐赠者都是「学生」在不同用例中扮演的角色，&lt;b&gt;不单独画小人&lt;/b&gt;；学生与管理员各自连到其可执行的用例&lt;br&gt;· 颜色：蓝＝账号与身份；绿＝浏览与收藏；橙＝发布与维护；黄＝交易与评价；紫＝沟通与通知；灰＝信用与举报；红＝管理员治理&lt;br&gt;· &lt;b&gt;不画 «include» / «extend»&lt;/b&gt;：按 SRS §3.1，UC-04 管理员登录是 UC-03 / UC-06 / UC-13 的&lt;b&gt;前置条件&lt;/b&gt;，不用 «include»；「登录」不单独成用例（UC-01 内含登录与建档）&lt;br&gt;· UC-29 与 UC-30 共用「会话」概念，但前者是发起并沟通（产生业务动作），后者是查看会话与置已读，故拆为两个用例&lt;br&gt;· UC-18、UC-30 由两类参与者共用（图中这两条关联分别从学生与管理员引出）；其中 UC-30 对管理员仅限「处置异议会话」&lt;br&gt;· BR-15「系统主动通知」是业务规则（由系统触发，不是参与者发起），&lt;b&gt;不画进用例图&lt;/b&gt;；用户主动查看消息才是 UC-18" vertex="1">
+          <mxGeometry height="180" width="1700" x="380" y="2120" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
