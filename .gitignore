@@ -18,6 +18,12 @@ logs/
 *.db-wal
 *.db-shm
 
+# 环境变量与首次启动生成的演示凭据（含口令，绝不入库）
+.env
+.env.local
+.env.*.local
+seed-credentials.txt
+
 # 本机 MySQL 实例（体积大且含本机数据，勿提交）
 .mysql/
 

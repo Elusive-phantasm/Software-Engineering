@@ -33,7 +33,12 @@ import { useAuthStore } from '../../stores/auth';
 const auth = useAuthStore();
 const router = useRouter();
 const route = useRoute();
-const form = reactive({ email: 'lin@campus.edu', password: 'Test@12345' });
+// 演示账号可选注入：仅当构建/启动时显式提供 VITE_DEMO_STUDENT_EMAIL / VITE_DEMO_STUDENT_PASSWORD 才预填。
+// 仓库与生产构建默认不预填任何口令（见 frontend/.env.example）。
+const form = reactive({
+  email: import.meta.env.VITE_DEMO_STUDENT_EMAIL || '',
+  password: import.meta.env.VITE_DEMO_STUDENT_PASSWORD || ''
+});
 const loading = ref(false);
 const notice = ref('');
 

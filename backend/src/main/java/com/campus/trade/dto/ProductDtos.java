@@ -20,10 +20,10 @@ public final class ProductDtos {
     ) {
     }
 
-    /** 审核驳回：必须引用 §4.3 类目编号 */
+    /** 审核不通过。禁售类目编号仅在涉及禁售内容时填写。 */
     public record RejectRequest(
             @NotBlank(message = "请填写驳回原因") String reason,
-            @NotBlank(message = "请引用禁售类目编号（如 A1）") String categoryCode
+            String categoryCode
     ) {
     }
 

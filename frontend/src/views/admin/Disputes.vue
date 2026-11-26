@@ -39,7 +39,7 @@
             <el-divider />
             <div class="composer">
               <el-input v-model="content" type="textarea" :rows="3" maxlength="500" show-word-limit
-                        placeholder="仅可就该商品的处置异议回复，不得主动发起私信（BR-20）" />
+                        placeholder="仅可就该商品的处置异议回复，不得主动发起私信" />
               <div class="right mt8">
                 <el-button type="primary" @click="reply">回复</el-button>
               </div>

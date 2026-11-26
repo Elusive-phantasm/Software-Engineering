@@ -8,6 +8,7 @@
  */
 import puppeteer from 'puppeteer-core';
 import fs from 'node:fs';
+import { demoAccounts } from './demo-accounts.mjs';
 
 const EDGE_CANDIDATES = [
   process.env.EDGE_PATH,
@@ -88,7 +89,19 @@ async function main() {
   console.log(`浏览器：${findBrowser()}`);
 
   // 先重置演示数据：冒烟测试会封禁账号、产生订单，不重置会让本轮看到脏状态
-  const reset = await fetch(`${BASE}/api/dev/reset`, { method: 'POST' });
+  // 开发工具已改为「默认关闭 + 管理员身份」，因此先登录管理员再重置
+  const accounts = demoAccounts();
+  const adminLogin = await fetch(`${BASE}/api/auth/admin/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adminNo: accounts.adminNo, password: accounts.adminPassword })
+  });
+  const adminBody = await adminLogin.json().catch(() => ({}));
+  const adminToken = adminBody?.data?.token;
+  const reset = await fetch(`${BASE}/api/dev/reset`, {
+    method: 'POST',
+    headers: adminToken ? { Authorization: `Bearer ${adminToken}` } : {}
+  });
   check('重置演示数据', reset.ok, `HTTP ${reset.status}`);
 
   console.log('\n-- 首页 --');
@@ -122,7 +135,7 @@ async function main() {
   check('详情页渲染价格', priceText.startsWith('¥'), priceText);
 
   console.log('\n-- 登录 --');
-  await login(page, 'zhao@campus.edu', 'Test@12345');
+  await login(page, 'zhao@campus.edu', accounts.studentPassword);
   const userText = await page.$eval('.user', (el) => el.textContent).catch(() => '');
   check('登录后显示昵称', userText.includes('赵同学'), userText.trim());
 
@@ -164,9 +177,9 @@ async function main() {
   await page.waitForSelector('input', { timeout: 10000 });
   const adminInputs = await page.$$('input');
   await adminInputs[0].click({ clickCount: 3 });
-  await adminInputs[0].type('ADM-001');
+  await adminInputs[0].type(accounts.adminNo);
   await adminInputs[1].click({ clickCount: 3 });
-  await adminInputs[1].type('Admin@12345');
+  await adminInputs[1].type(accounts.adminPassword);
   await clickByText(page, 'button', '登录');
   await sleep(1800);
   const kpi = await page.$$eval('.kpi', (els) => els.length).catch(() => 0);

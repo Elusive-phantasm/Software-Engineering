@@ -14,7 +14,7 @@
         <span v-if="detail.peerBanned" class="danger"> · 对方账号已封禁，无法继续发送</span>
       </div>
       <el-alert v-if="detail.offShelfReason && detail.iAmSeller" type="warning" :closable="false" class="mt8"
-                title="该商品因违规被管理员下架，你可向管理员提出异议（UC-13 辅事件流 C）">
+                title="该商品因违规被管理员下架，你可向管理员提出异议">
         <el-button size="small" type="warning" class="mt8" @click="appealDialog = true">向管理员提异议</el-button>
       </el-alert>
     </div>
@@ -31,7 +31,7 @@
 
     <div class="composer card mt12">
       <el-input v-model="content" type="textarea" :rows="3" maxlength="500" show-word-limit
-                placeholder="只能就这件商品沟通；平台不记录交付事实（BR-07）"
+                placeholder="只能就这件商品沟通；平台不记录交付事实"
                 @keydown.ctrl.enter="send" />
       <div class="flex-between mt8">
         <span class="muted">Ctrl + Enter 发送 · 纯文本单聊，不支持附件与撤回</span>
@@ -41,7 +41,7 @@
 
     <el-dialog v-model="appealDialog" title="向管理员提出处置异议" width="480px">
       <el-alert type="info" :closable="false" class="mb"
-                title="异议会以站内私信发给管理员，管理员复核后可按 ST-09 恢复在售（扣分不回滚）" />
+                title="异议会以站内私信发给管理员，管理员复核后可恢复在售" />
       <el-input v-model="appealContent" type="textarea" :rows="4" maxlength="500" show-word-limit
                 placeholder="说明为什么认为处置有误" />
       <template #footer>

@@ -62,13 +62,8 @@
     <!-- 驳回 -->
     <el-dialog v-model="rejectDialog" title="审核不通过" width="520px">
       <el-alert type="info" :closable="false" class="mb"
-                title="必须引用 §4.3 禁售品类清单中的类目编号，否则无法提交（BR-04）" />
+                title="请填写具体审核意见。涉及禁售内容时可选择对应类目。" />
       <el-form label-position="top">
-        <el-form-item label="禁售类目编号">
-          <el-select v-model="categoryCode" filterable placeholder="选择类目" style="width: 100%">
-            <el-option v-for="(name, code) in forbidden" :key="code" :label="`${code} ${name}`" :value="code" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="驳回原因">
           <el-input v-model="reason" type="textarea" :rows="3" maxlength="200" />
         </el-form-item>
@@ -81,13 +76,8 @@
 
     <!-- 强制下架 -->
     <el-dialog v-model="forceDialog" title="强制下架（违规处置）" width="520px">
-      <el-alert type="warning" :closable="false" class="mb" title="将同时扣减卖家信用分 −10（BR-14 ②）" />
+      <el-alert type="warning" :closable="false" class="mb" title="将同时扣减卖家信用分 −10" />
       <el-form label-position="top">
-        <el-form-item label="禁售类目编号">
-          <el-select v-model="categoryCode" filterable placeholder="选择类目" style="width: 100%">
-            <el-option v-for="(name, code) in forbidden" :key="code" :label="`${code} ${name}`" :value="code" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="处置理由">
           <el-input v-model="reason" type="textarea" :rows="3" maxlength="200" />
         </el-form-item>
@@ -159,10 +149,6 @@ function openReject(row) {
 }
 
 async function submitReject() {
-  if (!categoryCode.value) {
-    ElMessage.warning('请选择禁售类目编号');
-    return;
-  }
   if (!reason.value.trim()) {
     ElMessage.warning('请填写驳回原因');
     return;
@@ -181,8 +167,8 @@ function openForceOff(row) {
 }
 
 async function submitForceOff() {
-  if (!categoryCode.value) {
-    ElMessage.warning('请选择禁售类目编号');
+  if (!reason.value.trim()) {
+    ElMessage.warning('请填写处置理由');
     return;
   }
   await adminApi.forceOff(current.value.id, { reason: reason.value.trim() || '违规处置', categoryCode: categoryCode.value, deduct: true });

@@ -4,6 +4,7 @@
  */
 import autocannon from 'autocannon';
 import fs from 'node:fs';
+import { demoAccounts } from './demo-accounts.mjs';
 import path from 'node:path';
 
 const API = 'http://127.0.0.1:8080';
@@ -18,7 +19,7 @@ async function call(method, url, body, token) {
   return { ms: performance.now() - started, status: res.status, data };
 }
 
-async function login(email, password = 'Test@12345') {
+async function login(email, password = demoAccounts().studentPassword) {
   const r = await call('POST', '/api/auth/login', { email, password });
   return r.data.data.token;
 }
@@ -41,8 +42,10 @@ function report(title, result) {
 }
 
 async function main() {
-  // 干净起点
-  await call('POST', '/api/dev/reset', {});
+  // 干净起点（开发工具需管理员身份）
+  const accounts = demoAccounts();
+  const admin0 = (await call('POST', '/api/auth/admin/login', { adminNo: accounts.adminNo, password: accounts.adminPassword })).data.data.token;
+  await call('POST', '/api/dev/reset', {}, admin0);
 
   console.log('\n== NFR-01 商品列表性能：50 个连接并发 15 秒 ==');
   const listResult = await autocannon({
@@ -56,7 +59,7 @@ async function main() {
   console.log('\n== NFR-02 下单响应：小样本（10 笔合法下单，串行）==');
   const lin = await login('lin@campus.edu');
   const zhao = await login('zhao@campus.edu');
-  const admin = (await call('POST', '/api/auth/admin/login', { adminNo: 'ADM-001', password: 'Admin@12345' })).data.data.token;
+  const admin = admin0;
   const cats = await call('GET', '/api/categories');
   const categoryId = cats.data.data[2].id;
 

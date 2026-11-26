@@ -43,8 +43,11 @@ public class SecurityConfig {
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // 公开：注册登录、找回密码、接口文档、静态资源
-                .requestMatchers("/api/auth/**", "/api/dev/**", "/v3/api-docs/**", "/swagger-ui/**",
+                .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**",
                                  "/swagger-ui.html", "/uploads/**", "/error").permitAll()
+                // 开发/演示工具不再匿名开放：开关（app.features.enable-dev-tools，默认关闭）之外
+                // 再加管理员角色，避免开关被误开时把整库重置能力暴露给游客。
+                .requestMatchers("/api/dev/**").hasRole("ADMIN")
                 // 公开：商品浏览与分类（游客可看，SRS §5.2）
                 .requestMatchers(HttpMethod.GET, "/api/categories", "/api/products", "/api/products/*",
                                  "/api/products/*/reviews", "/api/students/*/profile").permitAll()

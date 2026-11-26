@@ -23,15 +23,17 @@
 
 | 组件 | 版本 | 说明 |
 |---|---|---|
-| JDK | 17+（本项目在 24 上验证） | 需设置 `JAVA_HOME` |
+| JDK | 17+（`pom.xml` 编译目标为 Java 17，已在 JDK 21 上验证） | 需设置 `JAVA_HOME` |
 | Maven | 3.9+ | 构建后端 |
 | MySQL | 8.0+ | 本项目使用独立实例（3307 端口），不占用系统默认实例 |
 | Node.js | 18+ | 构建前端 |
 
 ### 2. 数据库
 
-默认连接 `127.0.0.1:3307/campus_trade`，账号 `campus / Campus@2026`。
-如使用自己的 MySQL，改 `backend/src/main/resources/application.yml` 中的 `spring.datasource` 即可。
+默认连接 `127.0.0.1:3306/campus_trade`（脚本按 3306 → 3307 自动探测），账号 `campus`。
+连接参数全部支持环境变量覆盖：`DB_PORT`、`DB_NAME`、`DB_USERNAME`、`DB_PASSWORD`
+（示例见 `backend/.env.example`）。**正式部署必须用 `DB_PASSWORD` 注入独立口令**，
+`application.yml` 中的默认值只是本机课程演示值。
 仓库根目录的 `.mysql/` 是本机 3307 实例的数据目录（不入库），可直接双击 `启动数据库.bat` 使用。
 
 建库语句：
@@ -39,7 +41,8 @@
 ```sql
 CREATE DATABASE IF NOT EXISTS campus_trade
   CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-CREATE USER IF NOT EXISTS 'campus'@'%' IDENTIFIED BY 'Campus@2026';
+-- 口令请自行设置，并用环境变量 DB_PASSWORD 传给后端
+CREATE USER IF NOT EXISTS 'campus'@'%' IDENTIFIED BY '<你的口令>';
 GRANT ALL PRIVILEGES ON campus_trade.* TO 'campus'@'%';
 ```
 
@@ -86,14 +89,23 @@ npm run dev
 **换一台电脑运行**需要三样环境：
 
 - JDK 17+、Node.js 18+；
-- MySQL 8（3307）：仓库不带 `.mysql/` 数据目录。按上面「2. 数据库」建好库和账号即可，后端首次启动会自动建表并灌演示数据；
+- MySQL 8（3306 或 3307）：仓库不带 `.mysql/` 数据目录。按上面「2. 数据库」建好库和账号即可，后端首次启动会自动建表并灌演示数据；
 - 后端 jar 不在仓库里（`target/` 被忽略）：装 Maven 后执行 `cd backend && mvn package -DskipTests`，或用 IDEA / Eclipse 直接启动。
 
 **常见问题**：
 
-- 提示 3307 未运行：先双击 `启动数据库.bat`，或确认自己的 MySQL 监听 3307。
-- **市场里只有林同学的商品 / 数据像被测试弄乱**：管理端「看板」页底部点「重置演示数据」，或执行
-  `curl -X POST http://127.0.0.1:8080/api/dev/reset`。重置后是 **5 件在售、来自 3 个卖家**（林 2 件、赵 1 件、低信用 2 件）。
+- 提示数据库未运行：先双击 `启动数据库.bat`（3307），或确认自己的 MySQL 监听 3306 / 3307。
+- **市场里只有林同学的商品 / 数据像被测试弄乱**：用管理员登录管理端，在「看板」页底部点「重置演示数据」；
+  命令行等价做法是先拿管理员令牌再调用（开发工具默认关闭，需后端以 `APP_ENABLE_DEV_TOOLS=true` 启动）：
+
+  ```bash
+  TOKEN=$(curl -s -X POST http://127.0.0.1:8080/api/auth/admin/login \
+    -H 'Content-Type: application/json' \
+    -d "{\"adminNo\":\"$ADMIN_NO\",\"password\":\"$ADMIN_PASSWORD\"}" | jq -r .data.token)
+  curl -X POST http://127.0.0.1:8080/api/dev/reset -H "Authorization: Bearer $TOKEN"
+  ```
+
+  重置后是 **5 件在售、来自 3 个卖家**（林 2 件、赵 1 件、低信用 2 件）。
 - **改过 Java 源码后行为没变**：`启动后端.bat` 优先运行 `backend/target` 里的 jar；改完源码要
   `cd backend && mvn package -DskipTests` 重新打包，否则跑的还是旧包。
 - 8080 / 5173 已被占用：脚本会检测并跳过已在运行的服务；若是其他程序占用，先关掉它。
@@ -102,19 +114,30 @@ npm run dev
 
 ### 6. 演示账号
 
-| 角色 | 账号 | 密码 | 用途 |
-|---|---|---|---|
-| 学生·已认证 | `lin@campus.edu` | `Test@12345` | 卖家视角：2 件在售（教材、iPad）+ 1 件待审 + 1 件已售出 + 1 件已下架 |
-| 学生·已认证 | `zhao@campus.edu` | `Test@12345` | 买家视角：1 件在售（山地车，可验证「不能买自己的商品」）+ 1 笔成交可评价 |
-| 学生·待审核 | `ma@campus.edu` | `Test@12345` | 演示「核验审核中」拦截 |
-| 学生·已驳回 | `guo@campus.edu` | `Test@12345` | 演示「核验未通过，可重提」 |
-| 学生·未提交 | `lv@campus.edu` | `Test@12345` | 演示「请先上传学生证」 |
-| 学生·已封禁 | `ban@campus.edu` | `Test@12345` | 名下 1 件商品已是「已下架（管理员违规下架）」，演示封禁联动结果 |
-| 学生·低信用 | `low@campus.edu` | `Test@12345` | 2 件在售（台灯、电饭煲），信用分 55，演示发布/下单阈值 |
-| 管理员 | `ADM-001` | `Admin@12345` | 审核、处置、看板 |
+**口令不入库。** 仓库与代码里不再保存演示口令，口令只在这两处出现：
+
+1. **环境变量**（推荐，也是正式部署的唯一方式）：`APP_SEED_ADMIN_PASSWORD` / `APP_SEED_DEMO_PASSWORD`；
+2. **首次启动自动生成**：两者都未配置时，后端在灌入演示数据时随机生成口令，
+   写入 `backend/data/seed-credentials.txt`（已在 `.gitignore` 中忽略），日志只打印该文件路径。
+
+账号本身（与口令无关）：
+
+| 角色 | 账号 | 用途 |
+|---|---|---|
+| 学生·已认证 | `lin@campus.edu` | 卖家视角：2 件在售（教材、iPad）+ 1 件待审 + 1 件已售出 + 1 件已下架 |
+| 学生·已认证 | `zhao@campus.edu` | 买家视角：1 件在售（山地车，可验证「不能买自己的商品」）+ 1 笔成交可评价 |
+| 学生·待审核 | `ma@campus.edu` | 演示「核验审核中」拦截 |
+| 学生·已驳回 | `guo@campus.edu` | 演示「核验未通过，可重提」 |
+| 学生·未提交 | `lv@campus.edu` | 演示「请先上传学生证」 |
+| 学生·已封禁 | `ban@campus.edu` | 名下 1 件商品已是「已下架（管理员违规下架）」，演示封禁联动结果 |
+| 学生·低信用 | `low@campus.edu` | 2 件在售（台灯、电饭煲），信用分 55，演示发布/下单阈值 |
+| 管理员 | `ADM-001` | 审核、处置、看板（账号可用 `APP_SEED_ADMIN_NO` 覆盖） |
 
 > **演示买卖**：首页 5 件在售商品来自 **3 位不同卖家**（林同学、赵同学、低信用同学）。
 > 用 `zhao` 登录可以买林同学或低信用同学的；想看「不能买自己的」，就用 zhao 买那辆山地车。
+
+> **前端预填（可选）**：`frontend/.env.example` 复制为 `.env.local` 并填 `VITE_DEMO_STUDENT_*` /
+> `VITE_DEMO_ADMIN_*` 后，登录页会预填；不配则输入框为空，构建产物里也没有任何口令。
 
 ---
 
@@ -125,8 +148,12 @@ npm run dev
 | 后端冒烟 | `node tools/smoke.mjs` | 认证、商品全生命周期、交易、私信、通知、主页、举报处置、定时任务、封禁联动、权限面 | 72 项通过 |
 | 浏览器冒烟 | `node tools/e2e.mjs` | 首页/搜索/详情/登录/收藏/订单/信用分/通知 + 管理端 7 页 + 控制台零报错 | 20 项通过 |
 | 性能抽样 | `node tools/bench.mjs` | NFR-01 列表 50 并发、NFR-02 下单时延 | 最大 385ms / 37ms |
+| 开发工具收口 | `node tools/verify-dev-hardening.mjs` | 匿名/学生/管理员三种身份访问 `/api/dev/**`，开关开与关两种形态 | 13 项通过（两种形态各一次） |
 
-> 两个冒烟套件都会先调 `/api/dev/reset` 重置数据，可重复执行。
+> 两个冒烟套件都会先调 `/api/dev/reset` 重置数据，可重复执行。由于开发工具默认关闭，
+> 跑这些脚本前需**用 `APP_ENABLE_DEV_TOOLS=true` 启动后端**，并且脚本要能读到演示口令：
+> 设 `DEMO_STUDENT_PASSWORD` / `DEMO_ADMIN_PASSWORD`，或依赖首次启动生成的
+> `backend/data/seed-credentials.txt`（可用 `DEMO_CREDENTIALS_FILE` 指定位置）。
 > 详细记录与证据见 [docs/test/验收与测试记录.md](docs/test/验收与测试记录.md) 与 `evidence/`；
 > 测试阶段的场景、分工与判据见 [docs/tasks/分工通知/软件测试阶段分工/](docs/tasks/分工通知/软件测试阶段分工/)。
 >
@@ -228,7 +255,14 @@ Software-Engineering/
 
 ## 六、演示工具（答辩用）
 
-管理端「看板」页底部提供演示按钮，也可直接调接口：
+管理端「看板」页底部提供演示按钮，也可直接调接口。
+
+**两道闸门**（缺一不可）：
+
+1. `app.features.enable-dev-tools` 必须为 `true`（环境变量 `APP_ENABLE_DEV_TOOLS=true`）——**默认是 `false`**；
+2. 调用方必须是管理员身份。
+
+开关关闭时整组接口返回 403，看板上的演示面板会自动隐藏。
 
 | 接口 | 作用 |
 |---|---|
@@ -238,7 +272,11 @@ Software-Engineering/
 | `POST /api/dev/scheduler/run` | 立即执行一轮定时判定 |
 | `GET /api/dev/mailbox` | 开发邮箱（查看验证码） |
 
-> 生产部署把 `application.yml` 的 `app.features.enable-dev-tools` 置为 `false` 即可整体关闭。
+> 答辩时启动后端前设 `APP_ENABLE_DEV_TOOLS=true`；`GET /api/dev/state` 也已纳入同一闸门
+> （曾经匿名可达并暴露各表条数）。
+>
+> 正式部署请保持 `APP_ENABLE_DEV_TOOLS=false`，并用 `APP_ENV=prod` 启动：启动校验会拒绝
+> 「开发工具仍开着」「演示数据仍在灌」「口令还是演示值」这几种组合。
 > 注意：业务会话有效期使用**真实时钟**，时间偏移不会把用户踢下线。
 
 ---
@@ -249,8 +287,13 @@ Software-Engineering/
 2. **「卖家主动下架」不可直接重新上架**：按 ST-08 的封闭集实现（仅 `审核不通过` / `卖家撤回` 可重提），
    与 UC-17 的笼统表述存在需求内部矛盾，已在 [docs/requirements/需求覆盖矩阵.md](docs/requirements/需求覆盖矩阵.md) 记录。
 3. **举报成立即扣 −10**：按 BR-14 ② 的字面口径实现（不依赖管理员是否勾选「扣信用分」）。
-4. **管理员初始密码不强制修改**：为演示便利，`DataSeeder` 中 `must_change_password=0`；正式部署应置 1。
-5. **演示开关默认开启**：`enable-dev-tools=true`，且 `GET /api/dev/state` 未受开关保护；交付前需收口（已列入 S3 的停止条件）。
+4. **管理员初始密码不强制修改**：课程演示默认 `APP_SEED_ADMIN_MUST_CHANGE=false`；正式部署应设为 `true`
+   （对齐 SRS UC-04 主事件流第 4 步「首登或重置后强制修改初始密码」）。
+5. **演示工具默认关闭**：`enable-dev-tools=false`，且 `/api/dev/**` 全部要求管理员身份；
+   `GET /api/dev/state` 已与其它开发接口一样受开关与角色双重保护。
+6. **口令不入库**：演示口令由环境变量注入或首次启动随机生成（写入 `backend/data/seed-credentials.txt`，
+   已被 `.gitignore` 忽略）；`application.yml` 中的数据库默认口令只用于本机课程演示，
+   `APP_ENV=prod` 时会因「使用公开演示口令」被启动校验拒绝。
 
 ---
 

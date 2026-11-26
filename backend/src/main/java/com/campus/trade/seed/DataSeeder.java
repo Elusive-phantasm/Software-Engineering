@@ -17,18 +17,34 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 演示数据初始化：仅在库为空时灌入，保证「开箱即用」。
- * 账号密码统一 Test@12345；管理员 ADM-001 / Admin@12345。
+ *
+ * <p>口令来源与去向：
+ * <ul>
+ *   <li>优先取 {@code app.seed.admin-password} / {@code app.seed.demo-password}（可由环境变量注入）；</li>
+ *   <li>未配置时首次灌入随机生成，并写入 {@code app.seed.credentials-file}（默认 backend/data，已在 .gitignore 中忽略）；</li>
+ *   <li>代码与仓库不保存任何明文口令，日志只输出文件路径，不输出口令本身。</li>
+ * </ul>
+ * 正式部署应把 {@code app.seed.enabled} 置为 false。
  */
 @Slf4j
 @Component
 @Order(1)
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
+
+    private static final SecureRandom RANDOM = new SecureRandom();
+    private static final String PWD_ALPHABET =
+            "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@#$%";
+    private static final int PWD_LENGTH = 14;
 
     private final AdminMapper adminMapper;
     private final StudentMapper studentMapper;
@@ -48,6 +64,10 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
+        if (!props.getSeed().isEnabled()) {
+            log.info("app.seed.enabled=false，跳过演示数据初始化");
+            return;
+        }
         if (adminMapper.selectCount(null) > 0) {
             log.info("检测到已有数据，跳过演示数据初始化");
             return;
@@ -55,12 +75,26 @@ public class DataSeeder implements CommandLineRunner {
         log.info("开始初始化演示数据…");
         LocalDateTime now = timeProvider.now();
 
+        // 口令来源优先级：配置/环境变量 > 上次生成的凭据文件 > 随机生成
+        // 复用旧凭据是为了让「重置演示数据」不会悄悄换掉正在用的口令
+        Map<String, String> existing = readCredentials();
+        String adminPassword = resolvePassword(props.getSeed().getAdminPassword(), existing.get("admin-password"));
+        String studentPassword = resolvePassword(props.getSeed().getDemoPassword(), existing.get("student-password"));
+        List<String> generated = new ArrayList<>();
+        if (isBlank(props.getSeed().getAdminPassword()) && isBlank(existing.get("admin-password"))) {
+            generated.add("admin-no=" + props.getSeed().getAdminNo());
+            generated.add("admin-password=" + adminPassword);
+        }
+        if (isBlank(props.getSeed().getDemoPassword()) && isBlank(existing.get("student-password"))) {
+            generated.add("student-password=" + studentPassword);
+        }
+
         // 管理员
         Admin admin = new Admin();
-        admin.setAdminNo("ADM-001");
+        admin.setAdminNo(props.getSeed().getAdminNo());
         admin.setDisplayName("系统管理员");
-        admin.setPasswordHash(passwordEncoder.encode("Admin@12345"));
-        admin.setMustChangePassword(0); // 演示便利：初始密码不强制修改（正式部署可置 1）
+        admin.setPasswordHash(passwordEncoder.encode(adminPassword));
+        admin.setMustChangePassword(props.getSeed().isAdminMustChangePassword() ? 1 : 0);
         admin.setFailedCount(0);
         admin.setCreatedAt(now);
         adminMapper.insert(admin);
@@ -77,7 +111,7 @@ public class DataSeeder implements CommandLineRunner {
             categoryIds[i] = c.getId();
         }
 
-        String pwd = passwordEncoder.encode("Test@12345");
+        String pwd = passwordEncoder.encode(studentPassword);
         Student lin = student("lin@campus.edu", "林同学", "林初仁", "20230001", CertStatus.CERTIFIED, AccountStatus.NORMAL, 102, 1, pwd, now);
         Student zhao = student("zhao@campus.edu", "赵同学", "赵俊豪", "20230002", CertStatus.CERTIFIED, AccountStatus.NORMAL, 102, 1, pwd, now);
         Student ma = student("ma@campus.edu", "马同学", "马歆远", "20230003", CertStatus.PENDING, AccountStatus.NORMAL, 100, 0, pwd, now);
@@ -146,6 +180,75 @@ public class DataSeeder implements CommandLineRunner {
                 "你的商品《可调光宿舍台灯》被举报（虚假描述），管理员会尽快核实。", "report", report.getId(), now.minusHours(1));
 
         log.info("演示数据初始化完成：8 分类 / 7 学生 / 9 商品（来自 4 位卖家）/ 1 订单 / 1 举报");
+        if (!generated.isEmpty()) {
+            writeCredentials(generated);
+        }
+    }
+
+    /** 未配置口令时优先沿用上次生成的值，仍没有才随机生成；不写入日志或代码 */
+    private String resolvePassword(String configured, String previous) {
+        if (configured != null && !configured.isBlank()) {
+            return configured;
+        }
+        if (previous != null && !previous.isBlank()) {
+            return previous;
+        }
+        StringBuilder sb = new StringBuilder(PWD_LENGTH);
+        for (int i = 0; i < PWD_LENGTH; i++) {
+            sb.append(PWD_ALPHABET.charAt(RANDOM.nextInt(PWD_ALPHABET.length())));
+        }
+        return sb.toString();
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    /** 读取上次生成的凭据文件（不存在或读不了则返回空表） */
+    private Map<String, String> readCredentials() {
+        Path file = Paths.get(props.getSeed().getCredentialsFile()).toAbsolutePath().normalize();
+        Map<String, String> out = new java.util.HashMap<>();
+        if (!Files.exists(file)) {
+            return out;
+        }
+        try {
+            for (String raw : Files.readAllLines(file, StandardCharsets.UTF_8)) {
+                String line = raw.trim();
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+                int idx = line.indexOf('=');
+                if (idx > 0) {
+                    out.put(line.substring(0, idx).trim(), line.substring(idx + 1).trim());
+                }
+            }
+        } catch (Exception e) {
+            log.warn("读取已有演示凭据失败（{}），本次将重新生成", e.getMessage());
+        }
+        return out;
+    }
+
+    /**
+     * 把本次随机生成的口令写入本地文件，供演示者查阅。
+     * 文件位于运行目录（默认 backend/data），已在 .gitignore 中忽略；日志只打印路径。
+     */
+    private void writeCredentials(List<String> lines) {
+        Path file = Paths.get(props.getSeed().getCredentialsFile()).toAbsolutePath().normalize();
+        List<String> body = new ArrayList<>();
+        body.add("# 拾光二手 · 演示账号凭据（本文件由首次启动自动生成，请勿提交到仓库）");
+        body.add("# 生成时间：" + timeProvider.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        body.addAll(lines);
+        body.add("# 修改口令后请删除本文件，或改由环境变量 APP_SEED_ADMIN_PASSWORD / APP_SEED_DEMO_PASSWORD 提供");
+        try {
+            if (file.getParent() != null) {
+                Files.createDirectories(file.getParent());
+            }
+            Files.write(file, body, StandardCharsets.UTF_8);
+            log.warn("已生成演示口令并写入 {}（请勿提交到仓库；正式部署请改用环境变量注入）", file);
+        } catch (Exception e) {
+            log.warn("演示口令写入失败（{}）：请改用环境变量 APP_SEED_ADMIN_PASSWORD / APP_SEED_DEMO_PASSWORD 提供口令",
+                    e.getMessage());
+        }
     }
 
     private Student student(String email, String nickname, String realName, String studentNo,

@@ -14,6 +14,9 @@ import java.util.List;
 @ConfigurationProperties(prefix = "app")
 public class AppProperties {
 
+    /** dev / prod；prod 时启动期校验拒绝不安全的配置组合 */
+    private String env = "dev";
+
     private Limits limits = new Limits();
     private Credit credit = new Credit();
     private Deadlines deadlines = new Deadlines();
@@ -23,6 +26,7 @@ public class AppProperties {
     private Storage storage = new Storage();
     private Retention retention = new Retention();
     private Features features = new Features();
+    private Seed seed = new Seed();
 
     @Getter
     @Setter
@@ -111,6 +115,21 @@ public class AppProperties {
     @Setter
     public static class Features {
         private boolean loginSuccessNotification = true;
-        private boolean enableDevTools = true;
+        /** 演示 / 开发工具开关，默认关闭；开启后 /api/dev/** 仍需管理员身份 */
+        private boolean enableDevTools = false;
+    }
+
+    @Getter
+    @Setter
+    public static class Seed {
+        /** 是否在库为空时灌入演示数据 */
+        private boolean enabled = true;
+        private String adminNo = "ADM-001";
+        /** 留空则首次灌入时随机生成 */
+        private String adminPassword = "";
+        /** 留空则首次灌入时随机生成 */
+        private String demoPassword = "";
+        private boolean adminMustChangePassword = false;
+        private String credentialsFile = "./data/seed-credentials.txt";
     }
 }

@@ -5,7 +5,7 @@
       <div class="sub">仅管理员可登录，学生账号无法进入后台</div>
       <el-form label-position="top">
         <el-form-item label="管理员账号">
-          <el-input v-model="form.adminNo" size="large" placeholder="ADM-001" />
+          <el-input v-model="form.adminNo" size="large" placeholder="请输入管理员账号" />
         </el-form-item>
         <el-form-item label="密码">
           <el-input v-model="form.password" type="password" show-password size="large" @keyup.enter="submit" />
@@ -26,7 +26,12 @@ import { useAuthStore } from '../../stores/auth';
 const auth = useAuthStore();
 const router = useRouter();
 const route = useRoute();
-const form = reactive({ adminNo: 'ADM-001', password: 'Admin@12345' });
+// 演示账号可选注入：仅当显式提供 VITE_DEMO_ADMIN_NO / VITE_DEMO_ADMIN_PASSWORD 才预填。
+// 仓库与生产构建默认不预填任何口令（见 frontend/.env.example）。
+const form = reactive({
+  adminNo: import.meta.env.VITE_DEMO_ADMIN_NO || '',
+  password: import.meta.env.VITE_DEMO_ADMIN_PASSWORD || ''
+});
 const loading = ref(false);
 
 async function submit() {

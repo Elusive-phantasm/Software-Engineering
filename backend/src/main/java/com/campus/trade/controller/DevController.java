@@ -14,9 +14,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 开发与演示工具。生产部署时把 app.features.enable-dev-tools 置为 false 即整体关闭。
+ * 开发与演示工具。默认关闭（app.features.enable-dev-tools=false），开启后仍要求管理员身份。
  */
-@Tag(name = "99-开发工具", description = "演示数据重置、时间偏移、开发邮箱（默认开启，生产关闭）")
+@Tag(name = "99-开发工具", description = "演示数据重置、时间偏移、开发邮箱（默认关闭；显式开启后仍需管理员身份）")
 @RestController
 @RequestMapping("/api/dev")
 @RequiredArgsConstructor
@@ -30,6 +30,13 @@ public class DevController {
         if (!devService.isEnabled()) {
             throw BizException.permission("开发工具已关闭");
         }
+        // 纵深防御：即使 SecurityConfig 的路由规则被改动，这里仍要求管理员身份。
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        if (!isAdmin) {
+            throw BizException.permission("开发工具仅对管理员开放");
+        }
     }
 
     @Operation(summary = "重置演示数据")
@@ -42,6 +49,8 @@ public class DevController {
     @Operation(summary = "当前状态（时间偏移与各表条数）")
     @GetMapping("/state")
     public ApiResponse<Object> state() {
+        // 曾经未受开关保护：它会暴露各表条数与时间偏移，生产环境必须一并收口。
+        assertEnabled();
         return ApiResponse.ok(devService.state());
     }
 

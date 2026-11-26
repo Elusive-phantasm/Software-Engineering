@@ -26,8 +26,9 @@ if not exist "%DATA%" (
   echo.
   echo   仓库不带数据库文件。换电脑运行时，请先安装 MySQL 8，并按 README 的「数据库」一节建库：
   echo     CREATE DATABASE campus_trade CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-  echo     CREATE USER 'campus'@'%%' IDENTIFIED BY 'Campus@2026';
+  echo     CREATE USER 'campus'@'%%' IDENTIFIED BY '请自行设置口令';
   echo     GRANT ALL PRIVILEGES ON campus_trade.* TO 'campus'@'%%';
+  echo   再把该口令通过环境变量 DB_PASSWORD 传给后端（默认值仅用于本机课程演示）。
   echo   然后让 MySQL 监听 3307，再运行本脚本。
   if "%NO_PAUSE%"=="0" pause
   exit /b 1

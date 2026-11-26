@@ -3,6 +3,9 @@
  * 用法：node tools/smoke.mjs [baseUrl]
  */
 const BASE = process.argv[2] || 'http://127.0.0.1:8080';
+
+// 演示口令不再写死：从环境变量或首次启动生成的凭据文件读取（见 tools/demo-accounts.mjs）
+import { demoAccounts } from './demo-accounts.mjs';
 const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 
 let pass = 0;
@@ -44,7 +47,10 @@ const fail = async (method, path, body, token) => {
   return r.body;
 };
 
-const login = async (email) => (await ok('POST', '/api/auth/login', { email, password: 'Test@12345' })).token;
+const accounts = () => demoAccounts();
+
+const login = async (email) =>
+  (await ok('POST', '/api/auth/login', { email, password: accounts().studentPassword })).token;
 
 async function publishAndApprove(token, adminToken, title, price = '35.00', categoryId = 3) {
   const cats = await ok('GET', '/api/categories');
@@ -58,13 +64,24 @@ async function publishAndApprove(token, adminToken, title, price = '35.00', cate
 
 async function main() {
   console.log(`\n== 冒烟测试 ${BASE} ==`);
-  await req('POST', '/api/dev/reset', {});
+  // 开发工具现在要求管理员身份，且开关默认关闭；先登录管理员再重置
+  const adminBootstrap = await ok('POST', '/api/auth/admin/login',
+    { adminNo: accounts().adminNo, password: accounts().adminPassword });
+  const reset = await req('POST', '/api/dev/reset', {}, adminBootstrap.token);
+  if (reset.body?.code !== 0) {
+    throw new Error(
+      '重置演示数据失败（' + reset.status + ' ' + JSON.stringify(reset.body) + '）：\n' +
+      '冒烟测试需要后端以 APP_ENABLE_DEV_TOOLS=true 启动（同时仍需管理员登录）。'
+    );
+  }
+  // 重置会清空 sessions 表，之前拿到的令牌一律失效，因此重置后重新登录
   console.log('  （已重置演示数据，保证测试可重复）');
 
   console.log('\n-- 认证 --');
   const token = await login('lin@campus.edu');
   check('学生登录拿到令牌', typeof token === 'string' && token.length === 64);
-  const admin = await ok('POST', '/api/auth/admin/login', { adminNo: 'ADM-001', password: 'Admin@12345' });
+  const admin = await ok('POST', '/api/auth/admin/login',
+    { adminNo: accounts().adminNo, password: accounts().adminPassword });
   check('管理员登录成功', !!admin.token);
   const bad = await req('POST', '/api/auth/login', { email: 'lin@campus.edu', password: 'wrong' });
   check('错误密码被拒（401）', bad.status === 401 && bad.body.code === 1001);

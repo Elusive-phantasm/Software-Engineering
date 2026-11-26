@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div class="card mt16">
+    <div v-if="devToolsAvailable" class="card mt16">
       <h3 class="section-title">开发工具（演示用）</h3>
       <div class="dev">
         <el-button size="small" @click="shift(1)">时间 +1 小时</el-button>
@@ -56,6 +56,8 @@ import { adminApi, devApi } from '../../api';
 const data = ref({});
 const dev = reactive({ offsetHours: 0 });
 const loading = ref(false);
+// 开发工具关闭时 /api/dev/state 会返回 403；此时隐藏整块演示面板，且不弹出错误提示
+const devToolsAvailable = ref(false);
 
 const pendingReports = computed(() => 0);
 
@@ -70,8 +72,14 @@ async function load() {
   loading.value = true;
   try {
     data.value = (await adminApi.dashboard()).data;
-    const state = (await devApi.state()).data;
-    dev.offsetHours = state.offsetHours;
+    // 看板主体不依赖开发工具；探测失败只代表演示面板不可用
+    try {
+      const state = (await devApi.state({ silent: true })).data;
+      dev.offsetHours = state.offsetHours;
+      devToolsAvailable.value = true;
+    } catch {
+      devToolsAvailable.value = false;
+    }
   } finally {
     loading.value = false;
   }

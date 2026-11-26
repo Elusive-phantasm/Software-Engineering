@@ -3,7 +3,9 @@ server:
   servlet:
     context-path: /
   error:
-    include-message: always
+    # 不在默认错误响应里回显异常文本；业务错误由 GlobalExceptionHandler 统一给出可读提示
+    include-message: never
+    include-stacktrace: never
 
 spring:
   application:
@@ -12,9 +14,10 @@ spring:
     # 不使用表单登录，关闭默认的内置用户，避免启动时打印随机密码
     exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/campus_trade?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false&rewriteBatchedStatements=true
-    username: root
-    password: 123456
+    # 全部可用环境变量覆盖；默认值仅用于本机课程演示，正式部署必须显式注入 DB_PASSWORD
+    url: jdbc:mysql://127.0.0.1:${DB_PORT:3306}/${DB_NAME:campus_trade}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false&rewriteBatchedStatements=true
+    username: ${DB_USERNAME:campus}
+    password: ${DB_PASSWORD:Campus@2026}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 20
@@ -44,12 +47,15 @@ mybatis-plus:
       logic-delete-field: null
 
 springdoc:
+  # 正式部署可用 APP_ENABLE_API_DOCS=false 关闭 /v3/api-docs 与 Swagger UI
+  api-docs:
+    enabled: ${APP_ENABLE_API_DOCS:true}
+    path: /v3/api-docs
   swagger-ui:
+    enabled: ${APP_ENABLE_API_DOCS:true}
     path: /swagger-ui.html
     tags-sorter: alpha
     operations-sorter: alpha
-  api-docs:
-    path: /v3/api-docs
 
 logging:
   level:
@@ -57,6 +63,8 @@ logging:
     org.springframework.jdbc: warn
 
 app:
+  # dev = 课程演示 / 开发环境；prod = 正式部署（启动时校验组合，不安全的配置直接拒绝启动）
+  env: ${APP_ENV:dev}
   # 业务参数（对应需求文档中大量「建议值，待确认」的条目，集中在此便于调整）
   limits:
     max-on-sale-per-student: 5
@@ -111,4 +119,17 @@ app:
     notification-days: 90
   features:
     login-success-notification: true
-    enable-dev-tools: true
+    # 演示 / 开发工具（/api/dev/**）默认关闭；须显式置 true 才开放，且仍要求管理员身份
+    enable-dev-tools: ${APP_ENABLE_DEV_TOOLS:false}
+  seed:
+    # 演示数据初始化（管理员 + 演示学生 + 样例商品）；正式部署必须置 false
+    enabled: ${APP_SEED_ENABLED:true}
+    admin-no: ${APP_SEED_ADMIN_NO:ADM-001}
+    # 留空时由程序在首次灌入时随机生成并写入 credentials-file；仓库不保存明文口令
+    admin-password: ${APP_SEED_ADMIN_PASSWORD:}
+    demo-password: ${APP_SEED_DEMO_PASSWORD:}
+    # 首次登录是否强制改密（对齐 SRS UC-04 主事件流第 4 步；课程演示默认关闭）
+    admin-must-change-password: ${APP_SEED_ADMIN_MUST_CHANGE:false}
+    # 生成口令的落盘位置（默认位于 backend/data，已被 .gitignore 忽略）
+    credentials-file: ${APP_SEED_CREDENTIALS_FILE:./data/seed-credentials.txt}
+

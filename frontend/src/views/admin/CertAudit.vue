@@ -42,7 +42,7 @@
           <el-input v-model="rejectReason" type="textarea" :rows="3" maxlength="200" />
         </el-form-item>
         <el-form-item>
-          <el-checkbox v-model="forgery">疑似伪造 / 冒用（将按 BR-18 封禁账号并连带下架）</el-checkbox>
+          <el-checkbox v-model="forgery">疑似伪造 / 冒用（将封禁账号并连带下架）</el-checkbox>
         </el-form-item>
       </el-form>
       <template #footer>

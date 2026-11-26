@@ -23,7 +23,10 @@ http.interceptors.response.use(
       return body;
     }
     const message = body?.message || '请求失败';
-    ElMessage.error(message);
+    // config.silent：调用方自行处理失败（如可选的演示功能探测），不弹出全局错误
+    if (!response.config?.silent) {
+      ElMessage.error(message);
+    }
     return Promise.reject(new Error(message));
   },
   (error) => {
@@ -31,6 +34,9 @@ http.interceptors.response.use(
     const body = error.response?.data;
     const message = body?.message || error.message || '网络异常';
 
+    if (error.config?.silent) {
+      return Promise.reject(new Error(message));
+    }
     if (status === 401) {
       localStorage.removeItem(TOKEN_KEY);
       const current = window.location.hash || '';

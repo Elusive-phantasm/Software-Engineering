@@ -405,7 +405,7 @@ public class ProductService {
         auditService.allowed(user, "管理员", "product.approve", "product", id, null);
     }
 
-    /** ST-03 审核拒绝：驳回原因必须引用 §4.3 类目编号 */
+    /** ST-03 审核不通过。普通内容问题与禁售问题都可以驳回。 */
     @Transactional
     public void reject(AuthUser user, Long id, ProductDtos.RejectRequest req) {
         Admin admin = permissionService.currentAdmin(user);
@@ -414,14 +414,13 @@ public class ProductService {
             throw BizException.state("当前业务状态不支持该操作");
         }
         String code = req.categoryCode() == null ? "" : req.categoryCode().trim().toUpperCase();
-        if (!ForbiddenCategories.exists(code)) {
-            throw BizException.validate("驳回原因须引用 §4.3 禁售类目编号（如 A1）");
-        }
         String reason = req.reason() == null ? "" : req.reason().trim();
         if (reason.isEmpty()) {
             throw BizException.validate("请填写驳回原因");
         }
-        String note = code + " " + ForbiddenCategories.nameOf(code) + "：" + reason;
+        String note = ForbiddenCategories.exists(code)
+                ? code + " " + ForbiddenCategories.nameOf(code) + "：" + reason
+                : reason;
 
         p.setStatus(ProductStatus.OFF_SHELF);
         p.setOffShelfReason(OffShelfReason.REJECTED);
@@ -450,13 +449,12 @@ public class ProductService {
             throw BizException.validate("请填写处理理由");
         }
         String code = req.categoryCode() == null ? "" : req.categoryCode().trim().toUpperCase();
-        if (code.isEmpty()) {
-            throw BizException.validate("请引用 §4.3 禁售类目编号（如 A1）");
-        }
-        if (!ForbiddenCategories.exists(code)) {
+        if (!code.isEmpty() && !ForbiddenCategories.exists(code)) {
             throw BizException.validate("禁售类目编号不存在");
         }
-        String note = code + " " + ForbiddenCategories.nameOf(code) + "：" + reason;
+        String note = ForbiddenCategories.exists(code)
+                ? code + " " + ForbiddenCategories.nameOf(code) + "：" + reason
+                : reason;
 
         p.setStatus(ProductStatus.OFF_SHELF);
         p.setOffShelfReason(OffShelfReason.ADMIN_OFF);

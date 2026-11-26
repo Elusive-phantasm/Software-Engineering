@@ -5,6 +5,7 @@
 import puppeteer from 'puppeteer-core';
 import fs from 'node:fs';
 import path from 'node:path';
+import { demoAccounts } from './demo-accounts.mjs';
 
 const EDGE = [
   process.env.EDGE_PATH,
@@ -51,7 +52,7 @@ async function login(email, password) {
 }
 
 await shot('01-home', BASE, '.product-card');
-await login('lin@campus.edu', 'Test@12345');
+await login('lin@campus.edu', demoAccounts().studentPassword);
 await shot('02-home-logged-in', BASE, '.product-card');
 await page.click('.product-card');
 await sleep(1500);

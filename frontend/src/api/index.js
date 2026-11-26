@@ -103,7 +103,8 @@ export const adminApi = {
 
 /* -------------------------------------------------------------- 开发工具 */
 export const devApi = {
-  state: () => http.get('/dev/state'),
+  // opts.silent：用于可选的可用性探测，失败时不弹全局错误
+  state: (opts = {}) => http.get('/dev/state', { silent: !!opts.silent }),
   reset: () => http.post('/dev/reset'),
   shift: (hours) => http.post('/dev/time-shift', { hours }),
   resetTime: () => http.post('/dev/time-reset'),
