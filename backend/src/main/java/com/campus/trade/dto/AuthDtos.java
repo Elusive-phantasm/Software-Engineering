@@ -46,7 +46,9 @@ public final class AuthDtos {
     ) {
     }
 
-    public record UpdateProfileRequest(String nickname, String phone, String dorm, String realName) {
+    public record UpdateProfileRequest(
+            @Size(max = 20, message = "昵称不得超过 20 个字符") String nickname,
+            String phone, String dorm, String realName) {
     }
 
     public record ChangePasswordRequest(

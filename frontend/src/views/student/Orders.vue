@@ -81,7 +81,7 @@
     <!-- 举报用户 -->
     <el-dialog v-model="reportDialog" title="举报该用户" width="480px">
       <el-alert type="info" :closable="false" class="mb"
-                title="对学生的举报只受理与该用户的成交或沟通中发生的行为（BR-04）" />
+                title="对学生的举报只受理与该用户的成交或沟通中发生的行为" />
       <el-form label-position="top">
         <el-form-item label="举报类型">
           <el-radio-group v-model="reportType">

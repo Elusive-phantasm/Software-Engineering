@@ -14,23 +14,6 @@
         </p>
       </div>
 
-      <router-link to="/admin/login" class="admin-card">
-        <div class="admin-glow"></div>
-        <div class="admin-head">
-          <div>
-            <div class="admin-icon">
-              <el-icon :size="18"><Postcard /></el-icon>
-            </div>
-            <p class="admin-title">审核工作台</p>
-            <p class="admin-desc">商品、学生证与举报统一处理</p>
-          </div>
-          <span class="admin-badge">进入后台</span>
-        </div>
-        <div class="admin-more">
-          前往管理端
-          <el-icon :size="14"><ArrowRight /></el-icon>
-        </div>
-      </router-link>
     </section>
 
     <!-- 搜索与筛选卡 -->
@@ -104,10 +87,12 @@
 
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import ProductCard from '../../components/ProductCard.vue';
 import { productApi } from '../../api';
 
 const categories = ref([]);
+const route = useRoute();
 const items = ref([]);
 const total = ref(0);
 const loading = ref(false);
@@ -162,6 +147,9 @@ function onPage(page) {
 onMounted(async () => {
   await loadCategories();
   await load();
+  if (route.query.focus === 'feed') {
+    requestAnimationFrame(() => document.getElementById('product-feed')?.scrollIntoView({ behavior: 'smooth' }));
+  }
 });
 </script>
 

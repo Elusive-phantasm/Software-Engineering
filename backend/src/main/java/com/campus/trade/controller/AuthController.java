@@ -107,7 +107,7 @@ public class AuthController {
     @Operation(summary = "修改个人资料")
     @PatchMapping("/me/profile")
     public ApiResponse<Object> updateProfile(@CurrentUser AuthUser user,
-                                             @RequestBody AuthDtos.UpdateProfileRequest req) {
+                                             @Valid @RequestBody AuthDtos.UpdateProfileRequest req) {
         return ApiResponse.ok(authService.updateProfile(user, req), "资料已更新");
     }
 

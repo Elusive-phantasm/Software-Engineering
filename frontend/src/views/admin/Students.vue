@@ -77,7 +77,7 @@
         </el-form-item>
       </el-form>
       <el-alert v-if="targetStatus === '封禁'" type="warning" :closable="false"
-                title="封禁将在同一处置动作中下架其在售与待审核商品（ST-13），且不改变认证状态（BR-19）" />
+                title="封禁将在同一处置动作中下架其在售与待审核商品，且不改变认证状态" />
       <template #footer>
         <el-button @click="statusDialog = false">取消</el-button>
         <el-button type="danger" @click="submitStatus">确认处置</el-button>

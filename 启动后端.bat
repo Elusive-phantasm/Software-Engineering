@@ -29,17 +29,22 @@ if not defined JAVA_EXE (
 )
 echo [OK] JDK: %JAVA_EXE%
 
-rem ---------- 2. 检查 MySQL 3307 ----------
-call :port_open 3307
-if errorlevel 1 (
-  echo [错误] MySQL 未在 127.0.0.1:3307 运行。
-  echo        请先运行「启动数据库.bat」，或直接双击「一键启动.bat」。
-  if "%NO_PAUSE%"=="0" pause
-  exit /b 1
+rem ---------- 2. 自动选择 MySQL 端口 ----------
+call :port_open 3306
+if not errorlevel 1 (
+  set "DB_PORT=3306"
+  echo [OK] MySQL 3306 已连接
+) else (
+  call :port_open 3307
+  if errorlevel 1 (
+    echo [错误] 未检测到 MySQL 3306 或 3307。
+    echo        请先启动本机 MySQL，或运行“启动数据库.bat”。
+    if "%NO_PAUSE%"=="0" pause
+    exit /b 1
+  )
+  set "DB_PORT=3307"
+  echo [OK] MySQL 3307 已连接
 )
-echo [OK] MySQL 3307 可用
-echo [提示] 本脚本优先运行 backend\target 里的 jar；改过 Java 源码请先重新打包（mvn package -DskipTests）。
-
 rem ---------- 3. 找 jar 或 Maven ----------
 if not exist "%ROOT%backend\pom.xml" (
   echo [错误] 未找到 backend\pom.xml，请把本脚本放在仓库根目录。

@@ -60,7 +60,7 @@
           </el-form-item>
         </el-form>
         <el-alert v-if="upheld" type="warning" :closable="false"
-                  title="举报成立将自动扣减被举报方信用分 −10（BR-14 ②），同一举报只扣一次" />
+                  title="举报成立将自动扣减被举报方信用分 −10，同一举报只扣一次" />
       </template>
       <template #footer>
         <el-button @click="dialog = false">取消</el-button>

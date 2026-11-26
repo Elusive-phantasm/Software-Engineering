@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-12T07:54:24.100Z",
+  "base": "http://127.0.0.1:8080",
+  "web": "http://127.0.0.1:5173",
+  "passed": 57,
+  "failed": 3,
+  "failures": [
+    "前端关键 API 定义齐全 :: DELETE /favorites/{productId}",
+    "商品发布/审核后为在售",
+    "执行异常：POST /api/products/12/resubmit: HTTP 409, expected 200: {\"code\":3001,\"message\":\"当前下架原因不支持重新提交\"}"
+  ]
+}

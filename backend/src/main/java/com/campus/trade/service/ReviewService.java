@@ -50,7 +50,7 @@ public class ReviewService {
 
     @Transactional
     public Views.ReviewVo submit(AuthUser user, Long orderId, String rawContent) {
-        Student actor = permissionService.requireCertifiedStudent(user);
+        Student actor = permissionService.requireCertifiedStudent(user, "请先登录", "管理员无评价权限");
         String content = validate(rawContent);
 
         TradeOrder order = orderMapper.selectById(orderId);

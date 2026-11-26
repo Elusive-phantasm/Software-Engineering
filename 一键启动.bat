@@ -15,20 +15,22 @@ echo ============================================
 echo.
 
 rem ---------- 1. 数据库 ----------
-call :port 3307
+call :port 3306
 if errorlevel 1 (
-  echo [1/3] 启动数据库...
-  call "%ROOT%启动数据库.bat" nopause
+  call :port 3307
   if errorlevel 1 (
-    echo.
-    echo [错误] 数据库没有起来，已停止。请先解决上面的提示。
-    pause
-    exit /b 1
+    echo [ERROR] MySQL 3306/3307 未运行，正在尝试启动项目数据库...
+    call "%ROOT%启动数据库.bat" nopause
+    if errorlevel 1 ( pause & exit /b 1 )
+    set "DB_PORT=3307"
+  ) else (
+    set "DB_PORT=3307"
+    echo [1/3] MySQL 3307 已运行
   )
 ) else (
-  echo [1/3] 数据库 3307 已在运行
+  set "DB_PORT=3306"
+  echo [1/3] MySQL 3306 已运行
 )
-
 rem ---------- 2. 后端 ----------
 call :port 8080
 if errorlevel 1 (

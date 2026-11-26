@@ -1,0 +1,268 @@
+%!Mode:: "TeX:UTF-8"
+\documentclass[a4paper,11pt,UTF8]{ctexart}
+
+\usepackage{indentfirst} %缩进
+\usepackage{xeCJK}    %使用系统字体
+\usepackage{bm}       %粗体
+\usepackage{fancyhdr} %自定义页眉页脚
+\pagestyle{empty}                   %不设置页眉页脚
+\usepackage{amsmath, amsthm, amssymb, amsfonts} %数学公式
+\usepackage[a4paper,left=3cm,right=3cm,top=3.5cm,bottom=3.5cm]{geometry}
+\usepackage{booktabs} %插入表格
+\usepackage[section]{placeins} %避免浮动
+\usepackage{listings} %插入代码
+\usepackage{ctex}     %中文宏包
+\usepackage[svgnames, table]{xcolor} %彩色表格
+\usepackage{algorithm}          %伪代码
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{algorithm,algpseudocode,float}
+\usepackage{lipsum}
+\usepackage{enumitem}           %调整列举环境
+\usepackage{url}
+\usepackage{fontspec,xunicode}
+\usepackage{subcaption,wrapfig}
+\usepackage[style=iso]{datetime2}
+\usepackage{xeCJKfntef}
+\defaultfontfeatures{Mapping=tex-text} %如果没有它，会有一些 tex 特殊字符无法正常使用，比如连字符。
+\pagestyle{fancy}
+\usepackage{graphicx}
+\graphicspath{{imgs/}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 缩进及行间距
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\parindent}{22bp} %重新定义缩进长度
+\linespread{1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 图的标题行间距设置
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\bottomcaption}{%
+\setlength{\abovecaptionskip}{6bp}%
+\setlength{\belowcaptionskip}{6bp}%
+\caption}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 字体定义
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\setmainfont{Times New Roman}  %默认英文字体.serif是有衬线字体sans serif无衬线字体
+\setmonofont{Consolas}
+\setCJKmainfont[ItalicFont={楷体}, BoldFont={黑体}]{宋体}%衬线字体 缺省中文字体为
+\setCJKsansfont{黑体}
+\punctstyle{hangmobanjiao}
+%-----------------------xeCJK下设置中文字体------------------------------%
+\setCJKfamilyfont{song}[BoldFont=SimHei]{SimSun}                             %宋体 song
+\newcommand{\song}{\CJKfamily{song}}
+\setCJKfamilyfont{fs}{FangSong}                      %仿宋  fs
+\newcommand{\fs}{\CJKfamily{fs}} 
+\let\kaishu\relax                                    %重定义楷体，打开假粗体
+\newCJKfontfamily\kaishu{KaiTi}[AutoFakeBold] 
+%\setCJKfamilyfont{ktgb}{KaiTi_GB2312}                      %楷体 GB2312
+%\newcommand{\ktgb}{\CJKfamily{ktgb}}
+\setCJKfamilyfont{yh}{Microsoft YaHei}                    %微软雅黑 yh
+\newcommand{\yh}{\CJKfamily{yh}}
+\setCJKfamilyfont{hei}{SimHei}                              %黑体  hei
+\newcommand{\hei}{\CJKfamily{hei}}
+\setCJKfamilyfont{hwxk}{STXingkai}                                %华文行楷  hwxk
+\newcommand{\hwxk}{\CJKfamily{hwxk}}
+%------------------------------设置字体大小------------------------%
+\newcommand{\chuhao}{\fontsize{42bp}{63bp}\selectfont}     %初号， 1.5倍行距
+\newcommand{\xiaochuhao}{\fontsize{36bp}{36bp}\selectfont} %小初号，单倍行距
+\newcommand{\yihao}{\fontsize{26bp}{39bp}\selectfont}        % 一号, 1.5 倍行距
+\newcommand{\erhao}{\fontsize{22bp}{33bp}\selectfont}        % 二号, 1.5倍行距
+\newcommand{\xiaoerhao}{\fontsize{18bp}{18bp}\selectfont}       % 小二, 单倍行距
+\newcommand{\sanhao}{\fontsize{16bp}{24bp}\selectfont}       % 三号, 1.5倍行距
+\newcommand{\xiaosanhao}{\fontsize{15bp}{22bp}\selectfont}      % 小三, 1.5倍行距
+\newcommand{\sihao}{\fontsize{14bp}{21bp}\selectfont}        % 四号, 1.5 倍行距
+\newcommand{\banxiaosi}{\fontsize{13bp}{20bp}\selectfont}  % 半小四, 20pt行距
+\newcommand{\xiaosihao}{\fontsize{12bp}{20bp}\selectfont}       % 小四, 20pt行距
+\newcommand{\dawuhao}{\fontsize{11bp}{11bp}\selectfont}      % 大五号, 单倍行距
+\newcommand{\wuhao}{\fontsize{10.5bp}{10.5bp}\selectfont}   % 五号, 单倍行距
+\newcommand{\xiaowuhao}{\fontsize{9bp}{9bp}\selectfont}   %小五号，单倍行距
+%------------------------------重定义normalize------------------------%
+\renewcommand{\normalsize}{\fontsize{12bp}{20bp}\selectfont}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 图题字体大小相同
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{caption}
+\captionsetup{font={footnotesize}}   % footnotesize = 9bp
+\captionsetup[lstlisting]{font={footnotesize}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 重定义枚举编号为 1),2)...
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\labelenumi}{\theenumi）}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 重定义section标题
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\CTEXsetup[format={\CJKfamily{zhhei}\zihao{4}},number={\chinese{section}},name={,、~},aftername={},indent={0bp},beforeskip={6bp},afterskip={6bp},format+={\flushleft}]{section}
+\CTEXsetup[format={\Large\bfseries\CJKfamily{zhkai}\zihao{4}},name={（,）},number={\chinese{subsection}},aftername={},indent={22bp},beforeskip={6bp},afterskip={6bp}]{subsection}
+\CTEXsetup[number={\chinese{section}},name={附录, ~~ }]{appendix}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 标题名称中文化
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand\figurename{\hei 图}
+\renewcommand\tablename{\hei 表}
+\renewcommand\lstlistingname{\hei 代码}
+\renewcommand{\algorithmicrequire}{\textbf{输入:}}
+\renewcommand{\algorithmicensure}{\textbf{输出:}}
+\newtheorem{define}{定义}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 列表设置
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlist[enumerate,1]{itemindent=22bp,listparindent=\parindent,itemsep=0mm,partopsep=.7mm,parsep=0ex,labelsep=1.5mm,topsep=0.7mm}
+\setlist[enumerate,2]{label=\alph*),leftmargin=1.5em}  %二级item设置
+%\setitemize{itemindent=38bp,leftmargin=0bp,itemsep=-0.4ex,listparindent=26bp,partopsep=0bp,parsep=0.5ex,topsep=-0.25ex}
+%\setdescription{itemindent=38bp,leftmargin=0bp,itemsep=-0.4ex,listparindent=26bp,partopsep=0bp,parsep=0.5ex,topsep=-0.25ex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 代码设置
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{xcolor,listing}
+\definecolor{pygreen}{RGB}{28,172,120} % 注释颜色
+\definecolor{pyblue}{RGB}{0,0,255}    % 关键字颜色
+\definecolor{pyred}{RGB}{160,32,240}   % 字符串颜色
+
+\lstset{
+    language=bash,                
+    basicstyle=\small\ttfamily,     
+    columns=flexible,               % 3. 强烈建议改为 flexible，fixed 会导致字符间距看起来很疏离
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{pyblue}\bfseries, % 4. 关键字加粗，更清晰
+    commentstyle=\color{pygreen}\itshape,
+    stringstyle=\color{pyred},
+    showstringspaces=false,
+    breaklines=true,                % 自动换行
+    breakatwhitespace=true,         % 5. 只在空格处换行，避免切断变量名
+    frame=shadowbox,                % 6. 换成 shadowbox 或 lines，比 single 更有质感
+    rulesepcolor=\color{red!20!green!20!blue!20},
+    xleftmargin=2em,                % 7. 整体左移，给行号留出空间
+    framexleftmargin=1.5em,
+    captionpos=t,                   % 标题放在上方
+    aboveskip=1.5em,                % 代码块前后的间距
+    belowskip=1.5em,
+    escapeinside=``,                % 8. 允许在代码中插入中文（用反引号包裹）
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 伪代码分页
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\renewcommand{\ALG@name}{算法}
+\newenvironment{breakablealgorithm}
+  {% \begin{breakablealgorithm}
+   \begin{center}
+     \refstepcounter{algorithm}% New algorithm
+     \hrule height.8bp depth0bp \kern2bp% \@fs@pre for \@fs@ruled
+     \renewcommand{\caption}[2][\relax]{% Make a new \caption
+       {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+       \ifx\relax##1\relax % #1 is \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+       \else % #1 is not \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+       \fi
+       \kern2bp\hrule\kern2bp
+     }
+  }{% \end{breakablealgorithm}
+     \kern2bp\hrule\relax% \@fs@post for \@fs@ruled
+   \end{center}
+  }
+\makeatother
+
+\usepackage[colorlinks=true,linkcolor=blue,anchorcolor=black,citecolor=black,urlcolor=blue,CJKbookmarks=true]{hyperref}
+\usepackage{hypcap}
+
+\usepackage[most]{tcolorbox}
+\newtcbox{\code}{
+    on line, 
+    boxrule=0pt,
+    boxsep=0pt,
+    top=1.5pt,    % 略微增加高度，使中文行内对齐更美观
+    bottom=1.5pt,
+    left=2pt,
+    right=2pt,
+    arc=5.5pt,      % 轻微的圆角，看起来更现代
+    colback=gray!12, % 12% 的灰色，既能看清又不刺眼
+    fontupper=\ttfamily
+}
+
+\begin{document}
+\xiaosihao\song
+{\sihao\bfseries 姓名/学号：马歆远/246004488\qquad 小组：111
+
+代码基线：90a4327
+
+检查对象：CreditService.apply()；SchedulerService 两处定时扣分调用
+}
+
+\section{这段代码如何执行？}
+\textbf{输入：}学生 ID (studentId)、分值变动 (delta)、事件类型、原因，外加可选的幂等键 (sourceKey) 和订单号 (CreditService.java:41-42)；
+
+\textbf{核心判断逻辑：}先用 sourceKey 查重，查到就直接返回 duplicated=true (43-49行)；找不到对应学生就结束 (51-53行)；把变动后的分数限制在 0~150 的边界内 (55-57行)；最后判断实际变动值 applied != 0 才去执行写库和发通知 (59-79行)；
+
+\textbf{调用顺序：}幂等查重 $\rightarrow$ 查询学生记录 $\rightarrow$ 计算边界截断后的新分数 $\rightarrow$ updateById 更新学生分数 $\rightarrow$ 插入信用流水并发送站内通知 (43-77行)；
+
+\textbf{会修改的数据：}学生表的当前信用分和更新时间、信用流水表新增一条记录、站内通知表新增一条消息 (60-76行)，另外整个 apply() 方法加了 @Transactional 事务控制 (40行)。
+
+\section{我选择检查的质量要求是什么？}
+{\bfseries 依据编号和规则：}主依据 BR-14（SRS.md:634）：每次变动必须生成一条信用记录；辅助依据 BR-13（SRS.md:633）：信用分范围在 0$\sim$150 之间，超出范围按边界截断，并把截断后的值写入记录。
+
+{\bfseries 对应代码位置：}CreditService.java:40-79；SchedulerService.java:179-205、209-242；schema.sql:222-232。
+
+\section{我的判断是什么？}
+\textcolor{red}{\bfseries 已发现问题}
+
+理由：
+
+{\bfseries 在}\uline{多个请求并发修改同一名学生信用分的}{\bfseries 条件下，代码会}\uline{先读取旧分数并在内存中计算后直接执行整行 updateById（CreditService.java:55-62），既未带旧分数做条件限制也无乐观锁版本号（与类注释 18-19 行声称的“条件更新”不符），}{，\bfseries 因此}\uline{后提交的更新会覆盖先提交的结果，导致并发加扣分丢失。}
+
+{\bfseries 在}\uline{携带相同 sourceKey 的请求并发进入的}{\bfseries 条件下，代码会}\uline{因 44-49 行的“先查后写”无法拦截并发请求，直接触发数据库 source\_key 唯一索引报错（schema.sql:232），且 apply() 未捕获唯一约束异常将其转为 duplicated=true}{，\bfseries 因此}\uline{异常会直接向上抛出导致调用方请求失败。}
+
+{\bfseries 在}\uline{学生当前分数已达 150 分上限继续加分、或已降至 0 分下限继续扣分的}{\bfseries 条件下，代码会}\uline{因边界截断算出 applied == 0（CreditService.java:55-57）并直接跳过 59-79 行的写流水分支}{，\bfseries 因此}\uline{边界触发时不会生成信用记录，与 BR-14“每次变动必须生成一条信用记录”及 BR-13 的截断记录要求存在冲突。}
+
+{\bfseries 缺少的信息或需要继续查看的代码：}需要查看 NotificationService.notifyStudent() 的具体实现（是为了确认其异常处理与事务传播级别），还需要查看举报处置等其他调用 CreditService.apply() 的上层业务代码，确认调用方是否自行捕获并处理了唯一键冲突异常；同时还缺少本地测试库的事务隔离级别配置及实际并发运行日志。
+
+\section{如何验证:}
+{\bfseries 前置条件：}基于代码基线 90a4327 搭建隔离的本地测试数据库并创建测试学生账号，记录初始信用分、流水记录条数及站内通知数量，准备两个独立的数据库连接用于模拟并发请求；
+
+{\bfseries 输入或操作：}
+
+A. 把初始分设成 100 分，用线程屏障同时发 2 个不同 sourceKey 的 +2 请求；
+
+B. 把学生分数依次设成 149、150、1、0 分，分别执行 +2、+2、-10、-1 操作；
+
+C. 用两个并发请求带着一样的 sourceKey 同时调 apply()；
+
+D. 在 notifyStudent() 里手动抛一个未处理异常做故障测试；
+
+E. 针对同一个超时订单，重复触发“未评价”和“撤销超时”两个定时任务；
+
+{\bfseries 按需求应该得到：}
+
+A. 最终分数变成 104 分，而且生成 2 条独立的信用流水（符合 BR-14）；
+
+B. 分数一直卡在 0~150 之间，核对每次截断后的流水记录情况，确认 0 变动时的记账口径；
+
+C. 同一个事件只加扣分一次，重复的并发请求正常返回 duplicated=true 不报错；
+
+D. 确认站内通知报错时主事务会不会跟着回滚，从而确定最终的事务和异常处理方案；
+
+E. 不会对同一笔订单重复扣分，且超期时间严格按连续 168 小时、到点即超期来算 (SRS.md:653-666)；
+
+{\bfseries 还必须检查的数据或副作用：}学生表中的最终信用分与更新时间、信用流水表的记录总数及 source\_key / delta / event / reason / order\_id 等字段值、站内通知表的新增数量、接口返回的 HTTP 状态码、后台错误与异常堆栈日志、关联订单的状态流转结果以及数据库事务回滚情况。
+
+
+\clearpage
+\end{document}

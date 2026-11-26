@@ -1,0 +1,261 @@
+{
+  "by_pkg": {
+    "(root)": {
+      "files": 1,
+      "lines": 20,
+      "methods": 1
+    },
+    "audit": {
+      "files": 1,
+      "lines": 86,
+      "methods": 6
+    },
+    "common": {
+      "files": 5,
+      "lines": 253,
+      "methods": 20
+    },
+    "config": {
+      "files": 5,
+      "lines": 293,
+      "methods": 8
+    },
+    "constant": {
+      "files": 15,
+      "lines": 251,
+      "methods": 2
+    },
+    "controller": {
+      "files": 12,
+      "lines": 949,
+      "methods": 81
+    },
+    "dto": {
+      "files": 5,
+      "lines": 216,
+      "methods": 25
+    },
+    "entity": {
+      "files": 17,
+      "lines": 427,
+      "methods": 0
+    },
+    "mapper": {
+      "files": 17,
+      "lines": 153,
+      "methods": 0
+    },
+    "security": {
+      "files": 5,
+      "lines": 231,
+      "methods": 11
+    },
+    "seed": {
+      "files": 1,
+      "lines": 275,
+      "methods": 7
+    },
+    "service": {
+      "files": 19,
+      "lines": 4169,
+      "methods": 160
+    },
+    "util": {
+      "files": 2,
+      "lines": 110,
+      "methods": 7
+    },
+    "vo": {
+      "files": 1,
+      "lines": 340,
+      "methods": 22
+    }
+  },
+  "edges": {
+    "audit->entity": 1,
+    "audit->mapper": 1,
+    "audit->security": 1,
+    "audit->util": 1,
+    "common->audit": 1,
+    "config->common": 2,
+    "config->security": 2,
+    "controller->common": 14,
+    "controller->constant": 3,
+    "controller->dto": 9,
+    "controller->security": 23,
+    "controller->service": 20,
+    "controller->config": 1,
+    "mapper->entity": 17,
+    "security->config": 1,
+    "security->entity": 1,
+    "security->mapper": 1,
+    "security->util": 1,
+    "seed->config": 1,
+    "seed->util": 1,
+    "service->audit": 10,
+    "service->common": 16,
+    "service->config": 17,
+    "service->constant": 42,
+    "service->entity": 41,
+    "service->mapper": 41,
+    "service->security": 13,
+    "service->util": 17,
+    "service->dto": 4,
+    "service->vo": 10,
+    "service->seed": 1,
+    "util->entity": 1,
+    "util->mapper": 1,
+    "vo->constant": 1,
+    "vo->entity": 2
+  },
+  "services": {
+    "AuditService": {
+      "lines": 86,
+      "methods": 6,
+      "fan_in": 11
+    },
+    "AuthUser": {
+      "lines": 20,
+      "methods": 2,
+      "fan_in": 24
+    },
+    "CurrentUser": {
+      "lines": 15,
+      "methods": 0,
+      "fan_in": 11
+    },
+    "CurrentUserArgumentResolver": {
+      "lines": 31,
+      "methods": 2,
+      "fan_in": 1
+    },
+    "TokenAuthenticationFilter": {
+      "lines": 62,
+      "methods": 2,
+      "fan_in": 2
+    },
+    "TokenService": {
+      "lines": 103,
+      "methods": 5,
+      "fan_in": 1
+    },
+    "AdminService": {
+      "lines": 236,
+      "methods": 8,
+      "fan_in": 1
+    },
+    "AuthService": {
+      "lines": 364,
+      "methods": 18,
+      "fan_in": 1
+    },
+    "BanService": {
+      "lines": 70,
+      "methods": 1,
+      "fan_in": 0
+    },
+    "CreditService": {
+      "lines": 113,
+      "methods": 4,
+      "fan_in": 1
+    },
+    "DevService": {
+      "lines": 93,
+      "methods": 6,
+      "fan_in": 1
+    },
+    "EmailCodeService": {
+      "lines": 142,
+      "methods": 7,
+      "fan_in": 0
+    },
+    "FavoriteService": {
+      "lines": 97,
+      "methods": 3,
+      "fan_in": 1
+    },
+    "MailService": {
+      "lines": 91,
+      "methods": 4,
+      "fan_in": 1
+    },
+    "MessageService": {
+      "lines": 396,
+      "methods": 12,
+      "fan_in": 1
+    },
+    "NotificationService": {
+      "lines": 158,
+      "methods": 12,
+      "fan_in": 1
+    },
+    "OrderService": {
+      "lines": 385,
+      "methods": 8,
+      "fan_in": 1
+    },
+    "PermissionService": {
+      "lines": 112,
+      "methods": 8,
+      "fan_in": 1
+    },
+    "ProductService": {
+      "lines": 669,
+      "methods": 30,
+      "fan_in": 2
+    },
+    "ProfileService": {
+      "lines": 99,
+      "methods": 1,
+      "fan_in": 1
+    },
+    "ReportService": {
+      "lines": 294,
+      "methods": 7,
+      "fan_in": 2
+    },
+    "ReviewService": {
+      "lines": 200,
+      "methods": 9,
+      "fan_in": 2
+    },
+    "SchedulerService": {
+      "lines": 273,
+      "methods": 10,
+      "fan_in": 1
+    },
+    "StorageService": {
+      "lines": 113,
+      "methods": 4,
+      "fan_in": 0
+    },
+    "VerificationService": {
+      "lines": 264,
+      "methods": 8,
+      "fan_in": 2
+    }
+  },
+  "violations": [
+    "common.GlobalExceptionHandler -> audit.AuditService",
+    "security.TokenService -> config.AppProperties",
+    "service.AdminService -> config.AppProperties",
+    "service.AuthService -> config.AppProperties",
+    "service.CreditService -> config.AppProperties",
+    "service.DevService -> config.AppProperties",
+    "service.EmailCodeService -> config.AppProperties",
+    "service.FavoriteService -> config.AppProperties",
+    "service.MailService -> config.AppProperties",
+    "service.NotificationService -> config.AppProperties",
+    "service.OrderService -> config.AppProperties",
+    "service.PermissionService -> config.AppProperties",
+    "service.ProductService -> config.AppProperties",
+    "service.ProfileService -> config.AppProperties",
+    "service.ReportService -> config.AppProperties",
+    "service.ReviewService -> config.AppProperties",
+    "service.SchedulerService -> config.AppProperties",
+    "service.StorageService -> config.AppProperties",
+    "service.VerificationService -> config.AppProperties",
+    "util.TimeProvider -> mapper.SettingMapper"
+  ],
+  "total_files": 106
+}

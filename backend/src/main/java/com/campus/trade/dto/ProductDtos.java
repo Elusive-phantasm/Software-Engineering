@@ -2,6 +2,7 @@ package com.campus.trade.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -20,21 +21,22 @@ public final class ProductDtos {
     ) {
     }
 
-    /** 审核驳回：必须引用 §4.3 类目编号 */
+    /** 审核不通过。禁售类目编号仅在涉及禁售内容时填写。 */
     public record RejectRequest(
-            @NotBlank(message = "请填写驳回原因") String reason,
-            @NotBlank(message = "请引用禁售类目编号（如 A1）") String categoryCode
+            @NotBlank(message = "请填写驳回原因") @Size(max = 200, message = "驳回原因不得超过 200 字") String reason,
+            String categoryCode
     ) {
     }
 
     /** 管理员强制下架 */
     public record ForceOffRequest(
-            @NotBlank(message = "请填写处置理由") String reason,
+            @NotBlank(message = "请填写处置理由") @Size(max = 200, message = "处置理由不得超过 200 字") String reason,
             String categoryCode,
             Boolean deduct
     ) {
     }
 
-    public record RestoreRequest(@NotBlank(message = "请填写撤销处置的理由") String reason) {
+    public record RestoreRequest(@NotBlank(message = "请填写撤销处置的理由")
+                                 @Size(max = 200, message = "撤销处置理由不得超过 200 字") String reason) {
     }
 }

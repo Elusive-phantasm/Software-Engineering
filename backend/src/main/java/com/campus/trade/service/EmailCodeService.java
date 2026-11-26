@@ -33,6 +33,7 @@ public class EmailCodeService {
     private final SettingMapper settingMapper;
     private final AppProperties props;
     private final TimeProvider timeProvider;
+    private final EmailCodeFailureService failureService;
 
     public String issue(String email, String purpose) {
         String code = randomDigits(props.getSecurity().getCodeLength());
@@ -84,16 +85,11 @@ public class EmailCodeService {
         if (rec.getFailCount() != null && rec.getFailCount() >= props.getSecurity().getCodeMaxFails()) {
             throw BizException.validate("验证码错误或已失效，请重新获取");
         }
-        if (rec.getExpiresAt().isBefore(timeProvider.now())) {
+        if (!timeProvider.now().isBefore(rec.getExpiresAt())) {
             throw BizException.validate("验证码错误或已失效，请重新获取");
         }
         if (!digest(email, purpose, code.trim()).equals(rec.getCodeHash())) {
-            int fails = (rec.getFailCount() == null ? 0 : rec.getFailCount()) + 1;
-            rec.setFailCount(fails);
-            if (fails >= props.getSecurity().getCodeMaxFails()) {
-                rec.setUsed(1);
-            }
-            codeMapper.updateById(rec);
+            failureService.recordFailure(rec.getId(), props.getSecurity().getCodeMaxFails());
             throw BizException.validate("验证码错误或已失效，请重新获取");
         }
         return rec;

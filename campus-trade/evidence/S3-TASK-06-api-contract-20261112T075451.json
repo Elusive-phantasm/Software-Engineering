@@ -1,0 +1,10 @@
+{
+  "at": "2026-11-12T07:54:51.560Z",
+  "base": "http://127.0.0.1:8080",
+  "web": "http://127.0.0.1:5173",
+  "passed": 92,
+  "failed": 1,
+  "failures": [
+    "执行异常：POST /api/messages/appeal: HTTP 409, expected 200: {\"code\":3001,\"message\":\"不能与自己对话\"}"
+  ]
+}

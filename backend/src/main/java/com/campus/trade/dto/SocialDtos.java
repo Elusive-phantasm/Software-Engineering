@@ -22,7 +22,7 @@ public final class SocialDtos {
     public record HandleReportRequest(
             boolean upheld,
             List<String> actions,
-            @NotBlank(message = "请填写处理结论") String result,
+            @NotBlank(message = "请填写处理结论") @Size(max = 500, message = "处理结论不得超过 500 字") String result,
             String categoryCode
     ) {
     }
@@ -36,17 +36,18 @@ public final class SocialDtos {
 
     public record AccountStatusRequest(
             @NotBlank(message = "请选择账号状态") String status,
-            @NotBlank(message = "请填写处理理由") String reason,
+            @NotBlank(message = "请填写处理理由") @Size(max = 200, message = "处理理由不得超过 200 字") String reason,
             Boolean deductCredit
     ) {
     }
 
     public record AdjustCreditRequest(
             @NotNull(message = "请填写调整幅度") Integer delta,
-            @NotBlank(message = "请填写调整理由") String reason
+            @NotBlank(message = "请填写调整理由") @Size(max = 200, message = "调整理由不得超过 200 字") String reason
     ) {
     }
 
-    public record DeleteReviewRequest(@NotBlank(message = "请填写删除依据") String reason) {
+    public record DeleteReviewRequest(@NotBlank(message = "请填写删除依据")
+                                      @Size(max = 200, message = "删除依据不得超过 200 字") String reason) {
     }
 }

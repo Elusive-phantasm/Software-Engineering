@@ -17,7 +17,7 @@
       <el-table-column prop="detail" label="详情" min-width="220" show-overflow-tooltip />
     </el-table>
     <el-empty v-if="!loading && !items.length" description="暂无审计记录" />
-    <div class="muted mt12">审计不含密码、完整手机号、宿舍地址与学生证图片内容（§5.5 第 5 条）</div>
+    <div class="muted mt12">审计不含密码、完整手机号、宿舍地址与学生证图片内容</div>
   </div>
 </template>
 

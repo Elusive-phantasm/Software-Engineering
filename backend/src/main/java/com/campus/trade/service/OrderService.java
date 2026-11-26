@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * 订单（成交记录）：UC-10 下单成交、UC-16 我的订单、UC-31 撤销成交。
  * 本版订单**没有状态机**，只有「成交状态」与「撤销免责判定」两个标记（SRS §7.1）。
- * 事务与幂等：BR-06（下单即成交、同商品最多一条有效成交）、BR-21（单方即时撤销、7 天判定）。
+ * 事务与幂等：BR-06（下单即成交、同商品最多一条有效成交）、BR-21（双方审批撤销，平台记录撤销事实）。
  */
 @Service
 @RequiredArgsConstructor
@@ -145,7 +145,7 @@ public class OrderService {
         return toVo(order, user);
     }
 
-    /* ------------------------------------------------------ UC-31 / ST-10、ST-11 */
+    /* ------------------------------------------------------ UC-31 / 成交撤销状态转换 */
     @Transactional
     public Views.OrderVo cancel(AuthUser user, Long orderId, String reason) {
         Student actor = permissionService.requireCertifiedStudent(user);

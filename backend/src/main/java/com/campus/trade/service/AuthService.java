@@ -38,6 +38,7 @@ public class AuthService {
     private final EmailCodeService emailCodeService;
     private final MailService mailService;
     private final TokenService tokenService;
+    private final LoginFailureService loginFailureService;
     private final NotificationService notificationService;
     private final AuditService auditService;
     private final TimeProvider timeProvider;
@@ -114,7 +115,7 @@ public class AuthService {
         }
         if (AccountStatus.BANNED.equals(s.getAccountStatus())) {
             auditService.log("student", s.getId(), "未认证学生", "auth.login", "student", s.getId(), "denied", "ACCOUNT_BANNED", null);
-            throw BizException.of(com.campus.trade.common.ErrorCode.ACCOUNT_BANNED, "账号不可用");
+            throw BizException.of(com.campus.trade.common.ErrorCode.ACCOUNT_BANNED, "账号已封禁，不可发布与下单");
         }
 
         clearLoginFailure(s);
@@ -191,6 +192,7 @@ public class AuthService {
         admin.setPasswordHash(passwordEncoder.encode(req.newPassword()));
         admin.setMustChangePassword(0);
         adminMapper.updateById(admin);
+        tokenService.revokeAll("admin", admin.getId());
         auditService.log("admin", admin.getId(), "管理员", "admin.changePassword", "admin", admin.getId(), "allowed", null, null);
     }
 
@@ -313,37 +315,17 @@ public class AuthService {
      * 关键：锁定到期后计数必须清零，否则到期后一次误输就会立刻再次锁定 15 分钟。
      */
     private void countLoginFailure(Student s) {
-        LocalDateTime now = timeProvider.now();
-        int current = s.getFailedLoginCount() == null ? 0 : s.getFailedLoginCount();
-        LocalDateTime lockedUntil = s.getLockedUntil();
-        if (lockedUntil != null && !lockedUntil.isAfter(now)) {
-            // 锁定已到期：计数归零后重新累计，避免「到期后错一次又被锁 15 分钟」
-            current = 0;
-            lockedUntil = null;
-        }
-        int next = current + 1;
-        LocalDateTime nextLock = next >= props.getSecurity().getLoginFailLimit()
-                ? now.plusMinutes(props.getSecurity().getLockMinutes()) : lockedUntil;
-        // 显式 wrapper：updateById 会跳过 null，无法把 locked_until 置回空
-        studentMapper.update(null, Wrappers.<Student>lambdaUpdate()
-                .eq(Student::getId, s.getId())
-                .set(Student::getFailedLoginCount, next)
-                .set(Student::getLockedUntil, nextLock)
-                .set(Student::getUpdatedAt, now));
-        s.setFailedLoginCount(next);
-        s.setLockedUntil(nextLock);
+        loginFailureService.countFailure(s.getId());
     }
 
     private void clearLoginFailure(Student s) {
-        if ((s.getFailedLoginCount() != null && s.getFailedLoginCount() > 0) || s.getLockedUntil() != null) {
-            studentMapper.update(null, Wrappers.<Student>lambdaUpdate()
-                    .eq(Student::getId, s.getId())
-                    .set(Student::getFailedLoginCount, 0)
-                    .set(Student::getLockedUntil, null)
-                    .set(Student::getUpdatedAt, timeProvider.now()));
-            s.setFailedLoginCount(0);
-            s.setLockedUntil(null);
-        }
+        studentMapper.update(null, Wrappers.<Student>lambdaUpdate()
+                .eq(Student::getId, s.getId())
+                .set(Student::getFailedLoginCount, 0)
+                .set(Student::getLockedUntil, null)
+                .set(Student::getUpdatedAt, timeProvider.now()));
+        s.setFailedLoginCount(0);
+        s.setLockedUntil(null);
     }
 
     private String roleByCert(Student s) {

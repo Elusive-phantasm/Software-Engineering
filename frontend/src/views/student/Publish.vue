@@ -3,7 +3,7 @@
     <div class="card">
       <h2 class="section-title">{{ isEdit ? '编辑商品' : '发布闲置' }}</h2>
       <el-alert v-if="isEdit" type="warning" :closable="false" class="mb"
-                title="在售商品编辑后会回到「待审核」，重新审核通过前不会对外展示（BR-22）" />
+                title="在售商品编辑后会回到「待审核」，重新审核通过前不会对外展示" />
 
       <el-form :model="form" label-width="90px" class="form">
         <el-form-item label="标题" required>

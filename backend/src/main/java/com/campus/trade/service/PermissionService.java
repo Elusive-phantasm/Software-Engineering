@@ -26,11 +26,16 @@ public class PermissionService {
     private final AppProperties props;
 
     public Student currentStudent(AuthUser user) {
+        return currentStudent(user, "请先登录", "管理员不参与学生功能");
+    }
+
+    /** 角色拒绝文案依当前写操作区分，未登录接口仍沿用默认提示。 */
+    public Student currentStudent(AuthUser user, String guestMessage, String adminMessage) {
         if (user == null) {
-            throw BizException.of(ErrorCode.UNAUTHORIZED, "请先登录");
+            throw BizException.of(ErrorCode.UNAUTHORIZED, guestMessage);
         }
         if (user.isAdmin()) {
-            throw BizException.permission("管理员不参与学生功能");
+            throw BizException.permission(adminMessage);
         }
         Student s = studentMapper.selectById(user.subjectId());
         if (s == null) {
@@ -75,7 +80,7 @@ public class PermissionService {
 
     /** 发布资格：已认证 + 未封禁 + 信用分 ≥ 60（BR-01、BR-13） */
     public Student requirePublishRights(AuthUser user) {
-        Student s = currentStudent(user);
+        Student s = currentStudent(user, "请先登录并完成学生证核验", "管理员无发布商品权限");
         assertCertified(s);
         assertNotBanned(s);
         if (s.getCreditScore() < props.getCredit().getPublishThreshold()) {
@@ -86,7 +91,7 @@ public class PermissionService {
 
     /** 下单资格：已认证 + 未封禁 + 信用分 ≥ 40（BR-01、BR-13） */
     public Student requireOrderRights(AuthUser user) {
-        Student s = currentStudent(user);
+        Student s = currentStudent(user, "请先登录并完成学生证核验", "管理员无下单权限");
         assertCertified(s);
         assertNotBanned(s);
         if (s.getCreditScore() < props.getCredit().getOrderThreshold()) {
@@ -97,7 +102,11 @@ public class PermissionService {
 
     /** 评价 / 举报 / 发起私信资格：已认证 + 未封禁 */
     public Student requireCertifiedStudent(AuthUser user) {
-        Student s = currentStudent(user);
+        return requireCertifiedStudent(user, "请先登录", "管理员不参与学生功能");
+    }
+
+    public Student requireCertifiedStudent(AuthUser user, String guestMessage, String adminMessage) {
+        Student s = currentStudent(user, guestMessage, adminMessage);
         assertCertified(s);
         assertNotBanned(s);
         return s;

@@ -42,6 +42,7 @@ public class DevController {
     @Operation(summary = "当前状态（时间偏移与各表条数）")
     @GetMapping("/state")
     public ApiResponse<Object> state() {
+        assertEnabled();
         return ApiResponse.ok(devService.state());
     }
 

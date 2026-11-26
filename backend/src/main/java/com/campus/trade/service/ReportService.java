@@ -50,7 +50,8 @@ public class ReportService {
     /* --------------------------------------------------------------- UC-12 */
     @Transactional
     public Views.ReportVo submit(AuthUser user, SocialDtos.CreateReportRequest req) {
-        Student reporter = permissionService.requireCertifiedStudent(user);
+        Student reporter = permissionService.requireCertifiedStudent(
+                user, "请先登录", "管理员不能以举报人身份提交举报");
         String targetType = req.targetType().trim();
         String type = req.type().trim();
         if (!ReportTarget.PRODUCT.equals(targetType) && !ReportTarget.STUDENT.equals(targetType)) {
