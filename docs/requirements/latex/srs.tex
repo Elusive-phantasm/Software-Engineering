@@ -1,0 +1,4409 @@
+
+\documentclass[12pt,a4paper]{ctexart}
+
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.6cm,right=2.6cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+
+% ---------- fonts ----------
+\setCJKmainfont{SimSun}[BoldFont=SimHei, ItalicFont=KaiTi]
+\setCJKsansfont{SimHei}
+\setCJKmonofont{FangSong}
+\setCJKfamilyfont{kaiheavy}[AutoFakeBold=3.2]{KaiTi}
+\newcommand{\coverfont}{\CJKfamily{kaiheavy}}
+\newCJKfontfamily\heitifont{SimHei}
+
+% ---------- spacing ----------
+\linespread{1.35}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+
+% ---------- headings ----------
+\ctexset{
+  section = {
+    format = \heitifont\zihao{3},
+    beforeskip = 1.2em,
+    afterskip = 0.7em,
+  },
+  subsection = {
+    format = \heitifont\zihao{4},
+    beforeskip = 0.9em,
+    afterskip = 0.45em,
+  },
+  subsubsection = {
+    format = \heitifont\zihao{-4},
+    beforeskip = 0.7em,
+    afterskip = 0.35em,
+  },
+}
+
+% ---------- TOC style: dotted leaders, page number right ----------
+\renewcommand{\cftdot}{.}
+\renewcommand{\cftdotsep}{1.6}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsubsecleader}{\cftdotfill{\cftdotsep}}
+\setlength{\cftsecindent}{0pt}
+\setlength{\cftsubsecindent}{1.6em}
+\setlength{\cftsubsubsecindent}{3.6em}
+\renewcommand{\cftsecfont}{\normalfont}
+\renewcommand{\cftsecpagefont}{\normalfont}
+\setlength{\cftbeforesecskip}{0.55em}
+\setlength{\cftbeforesubsecskip}{0.08em}
+\setlength{\cftbeforesubsubsecskip}{0.02em}
+
+% ---------- page style: page number bottom center only ----------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\zihao{5}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ---------- table helpers ----------
+\renewcommand{\arraystretch}{1.22}
+\setlength{\LTpre}{0.15em}
+\setlength{\LTpost}{0.25em}
+
+% ---------- captions ----------
+\usepackage{caption}
+\captionsetup{font=small, labelsep=quad}
+
+\begin{document}
+
+% ================= COVER =================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+\vspace*{1.35cm}
+
+\includegraphics[width=9.6cm]{assets/logo-nbu.png}
+
+\vspace{4.7cm}
+
+{\coverfont\zihao{1}\bfseries 软件工程课程需求报告}
+
+\vspace{3.3cm}
+
+{\coverfont\zihao{2}\bfseries 校园二手交易平台}
+
+\vfill
+
+{\coverfont\zihao{3} 林初仁\quad 赵俊豪\quad 吕锦浩\quad 马歆远\quad 过振宇}
+
+\vspace{1.75cm}
+\end{center}
+\end{titlepage}
+
+% ================= TOC =================
+\setcounter{page}{2}
+
+\tableofcontents
+\clearpage
+\subsection*{编制分工}
+\addcontentsline{toc}{subsection}{编制分工}
+
+{\footnotesize
+\begin{longtable}{|p{3.31cm}|p{6.01cm}|p{6.67cm}|}
+\hline
+\textbf{成员} & \textbf{负责范围} & \textbf{对应章节} \\
+\hline
+\endfirsthead
+\hline
+\textbf{成员} & \textbf{负责范围} & \textbf{对应章节} \\
+\hline
+\endhead
+\hline
+\endfoot
+林初仁（组长） & 项目统筹、简化口径裁定、合稿检查 & §1 业务目标、§2 范围、附录 C \\
+\hline
+赵俊豪 & 功能需求（用例建模） & §3 功能需求 \\
+\hline
+吕锦浩 & 业务规则与状态建模 & §4 业务规则、§7 状态需求 \\
+\hline
+马歆远 & 数据、权限与质量需求 & §5 权限需求、§6 数据需求、§8 质量需求 \\
+\hline
+过振宇 & 原型与场景走查 & §7.5 场景走查、附录 A \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{文档说明}
+\addcontentsline{toc}{subsection}{文档说明}
+
+\begin{enumerate}[leftmargin=1.9em,itemsep=1pt,topsep=2pt]
+\item \textbf{V2.0 已完成对 V1.2.1 的简化重构}：交易链压缩为「发布 → 审核 → 在售 → 下单成交」，\textbf{取消支付、交付、确认收货、取消订单、退款等全部后续环节}；\textbf{删除捐赠、回收、借用三条物品流转路径}（学校不提供代收点、回收人员与仓库，物理环节不成立）。
+\item \textbf{本版（V2.1）在 V2.0 基础上新增「联系卖家 / 站内私信」能力（UC-29、UC-30、BR-20、NFR-09）。} 起因是 V2.0 的一处硬缺陷：UC-10 声明「向双方互发展示对方可用于线下联系的渠道」，但数据字典既无联系方式字段，§6.5 又规定\textbf{成交对家也不得查看手机号与宿舍地址}，导致成交后双方在平台上没有任何可用沟通通道。本版以\textbf{绑定商品的站内私信}补齐该通道，\textbf{且不放开手机号可见性}——NFR-04 的口径完全不变。
+\item 需求条目的\textbf{来源性质}分三类：\texttt{原始资料}、\texttt{AI候选}、\texttt{分析推导}；\textbf{确认状态}分四类：\texttt{业务方已确认}、\texttt{教师已确认}、\texttt{团队已复核}、\texttt{待确认}。\textbf{未特别标注者一律视为 \texttt{待确认}}。字段约束中标注「建议值，待确认」者为团队提议值。
+\item 本文档为\textbf{需求分析阶段}成果，不包含系统设计与实现方案。
+\item 凡涉及学生扮演业务方的确认，均标注「教学模拟」，不构成真实业务方认可。
+\item \textbf{本版所有 UML 图均待按 V2.1 重出}（旧图仍按 V1.2.1 的八状态订单、五状态商品、三条流转路径绘制，且不含私信，与本版正文冲突）。\textbf{图的权威性让位于正文表格}：冲突时以 §3～§7 的表格为准。清单见附录 A。
+\item 全文用词以\textbf{附录 B《术语表》}为准；表格与正文出现同义词交替视为一致性缺陷。\textbf{「消息通知」与「私信」是两个不同对象，见附录 B·七}，不得混用。
+\end{enumerate}
+
+
+
+
+\section*{1 业务目标}
+\addcontentsline{toc}{section}{1 业务目标}
+\markboth{1 业务目标}{1 业务目标}
+
+\subsection*{1.1 项目愿景}
+\addcontentsline{toc}{subsection}{1.1 项目愿景}
+
+在校内建立一个\textbf{可信、便捷}的闲置物品交易平台，让学生手中闲置的教材、数码产品、生活用品，能够安全地在同校同学之间转手，减少资源浪费。
+
+
+\subsection*{1.2 现状问题}
+\addcontentsline{toc}{subsection}{1.2 现状问题}
+
+{\footnotesize
+\begin{longtable}{|p{1.54cm}|p{2.81cm}|p{11.65cm}|}
+\hline
+\textbf{编号} & \textbf{问题} & \textbf{具体表现} \\
+\hline
+\endfirsthead
+\hline
+\textbf{编号} & \textbf{问题} & \textbf{具体表现} \\
+\hline
+\endhead
+\hline
+\endfoot
+P-01 & \textbf{信息分散} & 闲置信息散落在各类社交群与二手论坛，缺乏统一入口，商品是否还在售不透明 \\
+\hline
+P-02 & \textbf{信任缺失} & 交易双方互不了解身份，无法判断对方是否为同校学生，也无法评估历史交易表现 \\
+\hline
+P-03 & \textbf{违规无人管} & 违禁品、虚假描述商品缺乏审核与事后处置机制 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsection*{1.3 业务目标分解}
+\addcontentsline{toc}{subsection}{1.3 业务目标分解}
+
+{\footnotesize
+\begin{longtable}{|p{1.53cm}|p{3.81cm}|p{10.66cm}|}
+\hline
+\textbf{编号} & \textbf{目标} & \textbf{达成方式} \\
+\hline
+\endfirsthead
+\hline
+\textbf{编号} & \textbf{目标} & \textbf{达成方式} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{G-01} & 让交易可信 & 学生证人工核验准入 · 双向交易评价 · 信用分机制 · 违规商品举报与处置 \\
+\hline
+\textbf{G-02} & 让交易便捷 & 商品快速发布 · 关键词搜索与分类浏览 · \textbf{站内私信直接沟通} · 下单即成交流程最短 \\
+\hline
+\textbf{G-03} & 让闲置物品流转起来 & 通过校内学生之间的买卖，使闲置物品转手给有需要的同学 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+分解类型为\textbf{「与」分解（AND）}：三个子目标须同时满足，缺任一则总体目标不成立。
+
+\end{quote}
+
+
+\subsection*{1.4 主要成功指标}
+\addcontentsline{toc}{subsection}{1.4 主要成功指标}
+
+{\footnotesize
+\begin{longtable}{|p{1.57cm}|p{5.37cm}|p{3.88cm}|p{2.59cm}|p{2.59cm}|}
+\hline
+\textbf{编号} & \textbf{指标} & \textbf{目标值} & \textbf{来源性质} & \textbf{确认状态} \\
+\hline
+\endfirsthead
+\hline
+\textbf{编号} & \textbf{指标} & \textbf{目标值} & \textbf{来源性质} & \textbf{确认状态} \\
+\hline
+\endhead
+\hline
+\endfoot
+M-01 & 完成学生证核验的学生数 & 首学期 1000 人 & 分析推导 & 待确认 \\
+\hline
+M-02 & 每月成交笔数 & 1000 笔 / 月 & 分析推导 & 待确认 \\
+\hline
+M-03 & 违规商品平均处置时长 & 24 小时内 & 分析推导 & 待确认 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsection*{1.5 需求来源与追踪}
+\addcontentsline{toc}{subsection}{1.5 需求来源与追踪}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{来源类型} & \textbf{具体来源} \\
+\hline
+\endfirsthead
+\hline
+\textbf{来源类型} & \textbf{具体来源} \\
+\hline
+\endhead
+\hline
+\endfoot
+原始资料 & 课程项目任务书、组内分工说明、V1.2.1 需求规格说明书 \\
+\hline
+分析推导 & 目标分解（§1.3）、成功指标（§1.4）、简化口径裁定（§2.1） \\
+\hline
+AI 候选 & 用例条目（§3）、业务规则（§4）、数据字段约束（§6） \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{1.5.1 需求依据及验证边界}
+\addcontentsline{toc}{subsubsection}{1.5.1 需求依据及验证边界}
+
+{\footnotesize
+\begin{longtable}{|p{4.87cm}|p{5.92cm}|p{5.21cm}|}
+\hline
+\textbf{材料} & \textbf{可用于本稿的依据} & \textbf{不可推定的结论} \\
+\hline
+\endfirsthead
+\hline
+\textbf{材料} & \textbf{可用于本稿的依据} & \textbf{不可推定的结论} \\
+\hline
+\endhead
+\hline
+\endfoot
+V1.2.1 需求规格说明书（旧版已移除，\texttt{git log} 可回溯） & 全部保留条目的原始定义（认证、审核、举报、评价、信用分、权限、NFR） & 其八状态订单、三套流转状态机、支付与交付条款在本版已失效 \\
+\hline
+V1.2.1 修改说明（旧版已移除，\texttt{git log} 可回溯） & 编号沿革与历史口径 & — \\
+\hline
+学生报告模板 & 确认状态分类与 AI 证据追踪要求 & 文件为待填写模板，没有可提取的实际校园调查样本 \\
+\hline
+\end{longtable}
+}
+
+
+\textbf{本版未开展新的用户调查、访谈或真实系统测试。} 简化口径由团队裁定，属「教学模拟」，不构成真实业务方认可。
+
+
+
+\section*{2 范围}
+\addcontentsline{toc}{section}{2 范围}
+\markboth{2 范围}{2 范围}
+
+\subsection*{2.1 系统边界声明}
+\addcontentsline{toc}{subsection}{2.1 系统边界声明}
+
+本平台是一套\textbf{校内专用}的二手交易系统。以下五条边界为本版\textbf{组内定案}，全文所有需求均以此为前提：
+
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{边界项} & \textbf{声明} \\
+\hline
+\endfirsthead
+\hline
+\textbf{边界项} & \textbf{声明} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{资金} & \textbf{平台完全不涉及资金}。平台\textbf{不托管、不代收、不代付、不记录收款状态}，也不采集、不存储任何支付信息（支付密码、卡号、验证码、收款码一律不进入平台）。商品价格只是\textbf{标价展示}，用于成交金额留档 \\
+\hline
+\textbf{交付} & \textbf{平台不提供物流，也不做交付确认}。下单成交后，取货时间、地点、方式由买卖双方\textbf{在站内私信（UC-29）中约定}，平台记录沟通内容但\textbf{不记录交付事实}、不校验、不担保。因此「成交」只表示\textbf{下单成功}，不表示货物已交接 \\
+\hline
+\textbf{沟通} & \textbf{沟通只在站内进行}。平台\textbf{不展示、不转交买卖双方的手机号与宿舍地址}，双方通过\textbf{绑定具体商品的站内私信}联系（BR-20）。用户自行在消息正文中交换联系方式属个人行为，平台不校验、不担保 \\
+\hline
+\textbf{身份} & \textbf{平台自建账号体系}。学生以\textbf{邮箱}为唯一键、用\textbf{密码}注册与登录（\textbf{学号不参与登录}，避免他人抢注学号阻塞本人）；须\textbf{申报学号并上传学生证}，由管理员\textbf{人工核验}学籍，通过后才取得发布与下单资格、学号才与账号绑定。\textbf{平台不接入任何学校统一身份认证或学籍数据库接口} \\
+\hline
+\textbf{实物} & \textbf{平台无任何物理节点}。不设代收点、自提点、回收点、仓库，也不配备工作人员或回收人员。平台只承载\textbf{信息与记录}，实物全程在学生之间直接流转 \\
+\hline
+\textbf{售后} & \textbf{平台不介入纠纷的资金与实物处置}。成交后的质量问题、纠纷由双方自行协商；平台只处理\textbf{平台内的违规内容}（下架商品、限制账号、扣信用分） \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+上述边界直接决定本版没有订单状态机（§7.1）：平台拿不到支付回调，也没有交付确认，任何「已支付 / 待交付 / 待确认 / 退款中」的状态都\textbf{无法被平台观测到}，写进需求就是无法实现的空条款。
+
+\end{quote}
+
+\subsection*{2.2 目标范围}
+\addcontentsline{toc}{subsection}{2.2 目标范围}
+
+\subsubsection*{2.2.1 目标内}
+\addcontentsline{toc}{subsubsection}{2.2.1 目标内}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{范围块} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{范围块} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+身份 & 注册、登录、学生证上传与管理员人工核验 \\
+\hline
+交易 & 商品发布、管理员审核、关键词搜索、分类浏览、收藏、下单成交 \\
+\hline
+治理 & 违规商品举报、管理员巡查与处置、信用分、交易评价 \\
+\hline
+支撑 & 我的订单、我的商品、消息通知、\textbf{站内私信（联系卖家 / 沟通）} \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{2.2.2 目标外}
+\addcontentsline{toc}{subsubsection}{2.2.2 目标外}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{不在范围内} & \textbf{原因} \\
+\hline
+\endfirsthead
+\hline
+\textbf{不在范围内} & \textbf{原因} \\
+\hline
+\endhead
+\hline
+\endfoot
+在线支付、平台代收代付、担保交易、资金池 & 需支付牌照与商户资质；且平台无支付回调，无法观测真实付款 \\
+\hline
+\textbf{支付状态与收款确认（标记已付款 / 确认收款）} & 平台不碰钱，无权也无能力判定「钱是否到账」，该状态无法被验证 \\
+\hline
+\textbf{交付流程与交付确认（约见面、交付记录、确认收货）} & 交付全程线下，平台无任何观测点；强行记录只能得到不可信的自述数据 \\
+\hline
+\textbf{订单取消、退款、退款中 / 已退款状态} & 依赖已付款事实，本版不存在付款事实，故无退款可退 \\
+\hline
+物流配送、快递对接 & 交付全程线下完成 \\
+\hline
+对接学校统一身份认证、学籍数据库 & 属学校信息化部门管辖的外部系统，需审批、注册应用与密钥，本项目不具备接入条件 \\
+\hline
+\textbf{捐赠、回收、借用三条物品流转路径} & \textbf{学校不提供代收点、回收人员与仓库}：捐赠需实物归集与保管，回收需接收方与处理渠道，两者都依赖平台不具备的物理节点；本期整体删除，不保留空壳 \\
+\hline
+跨校交易 & 仅限本校学生 \\
+\hline
+议价 / 竞价 & 平台不做议价，下单即以标价成交 \\
+\hline
+商品推荐算法、广告位 & 非本期目标 \\
+\hline
+账号注销 & 本期不做。账号只能被封禁或限制，不提供学生自助注销与物理删除 \\
+\hline
+举报人对处置结果的申诉、卖家对下架的申诉 & 本期不做独立申诉流程。卖家可在\textbf{该商品的站内私信}中向管理员提出异议（BR-20），由管理员在处置队列中人工复核，不设申诉实体与申诉状态 \\
+\hline
+\textbf{语音 / 视频通话、图片与文件消息、群聊、消息撤回} & 站内私信本期\textbf{只支持纯文本单聊}，绑定单件商品：不做实时音视频、不传附件、不建群、不可撤回。理由是课程周期内先把「能联系上、有留痕」做扎实，不做通信产品 \\
+\hline
+\textbf{通讯录、加好友、跨商品的全局聊天} & 私信\textbf{必须绑定一件具体商品}，不做社交关系链，也不做独立聊天窗 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{2.3 功能清单}
+\addcontentsline{toc}{subsection}{2.3 功能清单}
+
+{\scriptsize
+\begin{longtable}{|p{1.62cm}|p{4.40cm}|p{4.08cm}|p{5.89cm}|}
+\hline
+\textbf{编号} & \textbf{功能} & \textbf{谁用} & \textbf{时机} \\
+\hline
+\endfirsthead
+\hline
+\textbf{编号} & \textbf{功能} & \textbf{谁用} & \textbf{时机} \\
+\hline
+\endhead
+\hline
+\endfoot
+UC-01 & 注册与登录 & 学生 & 使用平台前 \\
+\hline
+UC-02 & 提交学生证核验申请 & 学生 & 注册后、首次交易前 \\
+\hline
+UC-03 & 审核学生证 & 管理员 & 有学生提交核验申请后 \\
+\hline
+UC-04 & 管理员登录 & 管理员 & 进入后台前 \\
+\hline
+UC-05 & 发布商品 & 学生（卖家） & 上架前 \\
+\hline
+UC-06 & 审核商品 & 管理员 & 上架前准入 \\
+\hline
+UC-07 & 搜索商品 & 学生 & 购物时 \\
+\hline
+UC-08 & 按分类浏览商品 & 学生 & 购物时 \\
+\hline
+UC-09 & 收藏商品 & 学生 & 购物时 \\
+\hline
+UC-10 & 下单成交 & 学生（买家） & 在售时 \\
+\hline
+UC-11 & 下架或删除自己的商品 & 学生（卖家） & 在售后，卖家主动 \\
+\hline
+UC-12 & 举报违规商品或学生 & 学生 & 在售后 \\
+\hline
+UC-13 & 处理举报与违规处置 & 管理员 & 在售后 \\
+\hline
+UC-14 & 评价交易 & 学生（买家、卖家） & 下单成交后 \\
+\hline
+UC-15 & 查看信用分 & 学生 & 随时 \\
+\hline
+UC-16 & 查看我的订单 & 学生 & 随时 \\
+\hline
+UC-17 & 查看我的商品 & 学生（卖家） & 随时 \\
+\hline
+UC-18 & 查看消息通知 & 学生、管理员 & 随时 \\
+\hline
+UC-29 & 联系卖家与沟通 & 学生（买家、卖家） & 在售时，或本人为该商品成交买家 \\
+\hline
+UC-30 & 查看我的私信 & 学生、管理员 & 随时 \\
+\hline
+UC-31 & 申请退货/撤销成交 & 学生（买家、卖家） & 成交后、双方均未评价前 \\
+\hline
+UC-32 & 编辑商品 & 学生（卖家） & 待审核或在售时 \\
+\hline
+UC-33 & 查看个人主页 & 学生 & 随时 \\
+\hline
+UC-34 & 找回密码 & 学生 & 忘记密码时 \\
+\hline
+\end{longtable}
+}
+
+
+
+\begin{quote}\small
+另有一条\textbf{业务规则}：系统主动通知规则（\textbf{BR-15}），见 §4.2。它不是用例，不画进用例图。
+
+\end{quote}
+
+\subsection*{2.4 需求优先级}
+\addcontentsline{toc}{subsection}{2.4 需求优先级}
+
+\begin{quote}\small
+按 Kano 三层划分，判据是\textbf{「缺失时平台还能不能用」}，不是「重不重要」。
+
+\textbf{基本需求}＝缺了就无法完成一笔交易或无法治理平台；\textbf{期望型需求}＝缺了平台仍可用，但用户明确期待、实现了明显提升满意度；\textbf{兴奋型需求}＝用户未预期、实现后显著提升信任。
+
+\end{quote}
+
+{\scriptsize
+\begin{longtable}{|p{1.51cm}|p{1.51cm}|p{6.45cm}|p{6.54cm}|}
+\hline
+\textbf{优先级} & \textbf{判据} & \textbf{用例} & \textbf{业务规则} \\
+\hline
+\endfirsthead
+\hline
+\textbf{优先级} & \textbf{判据} & \textbf{用例} & \textbf{业务规则} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{基本需求}（17 个用例 / 17 条规则） & 缺失则交易或治理\textbf{无法完成} & UC-01 注册与登录、UC-02 提交核验、UC-03 审核学生证、UC-04 管理员登录、UC-05 发布商品、UC-06 审核商品、UC-07 搜索商品、UC-08 分类浏览、UC-10 下单成交、UC-11 下架商品、UC-12 举报、UC-13 处理举报与处置、UC-16 我的订单、UC-17 我的商品、UC-18 消息通知、UC-29 联系卖家与沟通、UC-30 查看我的私信 & BR-01 核验准入、BR-02 在售上限、BR-03 发布待审核、BR-04 禁售与处置、BR-05 价格合法、BR-06 下单即成交、BR-07 平台不碰钱货、BR-09 下架权限、BR-10 封禁与联动、BR-11 搜索与收藏、BR-12 成交统计、BR-15 主动通知、BR-16 核验期限、BR-17 重提上限、BR-18 伪造处置、BR-19 认证与账号状态分离、BR-20 私信准入 \\
+\hline
+\textbf{期望型需求}（5 个用例 / 5 条规则） & 缺失仍可交易，但用户\textbf{明确期待} & UC-09 收藏商品、UC-14 评价交易、UC-15 查看信用分、UC-31 撤销成交、UC-32 编辑商品 & BR-08 评价规则、BR-13 信用分定义与阈值、BR-14 信用分变动、BR-21 成交撤销、BR-22 商品编辑与重审 \\
+\hline
+\textbf{兴奋型需求}（本期为空） & 用户未预期 & — & — \\
+\hline
+\end{longtable}
+}
+
+
+\textbf{几点说明（答辩会被问）}
+
+
+\begin{enumerate}[leftmargin=1.9em,itemsep=1pt,topsep=2pt]
+\item \textbf{为什么私信是「基本」而不是「期望」}：本版平台不展示、不转交任何手机号（BR-20、NFR-04），\textbf{私信是买卖双方唯一的沟通渠道}。缺了它，成交后无法约定取货，交易实际上走不完——所以是基本需求，不是锦上添花。
+\item \textbf{为什么举报处置是「基本」而不是「期望」}：审核（UC-06）只能拦住发布前的问题，\textbf{上架后的违规只能靠举报 + 处置}。缺了它，§4.3 禁售清单对已上架商品完全失效。
+\item \textbf{为什么撤销成交是「期望」而不是「基本」}：撤销缺失时交易仍能跑完（只是买家反悔时商品会锁死），所以按判据归期望型；但它\textbf{承担着"已售出可回退"这一风控职责}，实答应按基本需求的测试强度验收。
+\item \textbf{为什么本期没有兴奋型条目}：这是\textbf{有意取舍}，不是遗漏。团队把预算放在把基本与期望型做扎实（含 §4.3 禁售清单、私信、撤销回滚三块硬骨头），不再叠加惊喜功能。
+\item \textbf{最接近兴奋型的设计}是 \textbf{BR-21 的「审批处理」机制}——撤销后由对方判是否违约、7 天不表态默认计违约。用户不会预期到这种设计，但它把"取消"从自由行为变成有声誉成本的行为。该机制作为 BR-21 的一部分交付，不单列。
+\end{enumerate}
+
+
+
+\section*{3 功能需求}
+\addcontentsline{toc}{section}{3 功能需求}
+\markboth{3 功能需求}{3 功能需求}
+
+\subsection*{3.1 用例图}
+\addcontentsline{toc}{subsection}{3.1 用例图}
+\begin{figure}[htbp]
+\centering
+\fbox{\begin{minipage}[c][6.2cm][c]{0.86\linewidth}
+\centering
+{\large\color{gray} 图位待补}\\[4pt]
+{\small\color{gray}系统参与者（学生、管理员）与 UC-01～UC-34 的用例关系；含 include/extend 关系。}
+\end{minipage}}
+\caption*{图 3-1\quad 用例图}
+\label{fig:usecase}
+\end{figure}
+
+
+本版参与者与用例的文字说明（图重出前以此为准）：
+
+
+\begin{itemize}[leftmargin=1.6em,itemsep=1pt,topsep=2pt]
+\item \textbf{参与者}：学生、管理员两类。买家、卖家、举报人均为「学生」在不同用例中扮演的角色，\textbf{不单独绘制}。
+\item \textbf{学生侧用例}：UC-01 注册与登录、UC-02 提交核验、UC-05 发布商品、UC-07 搜索、UC-08 分类浏览、UC-09 收藏、UC-10 下单成交、UC-11 下架商品、UC-12 举报、UC-14 评价、UC-15 查看信用分、UC-16 我的订单、UC-17 我的商品、UC-18 消息通知、\textbf{UC-29 联系卖家与沟通、UC-30 我的私信}、\textbf{UC-31 撤销成交、UC-32 编辑商品、UC-33 查看个人主页、UC-34 找回密码}。
+\item \textbf{管理员侧用例}：UC-04 管理员登录、UC-03 审核学生证、UC-06 审核商品、UC-13 处理举报与处置、UC-18 消息通知、\textbf{UC-30 我的私信（仅限处置异议会话）}。
+\item \textbf{关系}：UC-04 是 UC-03 / UC-06 / UC-13 的\textbf{前置条件}，不用 \texttt{«include»}；「登录」不作为独立用例（UC-01 内含）。UC-29 与 UC-30 共享「会话」概念，但前者是\textbf{发起并沟通}（产生业务动作），后者是\textbf{查看与会话置已读}（基本只读），故拆成两个用例。
+\end{itemize}
+
+\subsection*{3.2 用例说明（UC-01 ～ UC-18）}
+\addcontentsline{toc}{subsection}{3.2 用例说明（UC-01 ～ UC-18）}
+
+\begin{quote}\small
+字段口径：参与者、目标、前置条件、触发条件、主事件流、辅事件流、后置条件、发生频率、关联。
+
+辅事件流中「A.」「B.」为\textbf{替代流程}，「异常 X.」为\textbf{异常流程}；凡写明「状态不变」者，均为 §7 中的\textbf{状态保持}，不得记为转换成功。
+
+\end{quote}
+
+\subsubsection*{UC-01 注册与登录}
+\addcontentsline{toc}{subsubsection}{UC-01 注册与登录}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生 \\
+\hline
+目标 & 建立平台账号并登录；登出后可再次登录 \\
+\hline
+前置条件 & 无（本人为本校在读学生，持有效学生证） \\
+\hline
+触发条件 & 学生点击「注册」或「登录」 \\
+\hline
+主事件流 & 1. 学生点击「注册」，填写\textbf{邮箱}、昵称、真实姓名、手机号（可选），设置登录密码\newline{}2. 点击「获取验证码」→ 系统校验邮箱未被占用且格式合法，向该邮箱\textbf{发送 6 位验证码（有效期 10 分钟，一次性）}\newline{}3. 学生填写收到的验证码，勾选《用户协议》与《隐私政策》后提交\newline{}4. 系统校验\textbf{验证码正确且未过期}、\textbf{邮箱未被占用}、密码符合强度要求，创建账号，\textbf{认证状态置「未提交」}，账号状态置「正常」，该验证码立即作废\newline{}5. 系统提示「请提交学生证核验并申报学号」，引导进入 UC-02\newline{}6. 学生登录：输入\textbf{邮箱与密码}，系统校验通过后建立会话，\textbf{按当前认证状态与账号状态授予对应权限} \\
+\hline
+辅事件流 & A. 密码错误 → 提示「邮箱或密码不正确」，\textbf{不回显密码}；连续失败按 NFR-05 处理（连续 5 次锁定 15 分钟）\newline{}B. \textbf{邮箱已被注册} → 提示「该邮箱已注册」，引导找回密码（UC-34），\textbf{不创建第二个账号}\newline{}C. 邮箱格式非法 → 就地提示，\textbf{不下发验证码、不创建账号}\newline{}D. 未填写真实姓名 → 就地提示（核验时需要与证件比对），\textbf{不创建账号}\newline{}E. 账号已封禁 → 拒绝登录并说明「账号不可用」；账号受限 → 允许登录但提示受限原因\newline{}F. 未认证学生登录成功 → 允许登录与浏览，发布与下单在操作时被拦截（见 UC-05 辅事件流 C、UC-10 辅事件流 B）\newline{}G. \textbf{验证码错误或已过期} → 提示「验证码错误或已失效，请重新获取」，\textbf{不创建账号}；累计错误 \textbf{5 次}则该验证码作废\newline{}H. \textbf{验证码请求过于频繁} → 同一邮箱 \textbf{60 秒内}只允许请求 1 次、\textbf{24 小时内最多 10 次}，超出时提示需等待，\textbf{不下发新验证码}（NFR-10）\newline{}I. \textbf{邮件发送失败} → 提示「验证码发送失败，请稍后重试或更换邮箱」，\textbf{不创建账号}\newline{}J. 注册过程中邮箱被他人抢先注册 → 提交时提示「该邮箱已注册」，\textbf{不创建账号}，引导 UC-34 \\
+\hline
+后置条件 & 账号已创建或会话已建立；认证状态不变 \\
+\hline
+发生频率 & 注册约 40 次/天；登录约 800 次/天 \\
+\hline
+关联 & BR-01、BR-16、BR-17、BR-19；NFR-05、NFR-08、\textbf{NFR-10}；UC-02、\textbf{UC-34}；AT-01 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-02 提交学生证核验申请}
+\addcontentsline{toc}{subsubsection}{UC-02 提交学生证核验申请}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 主要：学生；次要：管理员（接收申请） \\
+\hline
+目标 & 上传学生证，向平台申请取得发布与交易资格 \\
+\hline
+前置条件 & 已注册并登录；认证状态为「未提交」或「已驳回」；核验重提次数未达上限（BR-17） \\
+\hline
+触发条件 & 学生点击「去核验」或「重新提交」，或注册成功后的系统引导 \\
+\hline
+主事件流 & 1. 系统展示核验须知（需上传含姓名、学号、本人照片的证件页），并要求学生\textbf{申报本人学号}\newline{}2. 学生\textbf{填写申报学号}，选择图片并上传\newline{}3. 系统校验\textbf{申报学号格式与是否已被其他已认证账号占用}、图片格式与大小，展示预览，学生确认\newline{}4. 提交 → 系统生成一条「待审核」认证申请（记录申报学号），\textbf{认证状态转为「待审核」}\newline{}5. 系统通知管理员有新申请待审，并提示学生审核时限（BR-16：24 小时） \\
+\hline
+辅事件流 & A. 图片格式不支持或超过大小上限 → 就地提示重新上传，\textbf{不生成申请，认证状态不变}\newline{}B. 上传内容明显不是学生证 → 前端提示可能被驳回，学生可撤回重传，\textbf{不生成申请}\newline{}C. \textbf{申报学号已被其他「已认证」账号绑定} → 拒绝提交，提示「该学号已被其他账号认证占用，如属冒用请举报」，\textbf{不生成申请}（一学号一账号）\newline{}D. 申报学号格式非法或为空 → 就地提示，\textbf{不生成申请}\newline{}E. 认证状态已是「待审核」→ 不允许重复提交，提示「核验审核中，请等待」，\textbf{不生成第二条申请}\newline{}F. 认证状态已是「已认证」→ 不展示核验入口，\textbf{不生成申请}\newline{}G. 重提次数已达上限 3 次 → 不允许再提交，提示联系管理员，\textbf{不生成申请}\newline{}H. 上传过程中断或提交失败 → 认证状态保持原状态，\textbf{不产生半条申请} \\
+\hline
+后置条件 & 生成一条「待审核」认证申请；认证状态为「待审核」；申请内容仅审核职责内的管理员可见 \\
+\hline
+发生频率 & 约 45 次/天（注册量 + 重提） \\
+\hline
+关联 & BR-16、BR-17、BR-19；NFR-08；UC-01、UC-03；AT-02、AT-05 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{UC-03 审核学生证}
+\addcontentsline{toc}{subsubsection}{UC-03 审核学生证}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 管理员 \\
+\hline
+目标 & 核对上传的学生证与账号所填学号是否属于同一人，给出通过或驳回结论 \\
+\hline
+前置条件 & 管理员已登录（UC-04）；存在「待审核」的认证申请 \\
+\hline
+触发条件 & 管理员进入后台「学生证审核」队列，或收到新申请提醒 \\
+\hline
+主事件流 & 1. 系统按提交时间展示待审核认证申请队列（\textbf{申报学号}、昵称、\textbf{真实姓名}、提交时间、重提次数）\newline{}2. 管理员查看学生证图片与账号所填\textbf{真实姓名、申报学号}、昵称\newline{}3. 管理员核对：\textbf{证件姓名 ↔ 账号所填真实姓名}、\textbf{证件学号 ↔ 本次申报学号}是否一致，图片是否清晰可辨\newline{}4. 一致且清晰 → 选择「通过」→ \textbf{认证状态转为「已认证」}，\textbf{把申报学号写入学生实体并锁定唯一}，记录审核人与审核时间，通知学生\newline{}5. 不一致、模糊或信息不全 → 选择「驳回」并\textbf{填写驳回原因} → \textbf{认证状态转为「已驳回」}，重提次数 +1，通知学生（含原因） \\
+\hline
+辅事件流 & A. 队列积压超过 BR-16 规定的 24 小时审核时限 → 系统持续提醒管理员，申请保持「待审核」，并计入审核超时统计\newline{}B. 图片疑似伪造、拼接或冒用他人证件 → 选择「驳回」并标记异常，按 BR-18 处置，可转 UC-13 追加处置\newline{}C. 同一学号有多条历史申请 → 仅最新一条为有效申请，历史申请只读留档，不重复审核\newline{}D. 管理员误判通过 → 事后核实后可将认证状态改回「已驳回」并留痕（AT-08），同时按 BR-18 处置\newline{}E. 申请对应的账号已被封禁 → 仍可审核，但结论不改变账号状态（BR-19：认证状态与账号状态分开） \\
+\hline
+后置条件 & 认证申请状态为「已通过」或「已驳回」；学生认证状态相应变为「已认证」或「已驳回」；审核记录留档 \\
+\hline
+发生频率 & 约 45 次/天（与申请量一致） \\
+\hline
+关联 & BR-16、BR-17、BR-18、BR-19；NFR-08；UC-02、UC-13；AT-03、AT-04、AT-08 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{UC-04 管理员登录}
+\addcontentsline{toc}{subsubsection}{UC-04 管理员登录}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 管理员 \\
+\hline
+目标 & 以管理员身份进入后台，执行审核与处置 \\
+\hline
+前置条件 & 管理员账号已由系统预置（\textbf{不开放注册，不由学生账号升级}） \\
+\hline
+触发条件 & 管理员访问后台入口并提交账号与密码 \\
+\hline
+主事件流 & 1. 管理员在后台登录页输入管理员账号与密码\newline{}2. 系统校验凭据，通过后建立\textbf{管理员会话}\newline{}3. 系统按管理员角色授予后台权限：商品审核、学生证审核、举报与违规处置、扣信用分、删除他人评价\newline{}4. 首登或重置后强制修改初始密码 \\
+\hline
+辅事件流 & A. 账号或密码错误 → 提示「账号或密码不正确」，不回显密码；连续失败 5 次锁定 15 分钟（NFR-05）\newline{}B. 使用学生账号登录后台 → 拒绝，提示「仅管理员可登录后台」，\textbf{不授予任何后台权限}\newline{}C. 管理员尝试发布商品、下单、评价、举报 → 一律拒绝（§5.2），\textbf{不因管理员身份获得学生权限}\newline{}D. 管理员同时拥有学生账号 → 两个账号相互独立，须分别登录；\textbf{不得以管理员会话执行学生操作} \\
+\hline
+后置条件 & 建立管理员会话；本次操作有效角色为「管理员」；会话与操作进入审计 \\
+\hline
+发生频率 & 约 20 次/天（后台值守） \\
+\hline
+关联 & NFR-05；§5.2 权限矩阵；UC-03、UC-06、UC-13；BR-19 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{UC-05 发布商品}
+\addcontentsline{toc}{subsubsection}{UC-05 发布商品}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生（卖家） \\
+\hline
+目标 & 卖家把要卖的物品发布到平台，审核通过后对外展示 \\
+\hline
+前置条件 & 已登录、\textbf{已认证}；账号状态为「正常」或「受限但未触发阈值」；在售商品未达上限（BR-02） \\
+\hline
+触发条件 & 卖家在「我要卖」页点击「发布」 \\
+\hline
+主事件流 & 1. 填写标题、分类、价格、成色、描述\newline{}2. 上传物品图片（\textbf{1～9 张，至少 1 张}）\newline{}3. 提交\newline{}4. 系统校验必填项与价格合法性，生成一条\textbf{「待审核」}商品，提示「等待管理员审核」 \\
+\hline
+辅事件流 & A. 必填项缺失 → 就地提示，\textbf{不生成商品}，页面保持编辑中\newline{}B. 价格非法（非数值、≤0 或超过 50000 元）→ 提示合法区间，\textbf{不生成商品}（BR-05）\newline{}C. 未认证 → 提示「请先完成学生证核验」（UC-02），\textbf{不生成商品}\newline{}D. 在售商品已达 5 件 → 提示先售出或下架，\textbf{不生成商品}（BR-02）\newline{}E. \textbf{未上传任何图片}，或图片格式/大小不符，或含水印联系方式 → 提示重新上传，\textbf{不生成商品}（图片为必填，至少 1 张）\newline{}F. 信用分低于 60 → 提示「信用分不足，暂不可发布新商品」，\textbf{不生成商品}（BR-13） \\
+\hline
+后置条件 & 生成一条「待审核」商品；此时不对外展示 \\
+\hline
+发生频率 & 约 60 次/天，开学季 200 次/天 \\
+\hline
+关联 & BR-01、BR-02、BR-03、BR-05、BR-13；ST-01；UC-06、UC-17；AT-01 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{UC-06 审核商品}
+\addcontentsline{toc}{subsubsection}{UC-06 审核商品}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 管理员 \\
+\hline
+目标 & 在商品上架前把住准入关，拦住违规与信息不完整的商品 \\
+\hline
+前置条件 & 管理员已登录；存在「待审核」商品 \\
+\hline
+触发条件 & 管理员进入审核队列，或收到新发布提醒 \\
+\hline
+主事件流 & 1. 系统按提交时间展示待审核商品队列\newline{}2. 管理员查看商品信息与图片，\textbf{逐项比对 §4.3 禁售品类清单（A1–E2，共 18 类）}\newline{}3. 管理员选择「通过」或「不通过」\newline{}4. 通过 → \textbf{商品变为「在售」}并对外展示，通知卖家\newline{}5. 不通过 → \textbf{商品变为「已下架」，下架原因记为「审核不通过」}，填写原因\textbf{并引用清单类目编号}（如「A1 管制刀具」），通知卖家 \\
+\hline
+辅事件流 & A. 商品命中清单任一类别 → 商品「已下架（审核不通过）」，驳回原因\textbf{必须引用类目编号}，卖家可删除违规内容后重新提交（ST-08）\newline{}B. 队列积压超过 24 小时 → 系统提醒管理员，队列按等待时长排序，\textbf{商品保持「待审核」}\newline{}C. 管理员误判 → 卖家可联系管理员复核，复核通过按 ST-09 恢复为「在售」\newline{}D. 卖家在待审核期间撤回 → 商品转为「已下架（卖家撤回）」，从队列移除（ST-04）\newline{}E. 同一卖家连续多条待审 → 按发布顺序依次处理，不合并\newline{}F. \textbf{商品疑似违规但无法归入清单任何类目} → 管理员可驳回并标注「清单外待裁定」，同时提交组长复核（§4.3.2 第 5 条）；\textbf{不得长期以「其他违规」为名拒绝} \\
+\hline
+后置条件 & 商品状态为「在售」或「已下架」（下架原因为「审核不通过」）；卖家收到结果通知 \\
+\hline
+发生频率 & 约 60 次/天（与发布量一致） \\
+\hline
+关联 & BR-03、BR-04、\textbf{§4.3 禁售品类清单}；ST-02、ST-03、ST-08；UC-05、UC-17 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-07 搜索商品}
+\addcontentsline{toc}{subsubsection}{UC-07 搜索商品}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生 \\
+\hline
+目标 & 快速找到想买的商品 \\
+\hline
+前置条件 & 无（未登录可浏览；下单才需要登录与认证） \\
+\hline
+触发条件 & 在首页搜索框输入关键词，或提交筛选条件 \\
+\hline
+主事件流 & 1. 输入关键词，或选择筛选条件（分类、价格区间、成色、排序）\newline{}2. 系统检索处于\textbf{「在售」}的商品\newline{}3. 返回结果列表（图片、标题、价格、成色、发布时间）\newline{}4. 学生点击进入商品详情页 \\
+\hline
+辅事件流 & A. 无匹配结果 → 提示「没有找到相关商品」，建议放宽筛选，列表为空\newline{}B. 关键词为空 → 提示先输入关键词，\textbf{不发起检索}\newline{}C. 结果中混入已售出或已下架商品 → 不展示\newline{}D. 停留期间该商品被他人下单成交 → 详情页提示「该商品已售出」，购买按钮置灰，\textbf{交易状态以服务端为准}\newline{}E. 关键词为敏感词或违规内容 → 按 BR-04 过滤并提示，\textbf{不发起检索}\newline{}F. 商品状态异常（状态字段取值不在 §7 集合内）→ 不展示，记录异常日志 \\
+\hline
+后置条件 & 无（只读操作） \\
+\hline
+发生频率 & 约 3000 次/天 \\
+\hline
+关联 & BR-11；NFR-01；UC-08、UC-10 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{UC-08 按分类浏览商品}
+\addcontentsline{toc}{subsubsection}{UC-08 按分类浏览商品}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生 \\
+\hline
+目标 & 按分类浏览，发现想买的商品 \\
+\hline
+前置条件 & 无（未登录可浏览） \\
+\hline
+触发条件 & 在首页点击分类入口 \\
+\hline
+主事件流 & 1. 系统展示\textbf{单层}分类列表（教材书籍、电子数码、生活用品、代步工具等）\newline{}2. 学生选择分类\newline{}3. 系统列出该分类下\textbf{「在售」}商品\newline{}4. 可切换排序方式 \\
+\hline
+辅事件流 & A. 该分类下无商品 → 展示「该分类暂无商品」\newline{}B. 分类入口被停用或合并 → 该入口不再展示\newline{}C. 分类与商品不符 → 学生可举报该商品（UC-12） \\
+\hline
+后置条件 & 无（只读操作） \\
+\hline
+发生频率 & 约 1500 次/天 \\
+\hline
+关联 & BR-11；NFR-01；UC-07、UC-12 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-09 收藏商品}
+\addcontentsline{toc}{subsubsection}{UC-09 收藏商品}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生 \\
+\hline
+目标 & 把感兴趣的商品存起来，之后再决定是否购买 \\
+\hline
+前置条件 & 已登录（未认证亦可收藏） \\
+\hline
+触发条件 & 在商品详情页或列表页点击「收藏」 \\
+\hline
+主事件流 & 1. 点击「收藏」\newline{}2. 系统把商品加入个人收藏夹并提示「已收藏」\newline{}3. 学生可在「我的收藏」查看、取消收藏、进入商品详情 \\
+\hline
+辅事件流 & A. 重复收藏 → 提示「已收藏」，\textbf{不重复记录}\newline{}B. 收藏后商品被售出或下架 → 收藏列表标记「已失效」，不可下单，\textbf{商品状态以实际状态为准}\newline{}C. 未登录点击收藏 → 引导登录，\textbf{不生成收藏记录}\newline{}D. 收藏数量达到上限（建议值，待确认：100 件）→ 提示先清理，\textbf{不新增收藏} \\
+\hline
+后置条件 & 收藏关系已记录 \\
+\hline
+发生频率 & 约 200 次/天 \\
+\hline
+关联 & BR-11；UC-07、UC-10 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{UC-10 下单成交}
+\addcontentsline{toc}{subsubsection}{UC-10 下单成交}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生（买家） \\
+\hline
+目标 & 买家锁定并买下商品，本次交易即刻完成，双方线下自行取货 \\
+\hline
+前置条件 & 已登录、\textbf{已认证}；商品处于\textbf{「在售」}；不是自己发布的；信用分不低于 40（BR-13） \\
+\hline
+触发条件 & 买家在商品详情页点击「立即购买」 \\
+\hline
+主事件流 & 1. 点击「立即购买」\newline{}2. 系统以\textbf{服务端最新状态}检查商品状态与买家资格\newline{}3. 展示确认信息（商品、卖家昵称、成交金额＝商品当前标价），提示「下单即成交，成交后请在站内私信中与卖家约定取货」\newline{}4. 买家确认\newline{}5. 系统\textbf{在同一业务动作中}：创建一条成交记录（订单）、\textbf{商品「在售」→「已售出」}\newline{}6. 系统通知买卖双方成交结果，并\textbf{引导双方进入该商品的站内私信会话}继续沟通取货（UC-29）；\textbf{平台不展示、不转交对方的手机号与宿舍地址}（BR-20） \\
+\hline
+辅事件流 & A. 商品已被他人抢先成交 → 提示「该商品已售出」，返回列表，\textbf{不生成订单}，商品保持「已售出」\newline{}B. 买家未认证 → 提示「请先完成学生证核验」，\textbf{不生成订单}\newline{}C. 买家是自己 → 提示「不能购买自己发布的商品」，\textbf{不生成订单}，商品保持「在售」\newline{}D. 买家信用分低于 40 → 提示「信用分不足，暂不可下单」，\textbf{不生成订单}\newline{}E. 商品状态非「在售」（待审核 / 已售出 / 已下架）→ 提示「该商品不可购买」并刷新状态，\textbf{不生成订单}\newline{}F. 重复提交同一购买请求 → \textbf{仅第一次有效}，其余返回同一订单结果，\textbf{不重复成交}\newline{}G. 成交记录写入成功但商品状态更新失败（或反之）→ \textbf{整体回滚}，两者均保持操作前状态，提示重试 \\
+\hline
+后置条件 & 生成一条\textbf{「已完成」}成交记录；商品状态为「已售出」；双方收到成交通知 \\
+\hline
+发生频率 & 约 50 次/天，开学季翻倍 \\
+\hline
+关联 & BR-01、BR-06、BR-07、BR-13、BR-20；ST-05；UC-07、UC-14、UC-16、UC-29、UC-31 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-11 下架或删除自己的商品}
+\addcontentsline{toc}{subsubsection}{UC-11 下架或删除自己的商品}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生（卖家） \\
+\hline
+目标 & 卖家把自己发布的商品撤下来（不再对外展示），或把已下架的商品永久删除 \\
+\hline
+前置条件 & 已登录、已认证；商品是本人发布的；下架要求商品处于「在售」，删除要求商品处于「已下架」 \\
+\hline
+触发条件 & 卖家在「我的商品」点击「下架」或「删除」 \\
+\hline
+主事件流 & 1. 卖家点击「下架」或「删除」，系统按操作与商品状态校验\newline{}2. \textbf{下架}：商品「在售」→「已下架」，下架原因记为「卖家主动下架」（ST-06），从搜索与分类列表移除\newline{}3. \textbf{删除}：商品「已下架」→ 写入 \texttt{删除时间}（BR-09），\textbf{从「我的商品」与所有列表永久移除，不可恢复}\newline{}4. 系统提示卖家，下架时通知已收藏该商品的买家 \\
+\hline
+辅事件流 & A. 商品已售出 → 提示「该商品已售出，不可下架或删除」，\textbf{商品保持「已售出」}\newline{}B. 商品已被管理员下架（违规处置）→ 提示「该商品已被管理员下架」，卖家不能再操作，\textbf{商品保持「已下架」}\newline{}C. 非本人商品 → 拒绝操作，\textbf{商品状态不变}\newline{}D. 商品处于「待审核」→ \textbf{只能撤回（ST-04），不能下架或删除}\newline{}E. \textbf{对「在售」商品点「删除」} → 拒绝，提示「请先下架再删除」，\textbf{商品保持「在售」}\newline{}F. \textbf{对「待审核」或「已售出」商品点「删除」} → 拒绝，理由同上（不可删除）\newline{}G. 删除成功后再次访问该商品链接 → 提示「该商品已不存在」，\textbf{不得泄露其历史信息}\newline{}H. 删除时该商品仍被他人收藏 → 删除照常执行，收藏记录保留并在收藏列表标记「已失效」 \\
+\hline
+后置条件 & 下架后商品状态为「已下架」（下架原因＝卖家主动下架）；删除后 \texttt{删除时间} 非空、商品从所有列表消失 \\
+\hline
+发生频率 & 下架约 15 次/天；删除约 3 次/天 \\
+\hline
+关联 & BR-09、BR-22；ST-06；UC-17 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{UC-12 举报违规商品或学生}
+\addcontentsline{toc}{subsubsection}{UC-12 举报违规商品或学生}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生 \\
+\hline
+目标 & 把违规的商品、或交易对手的不当行为上报给管理员 \\
+\hline
+前置条件 & 已登录、\textbf{已认证} \\
+\hline
+触发条件 & 在\textbf{商品详情页}点击「举报」（举报商品），或在\textbf{成交详情页／私信会话页}点击「举报该用户」（举报学生） \\
+\hline
+主事件流 & 1. 系统按入口确定 \texttt{被举报对象类型}：商品详情页 → \texttt{商品}；成交／私信页 → \texttt{学生}\newline{}2. 选择举报类型 —— 对象为 \texttt{商品} 时可选（违禁品 / 虚假描述 / 价格欺诈 / \textbf{站外导流} / 其他）；对象为 \texttt{学生} 时可选（\textbf{收款不履约} / 其他）\newline{}3. 填写说明，可选上传证据（截图、图片或私信记录）\newline{}4. 提交\newline{}5. 系统生成一条「待处理」举报，并提示处理时限（建议值，待确认：24 小时） \\
+\hline
+辅事件流 & A. 重复举报\textbf{同一对象} → 提示「你已举报过」（组合唯一），\textbf{不新增举报记录}\newline{}B. 举报自己发布的商品 → 提示「不能举报自己的商品」，\textbf{不新增举报记录}\newline{}C. \textbf{举报对象为学生时，与本人无任何成交记录且无私信会话} → 拒绝，提示「只能举报与你发生过交易或沟通的用户」，\textbf{不新增举报记录}（防止无凭据举报陌生人，BR-04）\newline{}D. 被举报商品已被下架或已售出 → 仍可提交，作为记录留档\newline{}E. 举报证据无法辨认 → 提示补充材料，否则可能影响判定\newline{}F. 举报自己 → 提示「不能举报自己」，\textbf{不新增举报记录}\newline{}G. 举报类型与对象不匹配（如对商品选「收款不履约」）→ 就地提示改选，\textbf{不新增举报记录}（§6.2.1 约束 2） \\
+\hline
+后置条件 & 生成一条待处理举报；举报人可在「我的举报」查看进度 \\
+\hline
+发生频率 & 约 8 次/天（其中对学生的举报预计占少数） \\
+\hline
+关联 & BR-04、BR-14；UC-13；ST-07、ST-13 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+\textbf{为什么举报对象要扩展到「学生」}：收款不履约、失联、私下交易后反悔——这些是\textbf{人的行为}，不是商品的属性，用"举报商品"表达不了。若只能举报商品，买家在成交后被卖家跑路时\textbf{没有任何可用入口}，BR-21 里「提交交易争议由管理员核实」就成了一句空话。扩展后，「交易争议」这一救济路径才真正落地。
+
+\end{quote}
+
+
+\begin{quote}\small
+\textbf{「违禁品」举报类型与审核清单的关系}：举报类型中的「违禁品」直接对应 \textbf{§4.3 禁售品类清单（A1–E2）}——举报人选「违禁品」后，管理员须按清单核实并判定具体类目编号，不得只写「违规」。清单以外的违规（虚假描述、价格欺诈、站外导流）走各自类型。
+
+\end{quote}
+
+\begin{quote}\small
+\textbf{关联缺口说明}：BR-14 是信用分变动规则，本条举报本身不扣分；扣分只在 UC-13 处置成立并显式执行时发生（BR-14 ②）。此关联仅用于说明"举报成立可触发卖家信用分变动"这一链路。
+
+\end{quote}
+
+\subsubsection*{UC-13 处理举报与违规处置}
+\addcontentsline{toc}{subsubsection}{UC-13 处理举报与违规处置}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 管理员 \\
+\hline
+目标 & 对举报以及巡查中发现的违规商品或违规学生作出处置，维持平台秩序 \\
+\hline
+前置条件 & 管理员已登录；存在待处理举报（对象为商品或学生），或管理员在巡查中发现违规商品 \\
+\hline
+触发条件 & 管理员进入举报队列，或日常巡查中发现违规 \\
+\hline
+主事件流 & 1. 系统展示待处理举报队列（按时间与严重程度排序，\textbf{标明对象类型}）\newline{}2. 管理员查看举报内容、证据、涉事对象（商品或学生）与双方记录、私信记录\newline{}3. 管理员作出判定 —— \textbf{成立 / 不成立}\newline{}4. \textbf{成立} → 按对象类型选择处置手段：\newline{}　4a. \textbf{对象为商品} → 警告、强制下架商品、限制发布、封禁账号、扣信用分\newline{}　4b. \textbf{对象为学生} → 警告、限制发布、封禁账号、扣信用分（\textbf{不含「强制下架商品」}，因为对象不是商品）。\textbf{若举报类型为 \texttt{收款不履约} 且核实成立，应同时封禁，并按 BR-10／ST-13 下架该卖家名下全部「在售」与「待审核」商品}\newline{}　4c. \textbf{选择「封禁账号」时}，无论对象类型，系统须在同一处置动作中按 ST-13 把该卖家名下全部「在售」与「待审核」商品转为「已下架」（下架原因＝\texttt{管理员违规下架}），\textbf{不得只封禁不下架}（BR-10）\newline{}5. \textbf{不成立} → 标记「已驳回」\newline{}6. 系统执行处置，通知举报人与被处置方\newline{}7. 举报记录状态置为「已处理」，处置结果留档 \\
+\hline
+辅事件流 & A. 举报不成立 → 标记「已驳回」并通知举报人，\textbf{商品状态保持原状}\newline{}B. 无人举报但管理员巡查发现违规 → 直接选择处置手段并记录原因，\textbf{下架执行角色记为管理员}（ST-07）\newline{}C. 被下架的卖家\textbf{在该商品的站内私信中}向管理员提出异议（BR-20：管理员仅可回复此类异议私信，不得主动发起）→ 管理员复核原处置依据，\textbf{复核不成立则维持「已下架」，复核通过则按 ST-09 恢复「在售」}；本期不设独立申诉流程与申诉状态（§2.2.2）\newline{}D. 同一商品被多次举报 → 合并到同一条处理记录，避免重复处置\newline{}E. 举报超过建议时限（24 小时）未处理 → 系统持续提醒管理员\newline{}F. 举报成立且商品\textbf{已被售出} → 仅\textbf{记录处置结论}、扣信用分、封禁账号；\textbf{商品状态保持「已售出」不变}——BR-09 禁止对已售出商品执行下架\newline{}G. \textbf{对象为学生且举报类型为 \texttt{收款不履约}，核实成立} → 记一条「经核实的交易争议」：卖家信用分 −10（按 BR-14 ② 的违规处置口径）、\textbf{应封禁账号}，并按 ST-13 下架其在售与待审商品；若该卖家此前已封禁，只补记争议与扣分，不重复封禁\newline{}H. \textbf{对象为学生的举报不成立} → 标记「已驳回」并通知举报人，\textbf{不产生任何处置记录、不扣分、不公开}；同时提示恶意举报可能被反向处置\newline{}I. \textbf{同一学生的多条举报} → 若均针对同一卖家且类型相同，合并到同一条处理记录，避免重复扣分（BR-14），ST-07 的入口状态也只有「在售」。已成交订单不因事后处置而回滚 \\
+\hline
+后置条件 & 举报状态为「已处理」或「已驳回」；\textbf{对象为商品时}被处置商品为「已下架」（下架原因＝\texttt{管理员违规下架}）；\textbf{对象为学生且成立时}该学生 \texttt{被核实争议数} +1、按 BR-14 扣分、按需封禁并联动下架其在售商品；记录留档 \\
+\hline
+发生频率 & 约 8 次/天（与举报量一致） \\
+\hline
+关联 & BR-04、BR-09、BR-10、BR-14；ST-07、ST-09；UC-06、UC-10、UC-12、UC-15 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-14 评价交易}
+\addcontentsline{toc}{subsubsection}{UC-14 评价交易}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生（买家、卖家，双方互评） \\
+\hline
+目标 & 交易双方对本次交易作出评价，作为平台信任依据 \\
+\hline
+前置条件 & 存在该商品的有效成交记录；评价人已认证；本人为该笔成交的买方或卖方；本人尚未评价过该订单 \\
+\hline
+触发条件 & 成交后页面提示「去评价」，或从「我的订单」进入 \\
+\hline
+主事件流 & 1. 系统展示评价页（\textbf{仅文字评价}，不设星级评分）\newline{}2. 学生填写评价内容\newline{}3. 提交后系统记录评价，评价人不可修改\newline{}4. 双方均提交后，在对方主页与商品页展示 \\
+\hline
+辅事件流 & A. 一方评价、另一方未评价 → 成交后 \textbf{7 天}内未评价方失去评价资格，已提交的评价照常展示\newline{}B. 评价含辱骂、联系方式、广告 → 系统按 BR-04 过滤，或转管理员删除\newline{}C. 同一订单重复评价 → 不允许，提示「该订单已评价」，\textbf{不新增评价}\newline{}D. 评价人是自己在评价自己 → 拒绝，\textbf{不新增评价}\newline{}E. 超过 7 天再提交 → 提示「评价期限已过」，\textbf{不新增评价}；该情形触发 BR-14 的 -1 分 \\
+\hline
+后置条件 & 评价记录已生成；按 BR-14 触发信用分变更 \\
+\hline
+发生频率 & 约 60 次/天 \\
+\hline
+关联 & BR-08、BR-14；UC-10、UC-15、UC-16 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-15 查看信用分}
+\addcontentsline{toc}{subsubsection}{UC-15 查看信用分}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生 \\
+\hline
+目标 & 学生查看自己的信用分与变更记录 \\
+\hline
+前置条件 & 已登录 \\
+\hline
+触发条件 & 在「我的」页点击「信用分」，或在他人主页查看对方信用分 \\
+\hline
+主事件流 & 1. 学生进入信用分页\newline{}2. 系统展示当前信用分与近期变更明细（加分 / 扣分原因、时间、关联订单号）\newline{}3. 学生可查看评分规则说明 \\
+\hline
+辅事件流 & A. 新用户无信用记录 → 展示初始分 100 并说明「完成首笔交易并提交评价后开始累积」\newline{}B. 对扣分有异议 → 学生可在站内消息中向管理员提出，核实后可修正（本期不设独立申诉流程）\newline{}C. 查看他人信用分 → \textbf{只展示分数}，不展示评分等级、变动明细与具体交易与评价记录（NFR-04）\newline{}D. 信用分低于阈值 → 提示受限：低于 60 不能发布新商品，低于 40 不能下单；已发布的在售商品与已有成交记录不受影响 \\
+\hline
+后置条件 & 无（只读操作，无状态变化） \\
+\hline
+发生频率 & 约 150 次/天 \\
+\hline
+关联 & BR-13、BR-14、BR-10；NFR-04；UC-14、UC-16 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-16 查看我的订单}
+\addcontentsline{toc}{subsubsection}{UC-16 查看我的订单}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生（买家 / 卖家） \\
+\hline
+目标 & 查看自己作为买家或卖家的成交记录，并进入评价或撤销成交 \\
+\hline
+前置条件 & 已登录 \\
+\hline
+触发条件 & 在「我的」页点击「我的订单」 \\
+\hline
+主事件流 & 1. 成交记录列表按成交时间倒序展示（商品、成交金额、成交时间、对方昵称、\textbf{成交状态}、\textbf{退货/撤销审批}）\newline{}2. 可切换「我买到的」与「我卖出的」\newline{}3. 点击进入订单详情\newline{}4. 从详情进入「评价」（UC-14）；记录为「有效」且双方均未评价时，另提供「撤销成交」入口（UC-31，需双方同意或管理员审批） \\
+\hline
+辅事件流 & A. 没有任何成交记录 → 空态提示并引导去浏览商品\newline{}B. 未认证用户 → 可查看，但不会有自己的成交记录\newline{}C. 关联商品已被下架 → 成交记录仍可正常查看，详情页标注商品当前状态\newline{}D. 成交记录超过保留期（建议值，待确认：3 年）→ 归档为「历史订单」，仍可查看\newline{}E. 成交记录为「已撤销」→ 只读展示撤销原因、撤销方与时间；\textbf{不提供评价入口、不显示「撤销成交」}\newline{}F. \textbf{本人是被撤销方且 \texttt{退货/撤销审批} 为「待判定」} → 详情页展示「对方已撤销这笔成交，剩余 X 天可判免责或计违约」并提供\textbf{「同意免责」/「计违约」}两个操作；7 天后该入口消失并显示判定结果\newline{}G. 本人是撤销方且 \texttt{退货/撤销审批} 为「待判定」→ 展示「等待对方判定（剩余 X 天），7 天后未处理将默认计你违约」 \\
+\hline
+后置条件 & 无（只读操作） \\
+\hline
+发生频率 & 约 400 次/天 \\
+\hline
+关联 & UC-10、UC-14、UC-31 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-17 查看我的商品}
+\addcontentsline{toc}{subsubsection}{UC-17 查看我的商品}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生（卖家） \\
+\hline
+目标 & 查看自己发布的商品及其状态与下架原因，并进入管理操作 \\
+\hline
+前置条件 & 已登录 \\
+\hline
+触发条件 & 在「我的」页点击「我的商品」 \\
+\hline
+主事件流 & 1. 商品列表按 \textbf{4 个状态}分组展示（待审核 / 在售 / 已售出 / 已下架），每条显示下架原因（若有）\newline{}2. 查看商品状态与浏览、收藏数\newline{}3. 点击进入商品详情\newline{}4. 从详情进入后续操作：\textbf{编辑（UC-32，待审核与在售时）}、下架（UC-11）、撤回（待审核时）、修改后重新提交（已下架时） \\
+\hline
+辅事件流 & A. 没有发布过商品 → 空态引导去发布（UC-05）\newline{}B. 商品「已下架（审核不通过）」→ 展示驳回原因；进入编辑页按 UC-05 重新提交（沿用原商品编号，不算新发布，须重审，ST-08）\newline{}C. 商品「已售出」→ 只读，不能下架\newline{}D. 商品「已下架（管理员违规下架）」→ 展示处置原因；卖家可站内联系管理员复核（UC-13 辅事件流 C）\newline{}E. 商品「待审核」→ 只能撤回（ST-04），不能下架 \\
+\hline
+后置条件 & 无（只读操作；后续动作归入 UC-05 / UC-11 / UC-13） \\
+\hline
+发生频率 & 约 200 次/天 \\
+\hline
+关联 & UC-05、UC-11、UC-13 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{UC-18 查看消息通知}
+\addcontentsline{toc}{subsubsection}{UC-18 查看消息通知}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生、管理员 \\
+\hline
+目标 & 查看系统推送的通知，并跳到对应内容 \\
+\hline
+前置条件 & 已登录 \\
+\hline
+触发条件 & 点击「消息」入口，或点击消息红点 \\
+\hline
+主事件流 & 1. 系统按时间倒序展示消息列表（含未读标记）\newline{}2. 用户点击一条消息\newline{}3. 系统把该消息置为「已读」，并跳转到对应商品 / 举报 / 核验申请详情 \\
+\hline
+辅事件流 & A. 没有消息 → 空态提示\newline{}B. 消息指向的内容已不可用 → 提示「该内容已不可用」，消息保留\newline{}C. 未读数清零 → 红点消失\newline{}D. 消息超过保留天数（建议值，待确认：90 天）→ 分页加载并提示，仅保留最近记录\newline{}E. 未登录点击消息入口 → 引导登录 \\
+\hline
+后置条件 & 消息已读状态已更新 \\
+\hline
+发生频率 & 约 600 次/天 \\
+\hline
+关联 & BR-15；\textbf{NFR-09}；UC-29 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-29 联系卖家与沟通}
+\addcontentsline{toc}{subsubsection}{UC-29 联系卖家与沟通}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 主要：学生（买家 / 咨询方）；次要：学生（商品发布人） \\
+\hline
+目标 & 就一件具体商品与发布人建立站内对话，协商取货时间与地点 \\
+\hline
+前置条件 & 已登录、\textbf{已认证}；目标商品为「在售」，或为「已售出」且\textbf{本人是该商品的成交买家}；本人不是该商品的发布人 \\
+\hline
+触发条件 & 在商品详情页或成交页点击「联系卖家」 \\
+\hline
+主事件流 & 1. 学生点击「联系卖家」，系统按服务端最新状态检查认证状态、商品状态与本人身份\newline{}2. 系统打开与该商品发布人的会话；首次进入时创建会话，并把商品的标题、价格、当前状态作为会话上下文固定展示\newline{}3. 学生填写消息内容（建议值，待确认：1～500 字纯文本）\newline{}4. 提交，系统记录该条消息，并把该会话对接收方置为「有未读」\newline{}5. 系统向接收方发送一条站内通知（BR-15 事件：收到新私信，消息类型＝私信，带会话入口）\newline{}6. 双方在会话内继续收发消息，约定取货时间与地点；\textbf{平台不记录交付事实}（BR-07） \\
+\hline
+辅事件流 & A. 未认证 → 提示「请先完成学生证核验」，\textbf{不创建会话、不记录消息}（BR-20）\newline{}B. 本人即该商品发布人 → 提示「不能与自己对话」，\textbf{不创建会话}\newline{}C. 商品已被他人成交且本人不是成交买家 → 提示「该商品已售出」，\textbf{不创建会话}\newline{}D. 商品处于「待审核」或「已下架」→ 提示「该商品暂不可沟通」，\textbf{不创建会话}\newline{}E. 消息内容为空或超过长度上限 → 就地提示，\textbf{不记录消息}\newline{}F. 同一（商品，双方）已有会话 → 直接进入既有会话，\textbf{不新建第二条会话}\newline{}G. 接收方账号已封禁 → \textbf{消息不落库、不产生通知}，返回明确失败提示「对方账号当前不可用」；\textbf{不得显示「已发送」}（NFR-09 第 ⑤ 条）；不改变商品状态与信用分\newline{}H. 发送失败（网络或服务异常）→ 消息不落库，会话保持原状，提示重试；\textbf{不得出现「显示已发送但实际未保存」}（NFR-09） \\
+\hline
+后置条件 & 会话存在且至少含一条消息；接收方产生一条未读私信与一条站内通知；商品状态不变 \\
+\hline
+发生频率 & 约 120 条/天 \\
+\hline
+关联 & BR-07、BR-15、BR-20；NFR-09；UC-07、UC-10、UC-30 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+\textbf{设计说明（为什么用私信，而不是互开手机号）}：给双方互开手机号会直接推翻 NFR-04「成交对家亦不可见手机号」的定案。改用\textbf{绑定商品的站内私信}后，既补齐了沟通通道，又不必放开任何手机号可见性——\textbf{隐私口径零改动}，代价只多一个实体与两个用例。
+
+\end{quote}
+
+\subsubsection*{UC-30 查看我的私信}
+\addcontentsline{toc}{subsubsection}{UC-30 查看我的私信}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生、管理员 \\
+\hline
+目标 & 查看与自己相关的全部会话、处理未读消息、回到对应商品 \\
+\hline
+前置条件 & 已登录 \\
+\hline
+触发条件 & 点击「私信」入口，或从站内通知点击进入 \\
+\hline
+主事件流 & 1. 系统按\textbf{最后一条消息时间倒序}展示会话列表（对方昵称、商品标题、最后一条消息摘要、时间、未读条数）\newline{}2. 用户点击一个会话，进入会话详情，按时间正序展示该（商品，双方）的全部消息\newline{}3. 系统把该会话内\textbf{属于本人的未读消息置为「已读」}，同步更新通知红点\newline{}4. 用户可在会话内继续发送消息（UC-29）\newline{}5. 用户可从会话跳转到对应商品详情 \\
+\hline
+辅事件流 & A. 没有任何会话 → 空态提示，引导去浏览商品（UC-07）\newline{}B. 会话关联的商品已下架或已售出 → 会话保留可读，展示商品当前状态，\textbf{不允许新的买家加入该会话}\newline{}C. 对方账号已封禁 → 会话保留可读，\textbf{禁止继续发送}\newline{}D. 本人已不是该会话参与方（如商品被他人成交）→ 仅保留历史可读，不可再发\newline{}E. 未读数与通知红点不一致 → 以会话侧未读数为准并记录异常日志（NFR-09）\newline{}F. 管理员登录后台 → \textbf{仅可查看与自己相关的处置异议会话}，不可读取学生之间的交易会话（§5.4） \\
+\hline
+后置条件 & 相关消息的已读状态已更新；无业务状态变化 \\
+\hline
+发生频率 & 约 300 次/天 \\
+\hline
+关联 & BR-20；NFR-09；UC-18、UC-29 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{UC-31 撤销成交}
+\addcontentsline{toc}{subsubsection}{UC-31 撤销成交}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 主要：学生（买家或卖家，退货/撤销申请方）；次要：学生（对方）与管理员（审批方） \\
+\hline
+目标 & 在双方同意或管理员审批通过后终止一笔已成交但未能履约的交易，使商品重新可售，并保留审批与退货记录 \\
+\hline
+前置条件 & 已登录；本人为该成交记录的买方或卖方；\texttt{成交状态} 为\textbf{「有效」}；商品当前为「已售出」；\textbf{双方均未提交评价}（BR-08、BR-21） \\
+\hline
+触发条件 & 任一方在「我的订单」详情页点击「申请退货/撤销成交」 \\
+\hline
+主事件流 & 1. 申请方点击「申请退货/撤销成交」，选择原因并提交证据\newline{}2. 系统校验本人为当事人、\texttt{成交状态} 为「有效」、商品为「已售出」、双方均未评价\newline{}3. 系统将申请记为「待对方同意」并通知对方；申请期间成交与商品状态保持不变\newline{}4. 对方选择同意或拒绝；\textbf{双方同意}后，或管理员审核通过后，\texttt{成交状态} 置「已撤销」，记录申请、同意/审批人、原因、时间；商品「已售出」→「在售」（ST-10）\newline{}5. 系统通知双方，保留退货/撤销审批记录\newline{}6. 商品重新出现在搜索与分类列表，可被再次下单 \\
+\hline
+辅事件流 & A. 对方拒绝 → 申请驳回，成交与商品状态不变\newline{}B. 对方同意 → 按双方同意流程撤销并恢复商品在售\newline{}C. 任一方提交管理员审批 → 管理员核实申请原因与证据；审批通过后撤销并恢复商品在售，审批拒绝则状态不变\newline{}D. 任一方在申请前已提交评价 → 不允许申请，提示「评价已提交，成交不可撤销」\newline{}E. 已存在待处理申请 → 不允许重复提交\newline{}F. \texttt{成交状态} 已是「已撤销」→ 不允许重复申请\newline{}G. 撤销时卖家账号已封禁 → 审批通过后商品转「已下架」（下架原因＝\texttt{撤销后不可交易}，ST-11）\newline{}H. 非当事人尝试申请 → 拒绝，成交记录与商品状态均不变\newline{}I. 原成交记录保留为历史，不删除 \\
+\hline
+后置条件 & 申请被拒绝时成交与商品状态不变；双方同意或管理员审批通过时，\texttt{成交状态} 为「已撤销」，商品回到「在售」（或按审批结果转「已下架」），双方收到通知，申请与审批记录留档 \\
+\hline
+发生频率 & 约 15 次/天 \\
+\hline
+关联 & BR-06、BR-07、BR-08、BR-14、BR-21；ST-05、ST-10；UC-10、UC-13、UC-16、UC-29 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-32 编辑商品}
+\addcontentsline{toc}{subsubsection}{UC-32 编辑商品}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生（卖家） \\
+\hline
+目标 & 修改自己已发布的商品信息（标题、描述、价格、成色、图片、分类），并按要求重新进入审核 \\
+\hline
+前置条件 & 已登录、已认证；商品为本人发布；商品当前为「待审核」或「在售」（BR-22） \\
+\hline
+触发条件 & 卖家在「我的商品」或商品详情页点击「编辑」 \\
+\hline
+主事件流 & 1. 系统加载商品当前内容进入编辑页；\textbf{发布人、商品状态、下架原因、发布时间以只读展示，不可修改}\newline{}2. 卖家修改标题、描述、价格、成色、图片或分类\newline{}3. 提交，系统校验必填项、价格区间（BR-05）与图片数量 1～9 张\newline{}4. 校验通过后按商品当前状态分流：\newline{}　4a. \textbf{商品为「在售」} → 商品转为\textbf{「待审核」}（ST-12），立即从搜索与分类列表移除，刷新发布时间与审核排队时间\newline{}　4b. \textbf{商品为「待审核」} → 保持「待审核」，刷新发布时间与审核排队时间（24 小时审核时限重新起算）\newline{}5. 提示「修改已提交，需重新审核通过后才对外展示」，通知历史收藏过该商品的买家 \\
+\hline
+辅事件流 & A. 必填项缺失、价格非法或图片不在 1～9 张 → 就地提示，\textbf{不保存修改，商品状态与原内容均不变}\newline{}B. 商品为「已售出」→ 拒绝编辑，提示「已售出商品不可修改」；\textbf{撤销成交回到「在售」后方可编辑}\newline{}C. 商品为「已下架」→ 不走本用例，按 UC-05 修改后重新提交（ST-08），能否重提受下架原因限制\newline{}D. 非本人商品 → 拒绝，\textbf{商品状态与原内容均不变}\newline{}E. 卖家账号已封禁 → 拒绝编辑（BR-10）\newline{}F. 卖家在「在售」商品被买家成交的同一时刻提交编辑 → 以服务端先成功者为准：成交先成功则商品已「已售出」，编辑按辅事件流 B 拒绝；编辑先成功则商品已回「待审核」，不再可被下单\newline{}G. 尝试修改发布人、商品状态、下架原因或发布时间 → 这些字段不可写，\textbf{修改被丢弃}，其余字段照常保存 \\
+\hline
+后置条件 & 「在售」商品变为「待审核」；或「待审核」商品保持「待审核」并刷新排队时间；商品编号不变；编辑内容已保存 \\
+\hline
+发生频率 & 约 30 次/天 \\
+\hline
+关联 & BR-03、BR-05、BR-22；ST-08、ST-12；UC-05、UC-06、UC-17 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-33 查看个人主页}
+\addcontentsline{toc}{subsubsection}{UC-33 查看个人主页}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生（本人或他人） \\
+\hline
+目标 & 查看某位学生的公开信任信息，判断是否值得与其交易 \\
+\hline
+前置条件 & \textbf{已登录}（游客不可查看他人主页） \\
+\hline
+触发条件 & 点击商品详情页的发布人昵称、私信会话对方、评价列表中的用户名，或从「我的」页进入本人主页 \\
+\hline
+主事件流 & 1. 系统展示该学生的\textbf{公开信息}：昵称、\textbf{认证状态标识}（已认证／未认证）、信用分、评价数、\textbf{被核实争议数}、在售商品数\newline{}2. 展示其当前\textbf{「在售」商品列表}（不含待审核、已售出、已下架、已删除）\newline{}3. 展示其\textbf{收到的评价}（仅文字；按 BR-08 仅在双方均已提交后展示）\newline{}4. \textbf{本人查看自己主页时}额外展示：真实姓名的编辑入口、手机号与宿舍地址（仅本人可见）、以及「我的商品」「我的订单」入口 \\
+\hline
+辅事件流 & A. 目标学生不存在或已删除 → 提示「该用户不存在」\newline{}B. 目标学生账号已封禁 → 主页仍可访问，展示「该账号已被封禁」标识并\textbf{隐藏其在售商品}（BR-10 已连带下架）\newline{}C. 游客访问 → 引导登录，\textbf{不展示任何主页内容}\newline{}D. 目标学生认证状态为未提交／待审核／已驳回 → 展示「未认证」标识；因未认证不能发布，其在售商品列表必为空\newline{}E. 目标学生无在售商品且无评价 → 空态提示\newline{}F. 目标学生有 \texttt{被核实争议数 > 0} → 在显著位置展示该计数，\textbf{但不展示具体争议内容与举报人}（§6.5） \\
+\hline
+后置条件 & 无（只读操作，无状态变化） \\
+\hline
+发生频率 & 约 200 次/天 \\
+\hline
+关联 & BR-10、BR-11、BR-13、BR-14；§6.5；NFR-04；UC-11、UC-14、UC-15、UC-29 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{UC-34 找回密码}
+\addcontentsline{toc}{subsubsection}{UC-34 找回密码}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+参与者 & 学生 \\
+\hline
+目标 & 在无法用密码登录时，通过邮箱验证码证明身份并重置登录密码 \\
+\hline
+前置条件 & 已注册；\textbf{能访问注册时填写的邮箱} \\
+\hline
+触发条件 & 登录页点击「忘记密码」，或由 UC-01 辅事件流 B 引导 \\
+\hline
+主事件流 & 1. 学生输入注册邮箱并提交\newline{}2. 系统\textbf{无论该邮箱是否存在，均返回同一提示}「若该邮箱已注册，验证码已发送，请查收」（防账号枚举）；邮箱存在时发送 \textbf{6 位验证码（有效期 10 分钟，一次性）}\newline{}3. 学生填写验证码与新密码\newline{}4. 系统校验：验证码正确且未过期、新密码符合强度要求、\textbf{新密码不得与当前密码相同}\newline{}5. 重置密码（只存新哈希），\textbf{该账号的所有登录会话立即失效}\newline{}6. 向该邮箱发送「密码已重置」通知，并生成一条站内通知（消息类型＝\texttt{核验}） \\
+\hline
+辅事件流 & A. \textbf{邮箱不存在} → 仍返回统一提示，\textbf{不发送、不创建记录}，界面无任何差异（防枚举，NFR-10）\newline{}B. 验证码错误或已过期 → 提示「验证码错误或已失效，请重新获取」，允许重试\newline{}C. \textbf{验证码累计错误 5 次} → 本次验证码作废，须重新获取\newline{}D. \textbf{验证码请求过于频繁} → 同一邮箱 60 秒内只允许 1 次、24 小时内最多 10 次，超出时提示等待\newline{}E. \textbf{新密码与当前密码相同} → 拒绝，提示「新密码不能与当前密码相同」\newline{}F. 新密码强度不足 → 就地提示，\textbf{不重置}\newline{}G. \textbf{账号已封禁} → \textbf{仍允许重置密码}（找回凭据不等于解封），但重置后登录仍被拒绝并说明封禁\newline{}H. 邮件发送失败 → 提示「验证码发送失败，请稍后重试」\newline{}I. \textbf{管理员账号不适用本用例} → 管理员账号由系统预置，密码重置须由系统维护方执行，界面提示联系维护方\newline{}J. 重置成功但学生未收到通知邮件 → 站内通知仍会送达，可在「消息」中查看 \\
+\hline
+后置条件 & 密码已更新为新哈希；该账号所有会话失效；重置通知已发送（邮箱 + 站内） \\
+\hline
+发生频率 & 约 5 次/天 \\
+\hline
+关联 & NFR-05、NFR-10；UC-01 \\
+\hline
+\end{longtable}
+}
+
+
+
+
+\section*{4 业务规则}
+\addcontentsline{toc}{section}{4 业务规则}
+\markboth{4 业务规则}{4 业务规则}
+
+\subsection*{4.1 业务规则表}
+\addcontentsline{toc}{subsection}{4.1 业务规则表}
+
+{\scriptsize
+\begin{longtable}{|p{1.32cm}|p{12.03cm}|p{1.32cm}|p{1.32cm}|}
+\hline
+\textbf{编号} & \textbf{规则内容} & \textbf{来源} & \textbf{状态} \\
+\hline
+\endfirsthead
+\hline
+\textbf{编号} & \textbf{规则内容} & \textbf{来源} & \textbf{状态} \\
+\hline
+\endhead
+\hline
+\endfoot
+BR-01 & 学生完成学生证人工核验、且账号未被封禁，才可发布商品与下单；不能下单本人发布的商品 & 分析推导 & 团队已复核 \\
+\hline
+BR-02 & 同一学号最多同时有 \textbf{5 件「在售」}商品；「待审核」「已售出」「已下架」不计入该上限 & 分析推导 & 团队已复核 \\
+\hline
+BR-03 & 商品提交后为「待审核」，管理员通过才「在售」；审核拒绝进入「已下架」并保留原因；已下架商品修改后再提交须重新审核 & AI 候选 & 团队已复核 \\
+\hline
+BR-04 & 禁售品类在审核时拒绝；已上架的违规商品可由管理员强制下架，须记录原因、操作者与证据；举报须核实后再处置；不设累计封禁次数阈值。\textbf{禁售品类以 §4.3 的 18 个类目（A1–E2）为闭集判据}，管理员\textbf{不得自行扩容}；清单外的明显违规按「清单外待裁定」上报组长，\textbf{不得长期以「其他」兜底}。\textbf{举报对象可以是商品，也可以是学生}：对商品的举报用于违规内容处置；\textbf{对学生的举报只受理「与该学生的成交或沟通中发生的行为」}（主要载体为 \texttt{收款不履约}），不得用于举报无关个人 & 分析推导 & 团队已复核 \\
+\hline
+BR-05 & 商品价格须为合法数值：\textbf{大于 0 且不超过 50000 元}，最多 2 位小数；平台不做议价，\textbf{下单即以商品当前标价成交}，成交金额须与该标价一致 & 分析推导 & 团队已复核 \\
+\hline
+BR-06 & \textbf{下单即成交}：创建成交记录与商品「在售」→「已售出」必须在\textbf{同一业务动作}中同时成功，任一步失败则整体回滚；同一商品同时最多一条有效成交记录；重复请求不得重复成交 & AI 候选 & 团队已复核 \\
+\hline
+BR-07 & \textbf{平台不参与资金与交付}：不采集、不存储任何支付信息；不记录收款状态与交付状态；「成交」只表示下单成功，不表示已收货或已付款。成交后双方自行线下联系取货，平台不校验、不担保 & 分析推导 & 团队已复核 \\
+\hline
+BR-08 & 仅\textbf{有效}成交记录的参与双方可各发表一次评价，不可评价本人、不可重复、不可修改；评价\textbf{只有文字，不设星级}；成交后 \textbf{7 天}内未评价者失去评价资格，双方均提交后展示。\textbf{成交记录一旦置为「已撤销」，不允许再评价} & AI 候选 & 团队已复核 \\
+\hline
+BR-09 & 卖家仅可下架本人「在售」商品；管理员可下架「待审核」与「在售」商品；「已售出」商品任何角色均不可下架。\textbf{卖家可永久删除本人「已下架」的商品}（软删除：写入 \texttt{删除时间}，从所有列表排除、不可恢复；历史成交与收藏记录保留）；「在售」「待审核」「已售出」商品\textbf{不可删除}，须先下架 & AI 候选 & 团队已复核 \\
+\hline
+BR-10 & 账号封禁后禁止发布与下单，仍可浏览、查看本人历史与提交举报；账号受限按信用分阈值限制对应行为（BR-13）；\textbf{账号状态不改变认证状态}（BR-19）。\textbf{封禁须连带处置存量商品}：执行封禁时，系统应在同一处置动作中将该卖家名下全部「在售」与「待审核」商品转为「已下架」（下架原因＝\texttt{管理员违规下架}，转换见 ST-13），\textbf{不得让被封禁者的商品继续对外展示}；其「已售出」商品不受影响（BR-09） & AI 候选 & 团队已复核 \\
+\hline
+BR-11 & 搜索与分类浏览默认只展示「在售」商品；\textbf{收藏不锁定商品}，同一学生对同一商品的收藏记录唯一、\textbf{收藏上限 100 件}（建议值，待确认），商品状态变化后收藏页显示实际状态（「已失效」）且不级联删除收藏记录 & AI 候选 & 团队已复核 \\
+\hline
+BR-12 & 成交笔数与金额以成交记录\textbf{去重}统计；商品下架、举报提交、核验申请均不计成交 & 分析推导 & 团队已复核 \\
+\hline
+BR-13 & \textbf{信用分定义与阈值}：初始 100，取值范围 0～150。\textbf{低于 60 禁止发布新商品；低于 40 禁止下单}；已达成的发布与成交记录不受影响。分数校内公开，变动明细仅本人与管理员可见。\textbf{越界按边界值截断}：变动后超过 150 的按 \texttt{150} 计，低于 0 的按 \texttt{0} 计，因此 149 分者评价 +2 后为 150（非 151），1 分者违规 −10 后为 0（非 −9）；\textbf{截断值写入信用记录，与信用分新值保持一致} & 分析推导 & 团队已复核 \\
+\hline
+BR-14 & \textbf{信用分变动事件}：① 成交后\textbf{任一方提交评价，该评价人 +2}（每订单每人一次，不要求对方也评价）；② \textbf{举报成立}（无论对象为商品还是学生）或商品被管理员强制下架，\textbf{被举报方 −10}（对象为商品时为该商品卖家，对象为学生时为该学生）；③ 成交后 7 天内未评价，未评价方 \textbf{−1}；④ \textbf{提交退货/撤销申请成交且被判 \texttt{计违约}，撤销方 −2}（每笔成交最多一次；\texttt{已免责} 不扣）。每次变动必须生成一条信用记录（\textbf{变动事件类型}、变动值、原因、时间、关联订单编号；对象为学生的举报还须能追溯到该条举报记录）；权限拒绝与业务状态拒绝\textbf{一律不扣分}。\textbf{已撤销的成交记录不适用第 ③ 项}——撤销后不得再因「未评价」扣分；\textbf{撤销本身也不扣分}，只有「计违约」判定成立时才按第 ④ 项扣分 & 分析推导 & 团队已复核 \\
+\hline
+BR-15 & 在以下事件发生时，系统应主动向相关用户发送站内通知：学生证核验结果（提交成功、核验通过、被驳回附原因）、登录成功、商品审核结果（通过 / 不通过附原因）、下单成交、\textbf{收到新私信}、\textbf{对方撤销了成交（提示可判免责或计违约）、退货/撤销审批结果（已免责 / 计违约）}、商品被卖家主动下架（通知已收藏该商品的买家）、\textbf{商品重新回到「在售」（撤销后重新可售、管理员撤销违规处置后恢复），通知已收藏该商品的买家}、商品因违规被下架、举报受理与处置结果、信用分变更。\textbf{通知由系统发起，不是用例}；用户主动查看消息为 UC-18，回复私信为 UC-29 / UC-30，退货/撤销与审批为 UC-31。详见 §4.2 & AI 候选 & 用户授权确认 \\
+\hline
+BR-16 & 学生注册后 \textbf{7 天内}须提交学生证核验申请；超期未提交的，系统每日提醒一次，账号保持「未提交」，可浏览但不可发布、下单、评价、举报。管理员须在收到申请的 \textbf{24 小时内}作出审核结论，超时计入审核超时统计，但\textbf{不得自动通过} & 分析推导 & 待确认 \\
+\hline
+BR-17 & 学生证核验被驳回后，学生可修改后重新提交，\textbf{最多重新提交 3 次}；超过上限须联系管理员人工处理，不得无限制重提 & 分析推导 & 待确认 \\
+\hline
+BR-18 & 学生证疑似伪造、拼接、冒用他人证件，或与账号所填学号不一致的，管理员驳回并标记异常；\textbf{核实伪造的必须按违规处置（UC-13）：应封禁账号}（不是「可封禁」），并依 BR-10 连带下架其全部「在售」与「待审核」商品，可按 BR-14 ② 扣信用分。已认证后才发现伪造并核实的，可将认证状态改回「已驳回」并留痕（AT-08），\textbf{且同样应封禁账号}——只改认证状态不封禁，会让用假证件的人继续在平台卖东西 & 分析推导 & 团队已复核 \\
+\hline
+BR-19 & \textbf{认证状态不是商品状态或信用分。} 认证状态变化（未提交 → 待审核 → 已认证 / 已驳回）不改变任何商品状态与信用分；反向亦不成立。「正常 / 受限 / 封禁」是\textbf{独立的账号状态}，与认证状态分开记录：认证通过不等于解封，封禁也不撤销认证 & 分析推导 & 团队已复核 \\
+\hline
+BR-20 & \textbf{私信范围与准入}：站内私信\textbf{必须绑定一件具体商品}，参与者仅限该商品的发布人、与该商品沟通过沟通过的已认证学生，以及（\textbf{仅当该商品下架原因为「管理员违规下架」时}）管理员。\textbf{只有已认证学生可发起私信}；同一（商品，双方）只存在一条会话，重复进入复用既有会话，不得新建第二条。\textbf{平台不展示、不转交、不代填买卖双方的手机号与宿舍地址}，一切沟通在站内进行；用户自行在消息正文中交换联系方式属个人行为，平台不校验、不担保。管理员\textbf{仅可回复}针对违规下架商品的异议私信，\textbf{不得主动发起私信}。私信仅支持纯文本，无附件、无撤回、无群聊 & 分析推导 & 团队已复核 \\
+\hline
+\end{longtable}
+}
+
+
+{\scriptsize
+\begin{longtable}{|p{1.32cm}|p{12.03cm}|p{1.32cm}|p{1.32cm}|}
+\hline
+\textbf{BR-21} & \textbf{\textbf{退货/撤销需双方同意或管理员审批}：任一方当事人可发起申请，但申请不会立即改变成交或商品状态。申请须满足本人为当事人、\texttt{成交状态} 为 \texttt{有效}、商品为 \texttt{已售出}、双方均未提交评价。对方明确同意后，或管理员核实申请原因与证据并审批通过后，\texttt{成交状态} 才由 \texttt{有效} 置 \texttt{已撤销}，商品由 \texttt{已售出} 回到 \texttt{在售}（ST-10），原成交记录保留为历史。对方拒绝或管理员拒绝时状态不变。申请、同意/拒绝、审批人、审批意见和处理时间必须留痕。平台不判断交易是否已实际交付或已付款，一方主张已履约的，可通过 UC-12 举报，由 UC-13 核实私信与成交记录后处置} & \textbf{分析推导} & \textbf{团队已复核} \\
+\hline
+\endfirsthead
+\hline
+\textbf{BR-21} & \textbf{\textbf{退货/撤销需双方同意或管理员审批}：任一方当事人可发起申请，但申请不会立即改变成交或商品状态。申请须满足本人为当事人、\texttt{成交状态} 为 \texttt{有效}、商品为 \texttt{已售出}、双方均未提交评价。对方明确同意后，或管理员核实申请原因与证据并审批通过后，\texttt{成交状态} 才由 \texttt{有效} 置 \texttt{已撤销}，商品由 \texttt{已售出} 回到 \texttt{在售}（ST-10），原成交记录保留为历史。对方拒绝或管理员拒绝时状态不变。申请、同意/拒绝、审批人、审批意见和处理时间必须留痕。平台不判断交易是否已实际交付或已付款，一方主张已履约的，可通过 UC-12 举报，由 UC-13 核实私信与成交记录后处置} & \textbf{分析推导} & \textbf{团队已复核} \\
+\hline
+\endhead
+\hline
+\endfoot
+BR-22 & \textbf{商品编辑与重审}：卖家可编辑\textbf{本人}商品的标题、描述、价格、成色、图片、分类；\textbf{发布人学号、商品状态、下架原因、发布时间为系统字段，卖家不得编辑}。编辑后按商品当前状态分流：①「\textbf{在售}」→ 商品回到「待审核」并\textbf{重新排队审核}（ST-12），编辑提交后立即从搜索与分类列表移除，直至重新通过；②「\textbf{待审核}」→ 保持「待审核」，刷新 \texttt{发布时间} 与审核排队时间（使 24 小时审核时限重新起算）；③「\textbf{已下架}」→ 按 ST-08 重新提交，能否重提仍受下架原因限制；④「\textbf{已售出}」→ \textbf{不可编辑}（含撤销后尚未重新上架期间，须先经撤销回到「在售」）。编辑内容须重新满足 BR-05 价格区间与图片 1～9 张；\textbf{编辑不得改变商品编号} & 分析推导 & 团队已复核 \\
+\hline
+\end{longtable}
+}
+
+
+
+
+\subsubsection*{4.1.1 时间期限的统一口径}
+\addcontentsline{toc}{subsubsection}{4.1.1 时间期限的统一口径}
+
+\begin{quote}\small
+适用于 BR-08（评价期 7 天）、BR-14（成交后 7 天）、BR-16（注册后 7 天、审核 24 小时）、BR-21（审批处理 7 天）及各条 NFR。
+
+\end{quote}
+
+\begin{enumerate}[leftmargin=1.9em,itemsep=1pt,topsep=2pt]
+\item 文中所有「\textbf{N 天}」「\textbf{N 小时}」均指\textbf{自起算事件发生时点起算的连续时长}，\textbf{不按自然日 0 点切换}。7 天 = 168 小时，24 小时 = 24 小时。
+\item \textbf{判定区间为左闭右开}：\texttt{起算时刻 ≤ t < 起算时刻 + N}。\textbf{恰好到达}「起算时刻 + N」的那一刻即视为\textbf{超期}。
+\item 各期限的\textbf{起算事件}必须具名，不得含糊：
+\end{enumerate}
+
+{\footnotesize
+\begin{longtable}{|p{3.81cm}|p{4.31cm}|p{7.88cm}|}
+\hline
+\textbf{期限} & \textbf{起算事件} & \textbf{终止判定} \\
+\hline
+\endfirsthead
+\hline
+\textbf{期限} & \textbf{起算事件} & \textbf{终止判定} \\
+\hline
+\endhead
+\hline
+\endfoot
+评价资格 7 天 & 该成交记录的 \texttt{成交时间} & t ≥ 成交时间 + 168h 时不得再评价 \\
+\hline
+未评价 −1 分 & 该成交记录的 \texttt{成交时间} & 满 168h 且该方未评价时扣分（已撤销记录不适用，BR-14） \\
+\hline
+退货/撤销审批 7 天 & 该成交记录的 \texttt{申请时间} & 管理员应在收到审批申请后 24 小时内处理，超时计入审批超时统计但不得自动通过 \\
+\hline
+核验提交 7 天 & 学生账号的 \texttt{注册时间} & t ≥ 注册时间 + 168h 起每日提醒（AT-07） \\
+\hline
+核验审核 24 小时 & 认证申请的 \texttt{提交时间} & t ≥ 提交时间 + 24h 起计入超时统计（AT-06） \\
+\hline
+商品审核 / 举报处理 24 小时 & 商品的提交时刻 / 举报的 \texttt{举报时间} & 同左，仅提醒，不自动通过 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{enumerate}[leftmargin=1.9em,itemsep=1pt,topsep=2pt]
+\item 起算时刻与判定时刻\textbf{均以服务端时间为准}，不采信客户端时间；时间戳精度到秒。
+\end{enumerate}
+
+\subsection*{4.2 系统主动通知规则}
+\addcontentsline{toc}{subsection}{4.2 系统主动通知规则}
+
+\begin{quote}\small
+本条规定系统主动发送站内通知的触发事件。\textbf{通知由系统发起，不是用例}；用户主动查看消息才是用例（UC-18）。
+
+\end{quote}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+编号 & \textbf{BR-15} \\
+\hline
+名称 & 系统主动通知 \\
+\hline
+规则内容 & 在以下事件发生时，系统应主动向相关用户发送站内通知：\textbf{学生证核验结果（提交成功、核验通过、被驳回并附原因）}、登录成功、\textbf{商品审核结果（通过 / 不通过并附原因）}、\textbf{下单成交}、\textbf{收到新私信（消息类型＝私信，附会话入口）}、\textbf{对方撤销了成交（提示可判免责或计违约）、退货/撤销审批结果（已免责 / 计违约）}、卖家主动下架自己的商品（通知收藏过该商品的买家）、\textbf{商品重新回到「在售」（撤销后重新可售、撤销违规处置后恢复），通知收藏过该商品的买家}、商品因违规被下架、举报受理与处置结果、\textbf{信用分变更} \\
+\hline
+为什么不是用例 & 触发方是\textbf{系统}而不是参与者；用例必须由参与者发起。用户主动「看消息」才是用例，见 UC-18；回复私信见 UC-29 / UC-30；撤销成交见 UC-31 \\
+\hline
+关联 & UC-01、UC-02、UC-03、UC-06、UC-10、UC-11、UC-13、UC-14、UC-18、\textbf{UC-29、UC-30、UC-31} \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsection*{4.3 禁售品类清单（BR-04 附表）}
+\addcontentsline{toc}{subsection}{4.3 禁售品类清单（BR-04 附表）}
+
+
+\subsubsection*{4.3.1 清单（18 个类目）}
+\addcontentsline{toc}{subsubsection}{4.3.1 清单（18 个类目）}
+
+{\scriptsize
+\begin{longtable}{|p{1.48cm}|p{2.05cm}|p{8.07cm}|p{4.39cm}|}
+\hline
+\textbf{编号} & \textbf{类目} & \textbf{典型物品（举例，非穷尽）} & \textbf{禁售原因} \\
+\hline
+\endfirsthead
+\hline
+\textbf{编号} & \textbf{类目} & \textbf{典型物品（举例，非穷尽）} & \textbf{禁售原因} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{A1} & 武器与管制器具 & 枪支、弹药、仿真枪、弩、管制刀具（匕首、三棱刀、弹簧刀等）、甩棍、指虎、催泪喷雾 & 违反枪支与管制刀具管理规定 \\
+\hline
+\textbf{A2} & 毒品与管制药品 & 毒品、麻醉药品、精神药品、易制毒化学品 & 违反禁毒与管制药品法规 \\
+\hline
+\textbf{A3} & 危险品 & 烟花爆竹、易燃易爆品、剧毒化学品、放射性物品、强腐蚀品、废弃铅蓄电池与含汞制品 & 违反危险化学品与危废管理规定，宿舍场景高危 \\
+\hline
+\textbf{A4} & 淫秽色情物品 & 色情书刊、影像、成人用品 & 违反治安管理规定 \\
+\hline
+\textbf{A5} & 赌博与作弊器材 & 赌具、筹码、考试作弊器材、窃听窃照专用器材 & 违反治安管理规定；作弊器材涉考试秩序 \\
+\hline
+\textbf{A6} & 野生动物及其制品 & 象牙、龟甲、受保护动物制品 & 违反野生动物保护规定 \\
+\hline
+\textbf{A7} & 伪造与变造物品 & 假证件、假印章、假票据、假币、有价证券 & 属伪造类违法物品 \\
+\hline
+\textbf{B1} & 实名制卡证 & 银行卡、电话卡、手机卡、SIM 卡、流量卡 & 违反电话用户实名制；电信诈骗高风险 \\
+\hline
+\textbf{B2} & 身份凭据与账号 & 身份证、学生证、校园卡/一卡通、门禁卡、工牌；学校邮箱、校园网、教务系统账号；游戏/影音/社交等互联网平台账号 & 涉身份冒用与实名制；账号转让违反原平台服务条款 \\
+\hline
+\textbf{B3} & 受管制消费品 & 处方药、医疗器械、烟草制品、电子烟及烟油、酒类 & 需经营许可，个人不得销售 \\
+\hline
+\textbf{B4} & 未许可食品与活体 & 自制食品、无标签预包装食品、活体动物（含宠物） & 需食品经营许可；活体涉动物防疫 \\
+\hline
+\textbf{C1} & 他人个人信息 & 他人个人信息、通讯录、客户名单、数据库、含他人身份信息的资料 & 违反个人信息保护要求 \\
+\hline
+\textbf{C2} & 校园内部资料 & 未经授权的试卷、题库、教师课件、内部通讯录、未公开通知文件 & 涉学校知识产权与保密要求 \\
+\hline
+\textbf{C3} & 盗版与破解资源 & 盗版书籍、盗版软件、破解版/注册机、翻录课程视频 & 侵犯著作权 \\
+\hline
+\textbf{D1} & 学术不端服务 & 代写论文或作业、代考、代做实验与课程设计的\textbf{服务或中介信息} & 违反学术诚信规范，学校明令禁止 \\
+\hline
+\textbf{D2} & 代抄与答案 & 他人已填写的作业本、实验报告、考试答案 & 为抄袭提供便利 \\
+\hline
+\textbf{E1} & 违规大功率电器 & 热得快、电磁炉、电炉、电热毯、电饭锅等超出宿舍限电标准的电器 & 违反宿舍安全管理规定 \\
+\hline
+\textbf{E2} & 明火器具 & 酒精炉、卡式炉、燃气罐、蜡烛、酒精灯 & 违反宿舍消防安全规定 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+类目编号规则：\textbf{A=法律法规禁止流通 / B=实名与资质管制 / C=侵权与隐私 / D=学术诚信 / E=校园安全}。新增类目在所属字母下顺延编号，\textbf{字母段不复用、不重排}。
+
+\end{quote}
+
+\subsubsection*{4.3.2 判定口径（5 条，用于消除二义性）}
+\addcontentsline{toc}{subsubsection}{4.3.2 判定口径（5 条，用于消除二义性）}
+
+\begin{enumerate}[leftmargin=1.9em,itemsep=1pt,topsep=2pt]
+\item \textbf{以物品主体判定，不以卖家声明的用途判定。} 主体本身即属禁售的直接拒绝；主体名义合法但\textbf{主要功能}指向违规用途的（如伪装成充电宝的偷拍设备），按实际功能判定为禁售。
+\item \textbf{教材与教辅允许售卖}，但不得随附他人已填写的作业、实验报告或考试答案（D2）；\textbf{教材内印制的正常习题与答案不属于违规}，不得据此驳回。
+\item \textbf{二手电子产品允许售卖}（手机、电脑、平板、相机、代步工具等），须同时满足：① 已清除个人数据并恢复出厂设置；② 不随附任何他人可登录的账号；③ 卖家在描述中说明来源与权属。涉嫌来路不明的，转管理员人工复核（UC-13 辅事件流 B），\textbf{不得仅凭「二手」二字驳回}。
+\item \textbf{虚拟类商品一律禁止}（账号、卡券、优惠券、代练代刷、游戏币），因无法核验权属且违反第三方平台条款。
+\item \textbf{清单为闭集，管理员不得自行扩容。} 遇到清单未覆盖但明显违规的物品，管理员可先行驳回并在原因中标注「清单外待裁定」，同时提交组长；组长裁定后\textbf{以新编号补入本表并升版本号}。\textbf{不得长期以「其他违规」为名默许清单外的拒绝}——那会让审核判据重新变成不可验收的形容词。
+\end{enumerate}
+
+\subsubsection*{4.3.3 与状态机、举报的对应关系}
+\addcontentsline{toc}{subsubsection}{4.3.3 与状态机、举报的对应关系}
+
+{\footnotesize
+\begin{longtable}{|p{3.92cm}|p{6.82cm}|p{5.26cm}|}
+\hline
+\textbf{场景} & \textbf{处理} & \textbf{对应转换} \\
+\hline
+\endfirsthead
+\hline
+\textbf{场景} & \textbf{处理} & \textbf{对应转换} \\
+\hline
+\endhead
+\hline
+\endfoot
+审核时命中清单 & 审核不通过，下架原因＝\texttt{审核不通过}，驳回原因引用类目编号 & ST-03 \\
+\hline
+已上架商品被发现命中清单 & 管理员强制下架，下架原因＝\texttt{管理员违规下架}，卖家信用分 −10 & ST-07 \\
+\hline
+卖家删除违规内容后重新提交 & 回到「待审核」 & ST-08（下架原因为 \texttt{审核不通过} 时可重提） \\
+\hline
+学生举报命中清单的商品 & 举报类型选「违禁品」，管理员按本节核实 & UC-12 → UC-13 \\
+\hline
+\end{longtable}
+}
+
+
+
+
+\section*{5 权限需求}
+\addcontentsline{toc}{section}{5 权限需求}
+\markboth{5 权限需求}{5 权限需求}
+
+\subsection*{5.1 角色及判定口径}
+\addcontentsline{toc}{subsection}{5.1 角色及判定口径}
+
+游客为未登录访问者。学生账号的\textbf{认证状态}有四态：\textbf{未提交}（已注册、尚未提交核验申请）、\textbf{待审核}（已提交、管理员未出结论）、\textbf{已驳回}（未通过，可修改后重提）、\textbf{已认证}（核验通过）。另有一个\textbf{独立的账号状态}：\textbf{正常 / 受限 / 封禁}。管理员是独立管理角色，\textbf{不经过学生证核验}，也不把管理员自动视为已认证学生。
+
+
+\textbf{权限矩阵按基础权限划分}：未提交、待审核、已驳回三态的\textbf{基础权限完全相同}（可浏览、可收藏，不可发布、下单、评价、举报），故在 §5.2 合并为「未认证学生」一列；三者只在\textbf{拒绝提示语}上有区别。\textbf{未认证学生可以收藏商品}，收藏不构成交易行为。
+
+
+「允许」仅表示通过角色权限条件，仍需通过对象归属、数据可见范围与账号状态条件；「拒绝」表示基础角色无权。\textbf{认证状态与账号状态分开记录，互不替代}（BR-19）。
+
+
+\subsection*{5.2 基础权限矩阵}
+\addcontentsline{toc}{subsection}{5.2 基础权限矩阵}
+
+{\scriptsize
+\begin{longtable}{|p{1.81cm}|p{7.24cm}|p{1.75cm}|p{2.88cm}|p{2.32cm}|}
+\hline
+\textbf{操作} & \textbf{游客} & \textbf{未认证学生} & \textbf{已认证学生} & \textbf{管理员} \\
+\hline
+\endfirsthead
+\hline
+\textbf{操作} & \textbf{游客} & \textbf{未认证学生} & \textbf{已认证学生} & \textbf{管理员} \\
+\hline
+\endhead
+\hline
+\endfoot
+浏览商品 & 允许 & 允许 & 允许 & 允许 \\
+\hline
+搜索商品 & 允许 & 允许 & 允许 & 允许 \\
+\hline
+按分类浏览 & 允许 & 允许 & 允许 & 允许 \\
+\hline
+发布商品 & 拒绝 & 拒绝 & 允许 & 拒绝 \\
+\hline
+下单成交 & 拒绝 & 拒绝 & 允许 & 拒绝 \\
+\hline
+收藏商品 & 拒绝 & 允许 & 允许 & 拒绝 \\
+\hline
+下架自己的商品 & 拒绝 & 拒绝 & 允许（仅限本人） & 拒绝 \\
+\hline
+提交学生证核验 & 拒绝 & 允许（未提交 / 已驳回） & 拒绝（已认证无需再提） & 拒绝 \\
+\hline
+评价 & 拒绝 & 拒绝 & 允许 & 拒绝 \\
+\hline
+举报 & 拒绝 & 拒绝 & 允许 & 拒绝（管理员不能以举报人身份提交） \\
+\hline
+\textbf{发送私信（联系卖家）} & 拒绝 & \textbf{拒绝} & 允许（仅限本人参与的商品会话） & 拒绝（管理员不得主动发起） \\
+\hline
+\textbf{查看本人私信} & 拒绝 & 允许（仅本人参与） & 允许（仅本人参与） & 允许（\textbf{仅限处置异议会话}） \\
+\hline
+\textbf{撤销成交} & 任一方当事人可发起退货/撤销申请。只有双方明确同意，或管理员审批通过后，\texttt{成交状态} 才置 \texttt{已撤销}，商品由 \texttt{已售出} 回到 \texttt{在售}（ST-10）。任一方已评价后不得申请（BR-21、UC-31） &  &  &  \\
+\hline
+\textbf{编辑商品} & 拒绝 & 拒绝 & 允许（仅限本人发布的「待审核」或「在售」商品） & 拒绝 \\
+\hline
+查看本人信用分 & 拒绝 & 允许 & 允许 & 不适用 \\
+\hline
+查看他人信用分（仅分数） & 拒绝 & 允许 & 允许 & 允许 \\
+\hline
+查看他人信用变动明细 & 拒绝 & 拒绝 & 拒绝 & 允许 \\
+\hline
+查看本人成交记录 & 拒绝 & 允许 & 允许 & 拒绝 \\
+\hline
+查看本人商品 & 拒绝 & 允许 & 允许 & 拒绝 \\
+\hline
+查看消息通知 & 拒绝 & 允许（仅本人） & 允许（仅本人） & 允许（仅本人） \\
+\hline
+审核商品 & 拒绝 & 拒绝 & 拒绝 & 允许 \\
+\hline
+审核学生证 & 拒绝 & 拒绝 & 拒绝 & 允许 \\
+\hline
+下架违规商品 & 拒绝 & 拒绝 & 拒绝 & 允许 \\
+\hline
+删除他人评价 & 拒绝 & 拒绝 & 拒绝 & 允许 \\
+\hline
+扣信用分 & 拒绝 & 拒绝 & 拒绝 & 允许 \\
+\hline
+\end{longtable}
+}
+
+
+\textbf{权限拒绝后的统一处理}：按 §5.5 第 1、2 条执行——不改变任何业务数据与状态，可追加安全审计记录，不得因被拒绝操作扣信用分。
+
+
+\textbf{拒绝提示语（按角色与状态区分）}：
+
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{场景} & \textbf{提示语} \\
+\hline
+\endfirsthead
+\hline
+\textbf{场景} & \textbf{提示语} \\
+\hline
+\endhead
+\hline
+\endfoot
+游客发布 / 下单 & 「请先登录并完成学生证核验」 \\
+\hline
+未提交学生证 & 「请先上传学生证」 \\
+\hline
+待审核 & 「核验审核中，请等待」 \\
+\hline
+已驳回 & 「核验未通过，请按原因修改后重新提交」 \\
+\hline
+管理员发布 / 下单 / 评价 & 「管理员无发布商品权限」/「管理员无下单权限」/「管理员无评价权限」 \\
+\hline
+管理员提交举报 & 「管理员不能以举报人身份提交举报」 \\
+\hline
+账号封禁 & 「账号已封禁，不可发布与下单」 \\
+\hline
+信用分不足 & 「信用分不足，暂不可发布新商品」/「信用分不足，暂不可下单」 \\
+\hline
+商品状态不符 & 「该商品不可购买」（状态拒绝，非权限拒绝） \\
+\hline
+未认证学生发起私信 & 「请先完成学生证核验，再联系卖家」 \\
+\hline
+对自己发布的商品发起私信 & 「不能与自己对话」 \\
+\hline
+对已售出商品发起私信（非成交买家） & 「该商品已售出」 \\
+\hline
+管理员主动发起私信 & 「管理员不能主动发起私信」 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{5.3 允许操作的对象与业务条件}
+\addcontentsline{toc}{subsection}{5.3 允许操作的对象与业务条件}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{操作} & \textbf{允许范围与仍需满足的业务条件} \\
+\hline
+\endfirsthead
+\hline
+\textbf{操作} & \textbf{允许范围与仍需满足的业务条件} \\
+\hline
+\endhead
+\hline
+\endfoot
+浏览 / 搜索 / 分类 & 公开可浏览范围的商品；只能看到「在售」商品详情，不能因此读取学生隐私（手机号、宿舍地址） \\
+\hline
+发布商品 & 本人发布；已认证、账号未封禁、信用分 ≥ 60、在售未达 5 件、字段与价格合法 \\
+\hline
+下单成交 & 本人下单；已认证、账号未封禁、信用分 ≥ 40、商品处于「在售」、非本人商品 \\
+\hline
+收藏 & 本人收藏；已登录即可，不要求认证；建议上限 100 件（待确认） \\
+\hline
+下架自己的商品 & 本人商品且处于「在售」 \\
+\hline
+提交学生证核验 & 本人；认证状态为「未提交」或「已驳回」，重提未达 3 次 \\
+\hline
+评价 & 本人为该笔成交的买方或卖方；尚未评价过该订单；在成交后 7 天内 \\
+\hline
+举报 & 已认证学生；\textbf{对象可为商品或学生}（对象为学生的举报须与本人有成交或私信关系）；不支持举报评价；不得举报本人商品或本人 \\
+\hline
+\textbf{发送私信} & 已认证学生；\textbf{必须绑定一件具体商品}；仅该商品的发布人、沟通过的买家、（违规下架时）管理员可参与；非参与方读不到任何消息正文 \\
+\hline
+\textbf{查看本人私信} & 本人仅可查看自己参与的会话；管理员仅可查看与处置异议相关的会话 \\
+\hline
+\textbf{撤销成交} & 任一方当事人可发起退货/撤销申请。只有双方明确同意，或管理员审批通过后，\texttt{成交状态} 才置 \texttt{已撤销}，商品由 \texttt{已售出} 回到 \texttt{在售}（ST-10）。任一方已评价后不得申请（BR-21、UC-31） \\
+\hline
+\textbf{编辑商品} & 本人发布的商品；仅「待审核」或「在售」可编辑（「已售出」不可、「已下架」走 ST-08 重提）；编辑后「在售」商品回到「待审核」重审（BR-22、ST-12）；发布人／状态／下架原因／发布时间为系统字段，卖家不可写 \\
+\hline
+审核商品 & 管理员；商品处于「待审核」；\textbf{须按 §4.3 禁售品类清单（A1–E2）逐类比对}，驳回原因须引用类目编号 \\
+\hline
+审核学生证 & 管理员；须核对\textbf{证件姓名与账号所填真实姓名}、\textbf{证件学号与账号所填学号}一致且图片清晰可辨；学生证图片\textbf{仅审核职责内的管理员}可见（NFR-08） \\
+\hline
+下架违规商品 & 管理员；商品处于「待审核」或「在售」；违规判定须落到 §4.3 的具体类目；须记录原因与证据 \\
+\hline
+删除他人评价 & 仅管理员；删除依据与保留要求在 BR-04 处置范围内 \\
+\hline
+扣信用分 & 仅管理员；触发条件与幅度按 BR-14 执行 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{5.4 本人数据与他人数据}
+\addcontentsline{toc}{subsection}{5.4 本人数据与他人数据}
+
+{\footnotesize
+\begin{longtable}{|p{2.79cm}|p{3.69cm}|p{3.25cm}|p{2.91cm}|p{3.36cm}|}
+\hline
+\textbf{数据} & \textbf{游客} & \textbf{其他学生} & \textbf{本人} & \textbf{管理员} \\
+\hline
+\endfirsthead
+\hline
+\textbf{数据} & \textbf{游客} & \textbf{其他学生} & \textbf{本人} & \textbf{管理员} \\
+\hline
+\endhead
+\hline
+\endfoot
+手机号、宿舍地址 & 不可查看 & 不可查看（\textbf{含成交对家}） & 可查看 & 仅必要管理场景查看并审计（建议，待确认） \\
+\hline
+信用分 & 不可查看 & 可查看\textbf{分数}（不含明细） & 可查看分数与明细 & 可查看分数与明细 \\
+\hline
+学号、认证资料、登录计数与锁定时刻 & 不可查看 & 不随公开商品与评价暴露 & 展示范围待确认；不展示内部计数与密码 & 仅必要管理范围；不因管理员角色批量公开 \\
+\hline
+学生证图片 & 不可查看 & 不可查看 & 可查看本人已提交的图片 & \textbf{仅审核职责内的管理员}在核验时读取 \\
+\hline
+商品公开信息 & 标题、价格、成色、图片、分类、商品状态、发布人昵称 & 同左 & 同左，另有管理入口 & 可浏览；审核所需信息按职责限定 \\
+\hline
+成交记录 & 不可查看 & 不可查看 & 可查看本人作为买方或卖方的记录 & 按职责限定 \\
+\hline
+\textbf{站内私信} & 不可查看 & \textbf{不可查看}（非会话参与方读不到任何消息正文） & 仅本人参与的会话 & \textbf{仅处置异议会话}；不得读取学生之间的交易会话 \\
+\hline
+举报记录及举报人身份 & 不可查看 & 不公开举报人、处理人明细 & 举报人可见本人提交的举报进度 & 可在处置职责范围内查看；管理员不可作为举报人 \\
+\hline
+\end{longtable}
+}
+
+
+
+「本人」通过当前登录主体与学号的归属判定，不能采信用户自行填写的学号扩大范围。查看本人不自动赋予修改本人信用分、认证状态或删除评价的权限。
+
+
+\subsection*{5.5 权限控制业务规则}
+\addcontentsline{toc}{subsection}{5.5 权限控制业务规则}
+
+\begin{enumerate}[leftmargin=1.9em,itemsep=1pt,topsep=2pt]
+\item \textbf{角色与对象校验}：每次实际操作都检查有效身份、角色、对象归属与字段可见范围。隐藏按钮只能辅助交互；直接指定他人编号、换入口或重复提交也必须受同样限制。默认不返回拒绝访问对象的手机号、地址、信用分明细或举报人身份。\textbf{私信还须校验「是否为该会话参与方」}：指定他人会话编号、猜测商品编号，均不得读到消息正文。
+\item \textbf{权限拒绝不改变业务}：被拒绝时不创建商品、成交记录、评价、举报或信用记录，不变更商品状态与举报处理状态，不删除评价，不更新信用分；\textbf{不得因一次被拒绝操作扣信用分}。允许追加必要的安全审计记录。
+\item \textbf{权限拒绝与状态拒绝区分}：角色无权时使用 §5.2 的提示语；角色有权但业务状态不满足时提示「当前业务状态不支持该操作」（如对已售出商品下单）。两类拒绝均保持操作前的业务数据与状态不变，审计原因分别记录。
+\item \textbf{拒绝提示要准确}：未认证学生发布时提示完成核验（并区分未提交 / 待审核 / 已驳回），不能误报系统故障；管理员下单时提示角色无权，不能诱导管理员完成核验来绕过限制。
+\item \textbf{必要审计}：记录权限拒绝、敏感个人信息读取与管理员审核 / 下架 / 删除 / 扣分等管理操作。审计至少含操作时间、操作者可得标识（游客使用会话标识）、有效角色、动作、目标可得标识、结果与原因类别；\textbf{不得写入登录密码、完整手机号、完整宿舍地址或学生证图片内容}。保留期限与审计访问权限待确认。
+\item \textbf{登录失败是独立安全行为}：平台自建账号体系，登录失败计数与锁定由平台自行维护；连续失败 5 次锁定 15 分钟会改变计数与锁定截止时间。\textbf{不得顺带变更认证状态、商品状态、信用分或账号封禁状态}。
+\item \textbf{并发操作一律「以服务端状态先到者为准」}：所有并发冲突按\textbf{谁先在服务端事务中成功，谁生效}处理；后到者按\textbf{业务状态拒绝}处理并提示当前状态，\textbf{不得两个都成功，也不得两个都失败}。具体覆盖：
+\end{enumerate}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{并发对} & \textbf{判定} \\
+\hline
+\endfirsthead
+\hline
+\textbf{并发对} & \textbf{判定} \\
+\hline
+\endhead
+\hline
+\endfoot
+两人同时下单同一商品 & 先提交者成交；后提交者提示「该商品已售出」，不产生记录（ST-05、SC-03） \\
+\hline
+买家下单 与 卖家主动下架 & 下单先成功则商品 \texttt{已售出}，卖家下架按 BR-09 拒绝（已售出不可下架）；下架先成功则商品 \texttt{已下架}，下单按「该商品不可购买」拒绝 \\
+\hline
+卖家编辑在售商品 与 买家下单 & 下单先成功则商品 \texttt{已售出}，编辑按 UC-32 辅事件流 B 拒绝；编辑先成功则商品已回 \texttt{待审核}（ST-12），\textbf{不再可被下单}，下单按「该商品不可购买」拒绝 \\
+\hline
+管理员封禁卖家 与 买家下单其商品 & 下单先成功则商品 \texttt{已售出}，封禁联动下架\textbf{不作用于已售出商品}（BR-09）；封禁先成功则商品已 \texttt{已下架}（ST-13），下单被拒 \\
+\hline
+管理员封禁卖家 与 该卖家商品被撤销 & 先到者为准：审批先通过且卖家已封禁 → 走 ST-11 转 \texttt{已下架（撤销后不可交易）}；封禁先成功则商品已 \texttt{已下架}，撤销仍可生效但\textbf{不再改变商品状态}（BR-21 只改成交标记） \\
+\hline
+管理员审核通过 与 卖家撤回 & 两者都从 \texttt{待审核} 出发：先成功者决定结果（ST-02 或 ST-04），后到者按「当前业务状态不支持该操作」拒绝 \\
+\hline
+两人同时接受同一举报 & 先处理者写入处理结果；后到者提示「该举报已被处理」，\textbf{不得重复扣分}（BR-14） \\
+\hline
+双方同时提交申请 & \textbf{先到者生效}：成交置 \texttt{已撤销}、商品回 \texttt{在售}；后到者提示「该成交已撤销」，\textbf{不重复撤销、不重复产生审批处理、不重复扣分}（BR-21、BR-14 ④） \\
+\hline
+对方人工判定 与 7 天超时自动判定 & \textbf{先落库者为准}：人工判定先成功则采用其结论（\texttt{已免责} 或 \texttt{计违约}）；系统超时判定先成功则固定为 \texttt{计违约}。\textbf{\texttt{计违约} 的 −2 扣分每笔成交最多一次}，两条路径同时触发也只扣一次（BR-14 ④、UC-31 辅事件流 C） \\
+\hline
+撤销 与 对方评价 & 评价先落库则撤销被拒（评价后不可撤销）；撤销先成立则评价被拒（BR-21、UC-31 辅事件流 D、E） \\
+\hline
+\textbf{两笔扣分同时作用于同一学生} & \textbf{必须累加，不得覆盖}：如同一卖家被两个举报分别判成立（各 −10），应得 −20 而非 −10。信用分更新一律用「原子增减 + 单条流水」，\textbf{禁止「读当前值→计算→写回」}（否则后写者覆盖先写者，即丢失更新） \\
+\hline
+\textbf{重复提交类幂等} & 同一动作重复提交只生效一次：下单（BR-06）、评价（BR-08）、举报（举报组合唯一）、核验申请（同一学生同时最多一条待审核）、收藏（组合唯一）、撤销、审批处理（BR-14 ④）——均以数据库唯一约束或事务内状态校验保证，\textbf{不依赖前端防抖} \\
+\hline
+\end{longtable}
+}
+
+
+识别唯一有效成交记录的依据是商品状态「在售」与服务端事务，\textbf{不做客户端预占、不做分布式锁外的乐观判断}。
+
+\begin{enumerate}[leftmargin=1.9em,itemsep=1pt,topsep=2pt]
+\item \textbf{处置的影响不混同于权限拒绝}：管理员下架、删除评价、扣分成功后的状态变化按 BR-04、BR-09、BR-14 执行；举报提交成功本身\textbf{不等于}违规已经成立，不得据此自动下架或扣分。
+\end{enumerate}
+
+\subsection*{5.6 典型走查输入与期望}
+\addcontentsline{toc}{subsection}{5.6 典型走查输入与期望}
+
+{\scriptsize
+\begin{longtable}{|p{3.66cm}|p{4.50cm}|p{4.84cm}|p{3.01cm}|}
+\hline
+\textbf{输入场景} & \textbf{提示与判断} & \textbf{业务数据与状态的期望} & \textbf{可检查的审计} \\
+\hline
+\endfirsthead
+\hline
+\textbf{输入场景} & \textbf{提示与判断} & \textbf{业务数据与状态的期望} & \textbf{可检查的审计} \\
+\hline
+\endhead
+\hline
+\endfoot
+游客尝试发布商品 & 请先登录并完成学生证核验；权限拒绝 & 不新增商品 & 权限拒绝；角色为游客 \\
+\hline
+未提交学生证的学生尝试下单 & 请先上传学生证；权限拒绝 & 不新增成交记录；商品保持「在售」 & 权限拒绝；不记录敏感明文 \\
+\hline
+待审核学生尝试发布商品 & 核验审核中，请等待；权限拒绝 & 不新增商品 & 权限拒绝；认证状态为待审核 \\
+\hline
+已驳回学生尝试下单 & 核验未通过，请按原因修改后重新提交；权限拒绝 & 不新增成交记录 & 权限拒绝；含驳回原因类别 \\
+\hline
+学生上传他人学生证 & 驳回并标记异常 & 认证状态转为「已驳回」；不进入「已认证」 & 违规标记可追溯；不含证件图片内容 \\
+\hline
+已认证学生指定他人学号读取手机号 & 仅本人可查看；权限拒绝 & 不返回手机号；数据不变 & 拒绝及目标标识；不含真实手机号 \\
+\hline
+管理员尝试下单或评价 & 管理员无下单权限 / 管理员无评价权限 & 无新增成交记录 / 评价；不影响商品与信用分 & 权限拒绝；角色为管理员 \\
+\hline
+已认证学生删除他人评价 & 仅管理员可删除他人评价 & 原评价保留；信用分不变 & 权限拒绝 \\
+\hline
+已认证学生查看交易对方信用分 & 允许，仅显示分数 & 返回分数，不返回变动明细 & 访问结果可追溯；不改变分数 \\
+\hline
+管理员提交举报 & 管理员不能以举报人身份提交举报 & 不新增举报记录 & 权限拒绝 \\
+\hline
+未认证学生尝试联系卖家 & 请先完成学生证核验，再联系卖家；权限拒绝 & 不创建会话；不记录消息 & 权限拒绝；认证状态为未提交 \\
+\hline
+已认证学生指定他人会话编号读取私信 & 非本人参与的会话；权限拒绝 & 不返回消息正文；会话不变 & 拒绝及目标标识 \\
+\hline
+管理员尝试读取学生之间的交易会话 & 仅处置异议会话；权限拒绝 & 不返回消息正文 & 权限拒绝；角色为管理员 \\
+\hline
+卖家对已下架自己的商品发起私信 & 允许，且仅可发给处置该商品的管理员 & 创建/复用该商品会话；不改变商品状态 & 会话参与方校验通过 \\
+\hline
+已认证学生提交退货/撤销申请成交 & \textbf{允许提交申请，等待对方同意或管理员审批} & 申请进入待处理，成交与商品状态暂不变 & 申请与审批记录可追溯 \\
+\hline
+任一方已评价后撤销成交 & 评价已提交，成交不可撤销；状态拒绝 & 成交记录与商品状态均不变 & 业务状态拒绝 \\
+\hline
+非当事人撤销他人成交 & 仅限本人参与的成交；权限拒绝 & \textbf{不产生任何撤销记录}；商品与成交记录不变 & 权限拒绝 \\
+\hline
+已认证学生在「在售」商品上编辑价格 & 允许，但商品转为「待审核」 & 商品 \texttt{在售}→\texttt{待审核}（ST-12）；立即从搜索与分类列表移除 & 编辑记录可追溯 \\
+\hline
+卖家尝试编辑「已售出」商品 & 已售出商品不可修改；状态拒绝 & 商品与原内容均不变 & 业务状态拒绝 \\
+\hline
+卖家尝试编辑他人商品 & 仅限本人发布的商品；权限拒绝 & 他人商品不变 & 权限拒绝 \\
+\hline
+管理员封禁卖家（该卖家有在售与待审商品） & 封禁并\textbf{联动下架}其全部「在售」与「待审核」商品 & 相关商品 \texttt{已下架（管理员违规下架）}；账号 \texttt{封禁}；两者同一动作完成 & 处置可追溯；\textbf{不得只封禁不下架} \\
+\hline
+已认证学生对已售出商品下单 & 该商品不可购买；状态拒绝 & 不产生成交记录；商品保持「已售出」 & 业务状态拒绝，不误记角色无权 \\
+\hline
+管理员审核非「待审核」状态的商品 & 当前业务状态不支持该操作；状态拒绝 & 商品原状态不变 & 业务状态拒绝 \\
+\hline
+管理员审核命中清单的商品（如出售管制刀具） & 按 §4.3 判定为 A1；驳回原因须引用类目编号 & 商品「已下架（审核不通过）」；不新增成交记录 & 处置可追溯；原因含类目编号 \\
+\hline
+管理员审核「二手 iPad，已恢复出厂」 & \textbf{允许通过}（§4.3.2 判定口径第 3 条，不得仅凭「二手」驳回） & 商品转为「在售」 & 审核结果可追溯 \\
+\hline
+管理员审核「教材（含印制的习题答案）」 & \textbf{允许通过}（§4.3.2 判定口径第 2 条，正常答案不属 D2） & 商品转为「在售」 & 审核结果可追溯 \\
+\hline
+信用分 55 的学生发布商品 & 信用分不足，暂不可发布新商品 & 不新增商品；信用分不变 & 业务状态拒绝 \\
+\hline
+信用分 35 的学生下单 & 信用分不足，暂不可下单 & 不新增成交记录 & 业务状态拒绝 \\
+\hline
+已认证学生下架他人商品 & 仅限本人发布的商品；权限拒绝 & 他人商品保持原状态 & 权限拒绝 \\
+\hline
+已认证学生查看本人信用记录 & 允许，仅返回本人记录 & 不得读取他人记录 & 访问范围按权限判定 \\
+\hline
+未认证学生查看消息通知 & 允许，仅返回当前账号通知 & 不得读取他人通知 & 访问结果可追溯 \\
+\hline
+两名买家同时对同一在售商品下单 & 先提交者成功，后提交者提示「该商品已售出」 & 仅一条成交记录；商品「已售出」 & 并发只产生一次业务变动 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+上述为可用于原型与后续系统验收的预期结果，\textbf{未执行真实系统测试}。
+
+\end{quote}
+
+
+\section*{6 数据需求}
+\addcontentsline{toc}{section}{6 数据需求}
+\markboth{6 数据需求}{6 数据需求}
+
+\subsection*{6.1 概念类图}
+\addcontentsline{toc}{subsection}{6.1 概念类图}
+\begin{figure}[htbp]
+\centering
+\fbox{\begin{minipage}[c][6.2cm][c]{0.86\linewidth}
+\centering
+{\large\color{gray} 图位待补}\\[4pt]
+{\small\color{gray}学生、商品、订单、评价、举报、信用记录、私信等实体的属性与关联多重性。}
+\end{minipage}}
+\caption*{图 6-1\quad UML 概念类图}
+\label{fig:class}
+\end{figure}
+
+
+关联要览（详见 §6.3）：学生 1—0..* 商品；学生 1—0..* 认证申请；管理员 0..1—1 认证申请（审核方）；学生 1—0..* 订单（作为买家）；学生 1—0..* 订单（作为卖家）；\textbf{商品 1—0..* 订单（其中「有效」最多 1 条）}；分类 1—0..* 商品；\textbf{学生 1—0..* 收藏；商品 1—0..* 收藏}；\textbf{订单 1—0..2 评价}；学生 1—0..* 评价（发出 / 收到）；学生 1—0..* 举报记录（提交）；商品 1—0..* 举报记录；管理员 0..1—1 举报记录（处理方）；学生 1—0..* 信用记录；订单 0..1—0..* 信用记录；学生 1—0..* 消息通知；\textbf{商品 1—0..* 私信；学生 1—0..* 私信（发送 / 接收）}。
+
+
+\begin{quote}\small
+\textbf{两条约束必须记住}：① \textbf{一件商品同时最多一条「有效」成交记录}——\texttt{已售出} 期间不可再下单（BR-06）；但撤销后可重新成交，故同商品可有\textbf{多条历史成交记录}（BR-21）；② \textbf{一笔订单最多两条评价}（买卖双方各一条，BR-08）。这与 V1.2.1「同商品多笔历史订单」在字面上一致，但语义不同：V1.2.1 允许并行多笔，本版只允许\textbf{串行多笔、有效唯一}。
+
+\textbf{注意「会话」不是实体}：会话是\textbf{同一（商品，双方）下的私信行聚合}，由应用层聚合出列表、未读数与最后消息时间，不单独建表。见 §6.2.1「私信」的说明。
+
+\end{quote}
+
+\subsection*{6.2 数据字典}
+\addcontentsline{toc}{subsection}{6.2 数据字典}
+
+\subsubsection*{6.2.1 逐实体数据定义}
+\addcontentsline{toc}{subsubsection}{6.2.1 逐实体数据定义}
+
+\subsubsection*{学生}
+\addcontentsline{toc}{subsubsection}{学生}
+
+{\scriptsize
+\begin{longtable}{|p{1.48cm}|p{1.48cm}|p{3.76cm}|p{7.73cm}|p{1.54cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{邮箱} & 文本 & \textbf{学生登录账号}；唯一凭据 & \textbf{唯一、非空}；须符合邮箱格式；\textbf{注册时必填，不可为他人占用而阻塞本人注册}（学号不参与登录，见下） & 是 \\
+\hline
+学号 & 文本 & 校内身份标识；\textbf{仅用于学生证核验与校内身份核对，不再作为登录账号} & \textbf{唯一}（一个学号只能绑定一个账号）；由学校分配，非系统生成；\textbf{认证状态为「已认证」时必填，未提交／待审核／已驳回时可为空}——学号在 UC-02 提交核验时申报，核验通过后才与账号绑定 & 条件必填：已认证时 \\
+\hline
+昵称 & 文本 & 展示用称呼，不等同于真实姓名 & 建议值，待确认：1～20 个字符；不允许仅空白 & 是 \\
+\hline
+\textbf{真实姓名} & 文本 & 学生真实姓名，\textbf{用于学生证核验时与证件姓名比对}（UC-03） & 建议值，待确认：1～20 个字符；不允许仅空白；\textbf{仅本人与具备核验/处置职责的管理员可见}（§6.5） & 是 \\
+\hline
+登录密码 & 文本 & 学生登录凭据（\textbf{邮箱 + 密码}） & \textbf{仅存不可逆哈希}；任何场景不得回显，不得写入日志、审计或导出 & 是 \\
+\hline
+注册时间 & 日期时间 & 账号创建时刻 & 由系统记录；用于 BR-16「注册后 7 天内提交核验」的期限计算 & 是 \\
+\hline
+认证状态 & 枚举 & 决定是否具备发布与交易权限 & 取值：\texttt{未提交}、\texttt{待审核}、\texttt{已认证}、\texttt{已驳回}（四态，见 §7.3）；已认证后经事后核实可改回 \texttt{已驳回} 并留痕（BR-18） & 是 \\
+\hline
+\textbf{账号状态} & 枚举 & 独立的账号管控标记，与认证状态互不替代 & 取值：\texttt{正常}、\texttt{受限}、\texttt{封禁}；由管理员处置设置（BR-10、BR-19）；封禁不改变认证状态 & 是 \\
+\hline
+手机号 & 文本 & 学生联系信息；受 NFR-04 保护 & 仅本人与管理员可见；\textbf{注册时非必填}；建议值，待确认：填写时为 11 位数字，仅适用于中国大陆手机号 & 否 \\
+\hline
+宿舍地址 & 文本 & 学生居住地址；受 NFR-04 保护 & 仅本人与管理员可见；建议值，待确认：填写时 1～100 个字符 & 否 \\
+\hline
+信用分 & 数值 & 学生当前信用分 & 初始值 100，\textbf{取值范围 0～150，越界按边界值截断}（BR-13）；分数校内公开，变动明细仅本人与管理员可见；计算与变动见 BR-14 & 是 \\
+\hline
+评价数 & 数值 & 学生收到的评价数量 & 非负整数、公开字段，由评价实体统计得出；是否冗余存储待确认 & 是 \\
+\hline
+\textbf{被核实争议数} & 数值 & 针对该学生的\textbf{对人举报经核实成立}的次数，即「交易争议」的公开计数 & 非负整数、\textbf{公开字段}（任意已登录用户可见）；只统计 \texttt{被举报对象类型=学生} 且 \texttt{处理状态=已处理}（成立）的记录；\textbf{举报被驳回不计入}；用于让其他学生在交易前识别风险（BR-04、BR-14） & 是 \\
+\hline
+\textbf{核验重提次数} & 数值 & 该学生累计重新提交核验的次数 & 非负整数；上限 3 次（BR-17）；每次被驳回加 1；\textbf{置于学生实体，全生命周期累计} & 是 \\
+\hline
+连续登录失败次数 & 数值 & 支持连续失败 5 次锁定的安全计数 & 非负整数；第 5 次失败触发锁定；成功登录后清零 & 是 \\
+\hline
+锁定截止时间 & 日期时间 & 本次登录锁定的到期时刻 & 第 5 次失败时设为触发时刻后 15 分钟；未锁定可为空 & 条件必填：锁定时 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{认证申请}
+\addcontentsline{toc}{subsubsection}{认证申请}
+
+{\scriptsize
+\begin{longtable}{|p{1.57cm}|p{1.51cm}|p{4.14cm}|p{6.77cm}|p{2.02cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+申请编号 & 文本 & 单次核验申请的唯一标识 & 唯一、非空、由系统生成 & 是 \\
+\hline
+\textbf{申报学号} & 文本 & 学生本次提交核验时申报的学号，作为与证件学号比对的依据 & 必填；建议值，待确认：格式与学号一致；\textbf{核验通过时写入 \texttt{学生.学号} 并全局唯一}；同一学生的历史申请可申报同一学号 & 是 \\
+\hline
+学生证图片 & 文本 & 学生证照片的存储引用 & \textbf{仅审核职责内的管理员可读取}；不得出现在公开页面、消息通知、导出文件、日志与审计正文中（NFR-08） & 是 \\
+\hline
+提交时间 & 日期时间 & 学生提交申请的时刻 & 由系统记录；与 BR-16 的 7 天提交期限、24 小时审核时限相关 & 是 \\
+\hline
+审核状态 & 枚举 & 本次申请的审核进展 & 取值：\texttt{待审核}、\texttt{已通过}、\texttt{已驳回}；创建时恒为 \texttt{待审核} & 是 \\
+\hline
+审核管理员编号 & 文本 & 作出结论的管理员 & 通过管理员编号引用管理员实体；待审核时可空；已出结论时必填 & 条件必填：已出结论时 \\
+\hline
+审核时间 & 日期时间 & 管理员作出结论的时刻 & 不早于提交时间；待审核时可空 & 条件必填：已出结论时 \\
+\hline
+驳回原因 & 文本 & 驳回时向学生展示的原因 & 建议值，待确认：1～200 个字符；已驳回时必填，其他状态为空 & 条件必填：已驳回时 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{商品}
+\addcontentsline{toc}{subsubsection}{商品}
+
+{\scriptsize
+\begin{longtable}{|p{1.45cm}|p{1.45cm}|p{4.07cm}|p{7.47cm}|p{1.56cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+商品编号 & 文本 & 商品唯一标识 & 唯一、非空、由系统生成 & 是 \\
+\hline
+标题 & 文本 & 商品展示标题 & 建议值，待确认：1～50 个字符；不允许仅空白 & 是 \\
+\hline
+\textbf{描述} & 文本 & 商品的详细说明（品相、使用时长、瑕疵等），是审核与买家判断的主要依据 & 建议值，待确认：1～1000 个字符；不允许仅空白；\textbf{纯文本，不支持富文本与内嵌链接} & 是 \\
+\hline
+价格 & 数值 & 商品的标价，也是唯一成交依据 & \textbf{大于 0 且不超过 50000 元，最多 2 位小数}（BR-05）；平台不议价 & 是 \\
+\hline
+成色 & 枚举 & 商品新旧程度 & 取值范围为\textbf{封闭四值}：全新、九成新、七成新、其他 & 是 \\
+\hline
+图片 & 列表 & 商品展示图片集合，也是审核与买家判断的主要依据 & \textbf{1～9 张}，至少 1 张；每张为一个有效图片条目；不允许空列表；不规定存储方式 & 是 \\
+\hline
+发布人学号 & 文本 & 发布该商品的学生 & 通过学生学号引用学生实体；发布人应为已认证学生 & 是 \\
+\hline
+分类编号 & 文本 & 商品所属分类 & 每件商品恰好关联 1 个分类（单层，不分层） & 是 \\
+\hline
+商品状态 & 枚举 & 商品当前生命周期状态 & 取值：\texttt{待审核}、\texttt{在售}、\texttt{已售出}、\texttt{已下架}（四态，见 §7.2）；创建时恒为 \texttt{待审核} & 是 \\
+\hline
+下架原因 & 枚举 & 进入「已下架」的原因，供卖家与管理员追溯 & 取值：\texttt{审核不通过}、\texttt{卖家撤回}、\texttt{卖家主动下架}、\texttt{管理员违规下架}、\textbf{\texttt{撤销后不可交易}}；商品状态为「已下架」时必填，其余状态为空 & 条件必填：已下架时 \\
+\hline
+发布时间 & 日期时间 & 记录商品发布的业务时刻 & 由系统记录；以发布提交成功时刻计，非审核通过时刻；\textbf{编辑或重新提交时刷新}（BR-22） & 是 \\
+\hline
+\textbf{删除时间} & 日期时间 & 卖家永久删除该商品的时刻 & 可空；\textbf{仅 \texttt{已下架} 商品可删除}；非空即视为已删除，\textbf{从搜索、分类、我的商品等所有列表排除且不可恢复}（BR-09、UC-11）；已删除商品的历史成交记录与收藏记录\textbf{保留}，仍可追溯 & 否 \\
+\hline
+\textbf{浏览数} & 数值 & 该商品被查看的次数 & 非负整数、公开字段，由系统统计；\textbf{建议值，待确认：是否冗余存储于商品实体，或由访问日志实时统计} & 是 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{订单（成交记录）}
+\addcontentsline{toc}{subsubsection}{订单（成交记录）}
+
+\begin{quote}\small
+\textbf{本实体只有一个两值标记，不是订单状态机。} 订单创建即成交，\textbf{不存在}「待支付 / 已支付 / 待交付 / 待确认 / 已完成 / 已取消 / 退款中 / 已退款」等任何依赖站外支付与站外交付的状态。唯一的 \texttt{成交状态} 只有 \texttt{有效}、\texttt{已撤销} 两个值，表达的是\textbf{「双方是否一致同意终止这笔成交」}——这是平台\textbf{能够确认的事实}，而不是平台无权观测的支付/交付事实（BR-21）。
+
+\end{quote}
+
+{\scriptsize
+\begin{longtable}{|p{1.51cm}|p{5.58cm}|p{2.44cm}|p{4.96cm}|p{1.51cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+订单编号 & 文本 & 成交记录唯一标识 & 唯一、非空、由系统生成 & 是 \\
+\hline
+商品编号 & 文本 & 本次成交涉及的商品 & 引用商品实体；\textbf{同一商品同时最多 1 条「有效」成交记录}（BR-06）；撤销后可再次成交，形成多条历史记录 & 是 \\
+\hline
+买家学号 & 文本 & 下单成交的学生 & 引用学生实体；成交时应为已认证学生；\textbf{不得等于该商品的发布人学号}（BR-01） & 是 \\
+\hline
+卖家学号 & 文本 & 该商品的发布人 & 冗余保存成交时的卖家，避免商品后续变更导致追溯失真 & 是 \\
+\hline
+成交金额 & 数值 & 本次成交的金额 & \textbf{必须等于下单时商品的标价}（BR-05）；大于 0 且不超过 50000 元 & 是 \\
+\hline
+成交时间 & 日期时间 & 订单创建与商品转为「已售出」的时刻 & 由系统记录；与商品状态更新为「已售出」在同一业务动作中完成（BR-06） & 是 \\
+\hline
+\textbf{成交状态} & 枚举 & 该笔成交是否仍有效 & 取值：\texttt{有效}、\texttt{已撤销}；\textbf{创建时恒为 \texttt{有效}}；仅在双方同意或管理员审批通过后置为 \texttt{已撤销}（BR-21），审批通过后不可回滚 & 是 \\
+\hline
+\textbf{撤销发起人学号} & 文本 & 单方发起撤销的一方 & 引用学生实体；须为该成交的买方或卖方；\texttt{已撤销} 时必填，\texttt{有效} 时为空 & 条件必填：已撤销时 \\
+\hline
+\textbf{撤销原因} & 文本 & 发起撤销时选择的原因 & 建议值，待确认：1～200 个字符；取值来自 UC-31 主事件流第 1 步的选项；\texttt{已撤销} 时必填 & 条件必填：已撤销时 \\
+\hline
+\textbf{撤销时间} & 日期时间 & 撤销生效的时刻 & 由系统记录；不早于 \texttt{成交时间}；审批通过时记录生效时间；\texttt{已撤销} 时必填 & 条件必填：已撤销时 \\
+\hline
+\textbf{退货/撤销审批} & 退货或撤销申请的处理标记，取值 \texttt{待对方同意}、\texttt{待管理员审批}、\texttt{已同意}、\texttt{已拒绝}。双方同意或管理员审批通过后，成交状态才可变为 \texttt{已撤销}。 &  &  &  \\
+\hline
+\textbf{审批处理时间} & 日期时间 & 判定生效的时刻（人工判定或系统超时判定） & 由系统记录；\texttt{退货/撤销审批} 为 \texttt{已免责} 或 \texttt{计违约} 时必填，\texttt{待判定} 时为空 & 条件必填：判定完成时 \\
+\hline
+\end{longtable}
+}
+
+
+
+{\footnotesize
+\begin{longtable}{|p{2.27cm}|p{3.22cm}|p{10.50cm}|}
+\hline
+\textbf{成交状态} & \textbf{退货/撤销审批} & \textbf{含义} \\
+\hline
+\endfirsthead
+\hline
+\textbf{成交状态} & \textbf{退货/撤销审批} & \textbf{含义} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{有效} & \textbf{必须为空} & 正常成交，无撤销动作 \\
+\hline
+\texttt{已撤销} & \texttt{待判定} & 撤销已生效、商品已回到「在售」，\textbf{对方有 7 天时间决定是否计撤销方违约} \\
+\hline
+\texttt{已撤销} & \texttt{已免责} & 对方认可，撤销方\textbf{不扣分} \\
+\hline
+\texttt{已撤销} & \texttt{计违约} & 对方判定或 7 天未表态，撤销方\textbf{信用分 −2}（BR-14 ④） \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{分类}
+\addcontentsline{toc}{subsubsection}{分类}
+
+{\footnotesize
+\begin{longtable}{|p{1.68cm}|p{1.68cm}|p{3.94cm}|p{7.01cm}|p{1.68cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+分类编号 & 文本 & 商品分类唯一标识 & 唯一、非空；由系统生成 & 是 \\
+\hline
+分类名称 & 文本 & 供学生选择和查看的分类名称 & 建议值，待确认：1～20 个字符，\textbf{名称唯一}（单层分类，不分层） & 是 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{收藏}
+\addcontentsline{toc}{subsubsection}{收藏}
+
+
+{\footnotesize
+\begin{longtable}{|p{1.63cm}|p{1.63cm}|p{3.39cm}|p{7.71cm}|p{1.63cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+收藏编号 & 文本 & 单条收藏记录的唯一标识 & 唯一、非空、由系统生成 & 是 \\
+\hline
+学生学号 & 文本 & 发起收藏的学生 & 引用学生实体；\textbf{未认证学生亦可收藏}（§5.2） & 是 \\
+\hline
+商品编号 & 文本 & 被收藏的商品 & 引用商品实体；商品状态变化\textbf{不删除}收藏记录（收藏页展示实际状态，BR-11） & 是 \\
+\hline
+收藏时间 & 日期时间 & 收藏发生的时刻 & 由系统记录；用于收藏列表排序 & 是 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+\textbf{三条一致性约束}：
+
+1. \textbf{(学生学号, 商品编号) 组合唯一}——重复收藏不新增记录（UC-09 辅事件流 A）。
+
+2. \textbf{同一学生的收藏数上限 100 件}（建议值，待确认；达到上限时提示先清理，BR-11）。
+
+3. 收藏\textbf{不锁定商品}：存在收藏记录不影响商品的下单与状态流转；商品转为 \texttt{已售出}／\texttt{已下架} 后，收藏记录保留并在收藏列表中显示「已失效」（BR-11）。
+
+\end{quote}
+
+\subsubsection*{评价}
+\addcontentsline{toc}{subsubsection}{评价}
+
+{\footnotesize
+\begin{longtable}{|p{2.12cm}|p{1.58cm}|p{3.27cm}|p{7.45cm}|p{1.58cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+评价编号 & 文本 & 评价唯一标识 & 唯一、非空、由系统生成 & 是 \\
+\hline
+订单编号 & 文本 & 本次评价依据的成交记录 & 引用订单实体；每条评价恰好依据一个订单 & 是 \\
+\hline
+评价人学号 & 文本 & 提交评价的学生 & 引用学生实体；须为该订单的买方或卖方 & 是 \\
+\hline
+被评价人学号 & 文本 & 收到评价的学生 & 引用学生实体；须为同一订单的另一方；\textbf{不得等于评价人学号} & 是 \\
+\hline
+评价内容 & 文本 & 评价的文字内容 & 建议值，待确认：1～500 个字符；不允许仅空白；\textbf{仅文字，不设星级评分字段} & 是 \\
+\hline
+评价时间 & 日期时间 & 评价成功提交的时刻 & 由系统记录；须在成交后 \textbf{7 天}内（BR-08） & 是 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{举报记录}
+\addcontentsline{toc}{subsubsection}{举报记录}
+
+{\scriptsize
+\begin{longtable}{|p{1.54cm}|p{1.58cm}|p{2.61cm}|p{8.27cm}|p{1.99cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+举报编号 & 文本 & 举报记录唯一标识 & 唯一、非空、由系统生成 & 是 \\
+\hline
+举报学生学号 & 文本 & 举报人 & 引用学生实体；非空；举报人只能是已认证学生；匿名举报不在本期范围 & 是 \\
+\hline
+\textbf{被举报对象类型} & 枚举 & 本次举报指向的是商品还是人 & 取值：\texttt{商品}、\texttt{学生}；\textbf{创建时必填、不可为空}；决定下面两个对象字段哪个生效 & 是 \\
+\hline
+被举报商品编号 & 文本 & 被举报的商品 & 引用商品实体；\textbf{仅当 \texttt{被举报对象类型} 为 \texttt{商品} 时必填，为 \texttt{学生} 时必须为空}；不得为举报人本人发布的商品（UC-12 辅事件流 B） & 条件必填：对象为商品时 \\
+\hline
+\textbf{被举报学生学号} & 文本 & 被举报的学生 & 引用学生实体；\textbf{仅当 \texttt{被举报对象类型} 为 \texttt{学生} 时必填，为 \texttt{商品} 时必须为空}；\textbf{不得等于举报人本人}；\textbf{须与举报人存在过成交记录或私信会话}，否则不受理（UC-12 辅事件流 C） & 条件必填：对象为学生时 \\
+\hline
+举报类型 & 枚举 & 举报所属类别 & 取值：\texttt{违禁品}、\texttt{虚假描述}、\texttt{价格欺诈}、\textbf{\texttt{站外导流}}、\textbf{\texttt{收款不履约}}、\texttt{其他}（\textbf{六值}，与 UC-12 主事件流一致）；\texttt{收款不履约} 专指成交后收款却不交货/失联，\textbf{只能用于对象为 \texttt{学生} 的举报} & 是 \\
+\hline
+举报原因 & 文本 & 举报事项的文字说明 & 建议值，待确认：1～500 个字符；不允许仅空白 & 是 \\
+\hline
+举报时间 & 日期时间 & 举报成功提交的时刻 & 由系统记录 & 是 \\
+\hline
+处理状态 & 枚举 & 举报处理进展 & 取值：\texttt{待处理}、\texttt{已处理}、\texttt{已驳回}；创建时恒为 \texttt{待处理} & 是 \\
+\hline
+\textbf{处置手段} & 列表（枚举集合） & 管理员实际执行的处置动作，可多选 & 取值来自 \{\texttt{警告}、\texttt{强制下架商品}、\texttt{限制发布}、\texttt{封禁账号}、\texttt{扣信用分}\}；\textbf{对象为 \texttt{学生} 时不得包含 \texttt{强制下架商品}}；举报成立并为「已处理」时必填且至少一项，\texttt{已驳回} 时必须为空 & 条件必填：成立时 \\
+\hline
+处理结果 & 文本 & 管理员处置结论的文字说明 & 建议值，待确认：1～500 个字符；处理完成时必填；\textbf{结论本身不自动改变商品或信用分，须由管理员显式执行处置} & 条件必填：已处理时 \\
+\hline
+处理管理员编号 & 文本 & 实际处理人 & 引用管理员实体；未处理时可空；已处理时必填 & 条件必填：已处理时 \\
+\hline
+处理时间 & 日期时间 & 举报完成处理的时刻 & 由系统记录，不早于举报时间；未处理时可空 & 条件必填：已处理时 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+\textbf{两条一致性约束}：
+
+1. \textbf{(举报学生学号, 被举报对象类型, 被举报对象编号) 组合唯一}——同一学生对同一对象（同一商品或同一学生）仅允许一条举报记录，重复提交不得新增（UC-12 辅事件流 A）。对象编号按类型取 \texttt{被举报商品编号} 或 \texttt{被举报学生学号}，两者\textbf{恰好有一个非空}。
+
+2. \textbf{\texttt{举报类型} 与 \texttt{被举报对象类型} 必须匹配}：\texttt{收款不履约} 只能用于对象为 \texttt{学生} 的举报；\texttt{违禁品}、\texttt{虚假描述}、\texttt{价格欺诈}、\texttt{站外导流} 只能用于对象为 \texttt{商品} 的举报；\texttt{其他} 两者皆可。
+
+\end{quote}
+
+\subsubsection*{信用记录}
+\addcontentsline{toc}{subsubsection}{信用记录}
+
+{\footnotesize
+\begin{longtable}{|p{1.65cm}|p{1.50cm}|p{2.87cm}|p{8.48cm}|p{1.50cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+信用记录编号 & 文本 & 单条信用变动记录唯一标识 & 唯一、非空、由系统生成 & 是 \\
+\hline
+学生学号 & 文本 & 记录归属的学生 & 引用学生实体；每条记录恰好属于 1 名学生 & 是 \\
+\hline
+变动值 & 数值 & 本次信用增减的数值 & 容许取值按 BR-14：\texttt{+2}、\texttt{−1}、\texttt{−2}、\texttt{−10}；正值增加、负值减少；不允许 0 & 是 \\
+\hline
+\textbf{变动事件类型} & 枚举 & 触发本次信用变动的业务事件 & 取值：\texttt{评价加分}、\texttt{违规处置}、\texttt{未评价扣分}、\texttt{撤销违约}；\textbf{与 BR-14 的 ①／②／③／④ 一一对应}；必填、且必须与 \texttt{变动值} 的符号方向一致 & 是 \\
+\hline
+变动原因 & 文本 & 本次变动的补充说明 & 建议值，待确认：1～200 个字符；不得与 \texttt{变动事件类型} 矛盾 & 是 \\
+\hline
+记录时间 & 日期时间 & 该变动生效的时刻 & 由系统记录；权限拒绝与状态拒绝不得产生信用变动 & 是 \\
+\hline
+关联订单编号 & 文本 & 可选关联的成交记录 & 引用订单实体；与订单无关时为空 & 否 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{消息通知}
+\addcontentsline{toc}{subsubsection}{消息通知}
+
+{\footnotesize
+\begin{longtable}{|p{1.55cm}|p{1.49cm}|p{3.42cm}|p{8.05cm}|p{1.49cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+通知编号 & 文本 & 通知记录唯一标识 & 唯一、非空、由系统生成 & 是 \\
+\hline
+接收人学号 & 文本 & 接收通知的学生或管理员 & 引用学生或管理员实体；须标明接收人类型 & 是 \\
+\hline
+消息类型 & 枚举 & 区分通知所属业务类型 & 取值：\texttt{核验}、\texttt{商品审核}、\texttt{成交}、\texttt{处置}、\texttt{信用}、\textbf{\texttt{私信}}；与 BR-15 的事件清单对应；\texttt{私信} 类通知须携带会话定位（商品编号＋对方学号） & 是 \\
+\hline
+\textbf{标题} & 文本 & 通知的简短标题，用于消息列表展示 & 建议值，待确认：1～30 个字符；不允许仅空白；不得包含他人隐私 & 是 \\
+\hline
+内容 & 文本 & 向接收人展示的通知正文 & 建议值，待确认：1～500 个字符；不得包含不应向接收人公开的他人隐私，不得含学生证图片内容 & 是 \\
+\hline
+生成时间 & 日期时间 & 通知生成的时刻 & 由系统记录 & 是 \\
+\hline
+已读状态 & 枚举 & 是否已读 & 取值：\texttt{未读}、\texttt{已读} & 是 \\
+\hline
+关联业务编号 & 文本 & 可选关联的商品、举报、核验申请等编号 & 可空；关联对象类型须与消息类型一致 & 否 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{私信}
+\addcontentsline{toc}{subsubsection}{私信}
+
+\begin{quote}\small
+\textbf{「会话」不是独立实体。} 会话是\textbf{同一（商品编号，双方学号有序对）下的私信行聚合}：会话列表、未读条数、最后一条消息时间均由应用层聚合得出，不单独建表。理由与参考实现一致——私信本身已是完整事实，多建一层会话表只会引入两份状态需要保持一致。因此本实体\textbf{没有状态字段}，每条消息只有「已读 / 未读」。
+
+\end{quote}
+
+{\footnotesize
+\begin{longtable}{|p{1.48cm}|p{1.48cm}|p{4.01cm}|p{7.55cm}|p{1.48cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+私信编号 & 文本 & 单条消息的唯一标识 & 唯一、非空、由系统生成 & 是 \\
+\hline
+商品编号 & 文本 & 该会话绑定的商品，决定会话上下文与参与方范围 & 引用商品实体；\textbf{必填，会话必须绑定具体商品}（BR-20）；商品状态变化不删除已产生的私信 & 是 \\
+\hline
+发送人学号 & 文本 & 消息发送方 & 引用学生或管理员实体；须为该商品会话的参与方；\textbf{发送人 ≠ 接收人}；学生发送人须为已认证 & 是 \\
+\hline
+接收人学号 & 文本 & 消息接收方 & 引用学生或管理员实体；须为该商品会话的参与方；\textbf{接收人为管理员时，商品下架原因必须为 \texttt{管理员违规下架}}（BR-20） & 是 \\
+\hline
+内容 & 文本 & 消息正文 & 建议值，待确认：1～500 个字符\textbf{纯文本}；不允许仅空白；不存附件、不存图片；不得写入日志 & 是 \\
+\hline
+发送时间 & 日期时间 & 消息生成的时刻 & 由系统记录；用于会话列表倒序与消息正序排列 & 是 \\
+\hline
+已读状态 & 枚举 & 该消息是否已被\textbf{接收人}阅读 & 取值：\texttt{未读}、\texttt{已读}；创建时恒为 \texttt{未读}；仅接收人可置为 \texttt{已读}；发送人不得修改 & 是 \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsubsection*{管理员}
+\addcontentsline{toc}{subsubsection}{管理员}
+
+{\footnotesize
+\begin{longtable}{|p{2.00cm}|p{1.52cm}|p{3.87cm}|p{6.61cm}|p{2.00cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+管理员编号 & 文本 & 管理员身份唯一标识，同时作为后台登录账号 & 唯一、非空；由系统预置生成；\textbf{不开放注册、不由学生账号升级}；管理员来源与人员名单待确认 & 是 \\
+\hline
+显示名称 & 文本 & 管理操作中显示的称呼 & 建议值，待确认：1～20 个字符；不存放无关个人信息 & 是 \\
+\hline
+登录密码 & 文本 & 管理员登录凭据 & 由系统预置初始密码，首次登录强制修改；\textbf{仅存不可逆哈希}；不得回显或写入日志、审计、导出 & 是 \\
+\hline
+连续登录失败次数 & 数值 & 支持管理员账号登录保护 & 非负整数；同样适用连续失败 5 次锁定 15 分钟 & 是 \\
+\hline
+锁定截止时间 & 日期时间 & 管理员账号登录锁定到期时刻 & 第 5 次失败时设为触发时刻后 15 分钟；未锁定可为空 & 条件必填：锁定时 \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{邮箱验证码}
+\addcontentsline{toc}{subsubsection}{邮箱验证码}
+
+\begin{quote}\small
+\textbf{临时安全记录，不是业务实体。} 用于注册与找回密码的身份验证；\textbf{验证码只存哈希、不存明文}，通过后立即作废（NFR-10）。保留期建议 7 天后清理（建议值，待确认）。
+
+\end{quote}
+
+{\footnotesize
+\begin{longtable}{|p{1.76cm}|p{1.54cm}|p{3.30cm}|p{7.86cm}|p{1.54cm}|}
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endfirsthead
+\hline
+\textbf{字段名称} & \textbf{数据类型} & \textbf{业务含义} & \textbf{约束条件} & \textbf{是否必填} \\
+\hline
+\endhead
+\hline
+\endfoot
+验证码编号 & 文本 & 单次验证码记录的唯一标识 & 唯一、非空、由系统生成 & 是 \\
+\hline
+邮箱 & 文本 & 接收验证码的邮箱 & 非空；\textbf{按邮箱做频控}（60 秒 1 次、24 小时 10 次）；机构域邮箱由学生自填 & 是 \\
+\hline
+用途 & 枚举 & 该验证码用于哪个流程 & 取值：\texttt{注册}、\texttt{找回密码}；\textbf{两种用途的验证码不可互换使用} & 是 \\
+\hline
+验证码哈希 & 文本 & 6 位数字验证码的哈希值 & \textbf{只存不可逆哈希，任何场景不得存明文}；不得写入日志、审计、导出、错误提示（NFR-10） & 是 \\
+\hline
+生成时间 & 日期时间 & 验证码签发时刻 & 由系统记录；用于 60 秒／24 小时频控判定 & 是 \\
+\hline
+过期时间 & 日期时间 & 验证码失效时刻 & \textbf{恒为生成时间 + 10 分钟}；超过即失效 & 是 \\
+\hline
+已使用 & 布尔 & 是否已被成功验证过一次 & \textbf{一次性}：验证通过并完成对应操作后置真，之后不得再用 & 是 \\
+\hline
+失败次数 & 数值 & 该验证码被错误尝试的次数 & 非负整数；\textbf{达到 5 次即作废}，须重新获取 & 是 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{6.3 实体关系说明}
+\addcontentsline{toc}{subsection}{6.3 实体关系说明}
+
+{\scriptsize
+\begin{longtable}{|p{2.09cm}|p{2.15cm}|p{3.28cm}|p{8.48cm}|}
+\hline
+\textbf{关联（角色）} & \textbf{关联两端的多重性} & \textbf{关联字段} & \textbf{依据与边界} \\
+\hline
+\endfirsthead
+\hline
+\textbf{关联（角色）} & \textbf{关联两端的多重性} & \textbf{关联字段} & \textbf{依据与边界} \\
+\hline
+\endhead
+\hline
+\endfoot
+学生—商品 & 学生 1；商品 0..* & 商品.发布人学号 → 学生.学号 & 一名学生可发布多个商品；每件商品恰有一名发布人；在售数量受 BR-02 限制 \\
+\hline
+学生—认证申请 & 学生 1；认证申请 0..* & 认证申请.申报学号 / 提交人与账号的关联 & 一名学生可因驳回重提产生多次申请；\textbf{同时最多一条「待审核」}；核验通过时把 \texttt{申报学号} 写入 \texttt{学生.学号} 并锁定唯一 \\
+\hline
+管理员—认证申请（审核） & 管理员 0..1；认证申请 1 & 认证申请.审核管理员编号 → 管理员.管理员编号 & 未出结论时无审核人；已出结论恰有一人 \\
+\hline
+学生—订单（买入） & 学生 1；订单 0..* & 订单.买家学号 → 学生.学号 & 一名学生可有多笔成交记录；每笔恰有一名买家 \\
+\hline
+学生—订单（卖出） & 学生 1；订单 0..* & 订单.卖家学号 → 学生.学号 & 一名学生可卖出多件；每笔恰有一名卖家 \\
+\hline
+商品—订单 & 商品 1；订单 0..* & 订单.商品编号 → 商品.商品编号 & \textbf{同一商品同时最多 1 条「有效」成交记录}（BR-06）；撤销后（BR-21）商品回到「在售」可再次成交，故同商品可有\textbf{多条历史成交记录}，但任意时刻有效记录 ≤ 1 \\
+\hline
+分类—商品 & 分类 1；商品 0..* & 商品.分类编号 → 分类.分类编号 & 每件商品 1 个分类；同一分类下可有多个商品；\textbf{分类单层，不分层} \\
+\hline
+学生—收藏 & 学生 1；收藏 0..* & 收藏.学生学号 → 学生.学号 & 一名学生可收藏多件商品，\textbf{上限 100 件}（BR-11）；未认证学生亦可收藏 \\
+\hline
+商品—收藏 & 商品 1；收藏 0..* & 收藏.商品编号 → 商品.商品编号 & 一件商品可被多人收藏；\textbf{(学生学号, 商品编号) 组合唯一}；商品状态变化不删除收藏记录 \\
+\hline
+学生—评价（发出） & 学生 1；评价 0..* & 评价.评价人学号 → 学生.学号 & 学生在该关系中扮演评价人 \\
+\hline
+学生—评价（收到） & 学生 1；评价 0..* & 评价.被评价人学号 → 学生.学号 & 学生在该关系中扮演被评价人 \\
+\hline
+订单—评价 & 订单 1；评价 0..2 & 评价.订单编号 → 订单.订单编号 & 每笔成交最多两方各一条评价（BR-08）；不可自评、不可重复 \\
+\hline
+学生—举报记录（提交） & 学生 1；举报记录 0..* & 举报记录.举报学生学号 → 学生.学号 & 举报人必须为已认证学生 \\
+\hline
+商品—举报记录 & 商品 1；举报记录 0..* & 举报记录.被举报商品编号 → 商品.商品编号 & 本期举报对象仅为商品 \\
+\hline
+管理员—举报记录（处理） & 管理员 0..1；举报记录 1 & 举报记录.处理管理员编号 → 管理员.管理员编号 & 未处理时无处理人；处理完成恰有一人 \\
+\hline
+学生—信用记录 & 学生 1；信用记录 0..* & 信用记录.学生学号 → 学生.学号 & 每条记录恰好属于 1 名学生 \\
+\hline
+订单—信用记录 & 订单 0..1；信用记录 0..* & 信用记录.关联订单编号 → 订单.订单编号 & 信用记录可无订单；每笔订单可被多条信用记录引用 \\
+\hline
+学生—消息通知（接收） & 学生 1；消息通知 0..* & 消息通知.接收人学号 → 学生.学号 & 每条通知对应一名接收人；学生可收到多条通知 \\
+\hline
+学生—邮箱验证码 & 学生 1；邮箱验证码 0..* & 邮箱验证码.邮箱 → 学生.邮箱 & 一名学生可产生多条验证码记录（注册、多次找回）；\textbf{验证码是临时安全记录，通过后作废，保留期建议 7 天}；邮箱不存在时也可能产生记录但\textbf{不得据此暴露账号是否存在}（NFR-10） \\
+\hline
+商品—私信 & 商品 1；私信 0..* & 私信.商品编号 → 商品.商品编号 & 会话必须绑定具体商品（BR-20）；同一商品可有多个会话，各对应不同买家；商品状态变化不删除已产生的私信 \\
+\hline
+学生—私信（发送） & 学生 1；私信 0..* & 私信.发送人学号 → 学生.学号 & 学生在该关系中扮演发送人；管理员作为发送人时仅限回复违规下架异议 \\
+\hline
+学生—私信（接收） & 学生 1；私信 0..* & 私信.接收人学号 → 学生.学号 & 学生在该关系中扮演接收人；接收人须为该商品会话的参与方 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{6.4 关联字段与条件约束}
+\addcontentsline{toc}{subsection}{6.4 关联字段与条件约束}
+
+\begin{itemize}[leftmargin=1.6em,itemsep=1pt,topsep=2pt]
+\item 一件商品关联一个发布学生和一个分类；一笔订单关联一名买家、一名卖家与一件商品。分类不再以枚举描述，统一用分类编号引用分类实体。
+\item 评价关联评价人、被评价人与一笔订单。订单一方是买家，另一方是卖家；「仅交易双方互评、成交后可评、每人每单一次、7 天内」由 BR-08 定案，此处的一致性条件为：评价人学号 ≠ 被评价人学号，且二者须分别等于该订单的买家学号与卖家学号。
+\item 举报学生学号必填，举报人只能是已认证学生；\textbf{举报对象为商品或学生，二者由 \texttt{被举报对象类型} 决定，对应编号字段恰好一个非空}。处理状态、处理结果、处理人与处理时间须相互一致：\texttt{待处理} 时三者为空，\texttt{已处理} 或 \texttt{已驳回} 时三者必填。
+\item 一名学生有零到多条信用记录，每条记录可选关联一笔订单。\textbf{信用分不以记录累加实时推导}，须存为学生实体上的当前值，并由 BR-14 的每次变动同时写一条信用记录。拒绝访问不产生信用扣分。
+\item 连续登录失败次数、锁定截止时间由平台自行维护，只约束登录，\textbf{不等同于封禁账号，也不改变认证状态}。
+\item \textbf{学生证图片属敏感个人信息}，仅审核职责内的管理员在核验时读取；不随公开商品、评价、订单或消息通知暴露，不进入日志、导出与审计正文（NFR-08）。登录密码只存不可逆哈希，学生与管理员各自独立。
+\item \textbf{账号状态与认证状态分开记录}（BR-19）：封禁不撤销认证，认证通过不解封。
+\item \textbf{收藏的一致性条件}：① \texttt{(学生学号, 商品编号)} \textbf{组合唯一}，重复收藏不新增记录；② 同一学生收藏数\textbf{上限 100 件}；③ 收藏\textbf{不锁定商品}，不参与任何商品状态流转；④ 商品转为 \texttt{已售出}／\texttt{已下架}／\texttt{已删除} 时\textbf{不级联删除收藏记录}，收藏列表按商品实际状态显示「已失效」（BR-11）。
+\item \textbf{私信的一致性条件}：① \texttt{私信.商品编号} 必填且必须指向存在的商品；② 发送人与接收人\textbf{都必须是该商品会话的参与方}，且发送人 ≠ 接收人；③ 同一（商品编号，双方学号有序对）下的消息构成一个会话，\textbf{会话不单独建表}；④ 学生作为发送人时须为已认证，接收人为管理员时该商品下架原因必须为 \texttt{管理员违规下架}（BR-20）；⑤ 商品被封禁处置后，私信记录保留可读，不级联删除。
+\end{itemize}
+
+\subsubsection*{6.4.1 状态联动数据约束}
+\addcontentsline{toc}{subsubsection}{6.4.1 状态联动数据约束}
+
+下单成交时，\texttt{订单} 记录的创建与 \texttt{商品.商品状态} 由「在售」改为「已售出」必须在同一事务中成功，失败则整体回滚，不得留下「有成交记录但商品仍在售」或「商品已售出但无成交记录」的半成品（BR-06）。
+
+
+商品进入「已下架」时必须同时写入 \texttt{商品.下架原因}；进入「已售出」或「待审核」时不得有下架原因。\textbf{五种下架原因与 §7.2／§7.4.1 的转换一一对应}：\texttt{审核不通过}→ST-03、\texttt{卖家撤回}→ST-04、\texttt{卖家主动下架}→ST-06、\texttt{管理员违规下架}→ST-07／ST-13、\texttt{撤销后不可交易}→ST-11，\textbf{不允许出现转换表以外的原因取值}。其中 \texttt{撤销后不可交易} 只能由 ST-11 产生，且该原因为「已下架」时\textbf{不允许走 ST-08 重新提交}（须先由管理员解除账号封禁）。
+
+
+信用分变动须同时写入 \texttt{学生.信用分} 的新值与 \texttt{信用记录} 的一条流水，两者不得分离（BR-14）。
+
+
+\textbf{成交撤销须原子完成}：\texttt{订单.成交状态} 由 \texttt{有效} 改为 \texttt{已撤销} 与 \texttt{商品.商品状态} 由「已售出」改为「在售」必须在同一事务中成功；失败则整体回滚，不得留下「成交已撤销但商品仍已售出」或「商品回到在售但成交记录仍有效」的半成品（BR-21、ST-10）。撤销时若卖家账号已封禁，则商品改为「已下架」并把 \texttt{下架原因} 写为 \texttt{撤销后不可交易}（UC-31 辅事件流 G），而非回到「在售」。
+
+
+\textbf{撤销与审批处理的五条一致性约束}（违反即为数据缺陷）：
+
+\begin{enumerate}[leftmargin=1.9em,itemsep=1pt,topsep=2pt]
+\item \texttt{成交状态} 为 \texttt{有效} 时，\texttt{撤销发起人学号}、\texttt{撤销原因}、\texttt{申请时间}、\texttt{退货/撤销审批}、\texttt{审批处理时间} \textbf{必须全部为空}。
+\item \texttt{成交状态} 为 \texttt{已撤销} 时，前三者\textbf{必须非空}；\texttt{退货/撤销审批} 必须非空，且为 \texttt{待判定} 时 \texttt{审批处理时间} 必须为空、为 \texttt{已免责} 或 \texttt{计违约} 时 \texttt{审批处理时间} 必须非空。
+\item \textbf{每笔成交最多产生一次撤销与一次审批处理}（\texttt{已撤销} 不可回滚、不可重复撤销），因此 \texttt{计违约} 扣分\textbf{每笔成交最多发生一次}（BR-14 ④）。
+\item \textbf{\texttt{退货/撤销审批} 与信用记录双向绑定}：为 \texttt{计违约} 时，\textbf{必须且只能存在 1 条}变动值 \texttt{−2}、关联该 \texttt{订单编号}、原因为撤销违约的信用记录；为 \texttt{已免责} 或 \texttt{待判定} 时，\textbf{不得存在}该条记录。二者不一致即为数据缺陷。
+\item \textbf{判定与扣分必须原子完成}：\texttt{退货/撤销审批} 置 \texttt{计违约} 与写入 \texttt{学生.信用分} 新值、插入信用记录，必须在同一事务中成功；失败整体回滚，\textbf{不得出现「判了违约但没扣分」或「扣了分但判定仍是待判定」}（含人工判定与 7 天超时自动判定两条路径）。
+\end{enumerate}
+
+\textbf{商品编辑（ST-12）后的字段一致性}：
+
+\begin{itemize}[leftmargin=1.6em,itemsep=1pt,topsep=2pt]
+\item 进入 \texttt{待审核} 时必须\textbf{清空 \texttt{下架原因}}，且 \texttt{发布时间} 刷新为本次提交时刻（使 24 小时审核时限重新起算）。
+\item \texttt{商品编号}、\texttt{发布人学号} \textbf{在任何编辑路径下都不得改变}；卖家可写字段仅限标题、描述、价格、成色、图片、分类。
+\item 编辑提交后，该商品\textbf{不得再存在指向它的「有效」成交记录}（\texttt{在售}→\texttt{待审核} 前必须已无有效成交，否则 ST-12 不成立）。
+\end{itemize}
+
+\textbf{商品状态与成交记录的双向一致性约束}（每次状态变更后须校验，违反即为数据缺陷）：
+
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{商品状态} & \textbf{对成交记录的要求} \\
+\hline
+\endfirsthead
+\hline
+\textbf{商品状态} & \textbf{对成交记录的要求} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{在售} / \texttt{待审核} / \texttt{已下架} & 该商品\textbf{不得存在任何「有效」成交记录} \\
+\hline
+\texttt{已售出} & 必须\textbf{恰好存在 1 条「有效」成交记录}，且其 \texttt{商品编号} 指向该商品 \\
+\hline
+任意状态 & 同一商品的「有效」成交记录数 \textbf{≤ 1}（BR-06） \\
+\hline
+\end{longtable}
+}
+
+
+\textbf{账号状态与商品状态的联动}：卖家账号为 \texttt{封禁} 时，其名下商品\textbf{不得处于「在售」或「待审核」}。本条为一致性校验规则；封禁时如何把商品转为「已下架」属于处置策略，见 §5.5 与遗留待确认项。
+
+
+\textbf{私信不参与任何状态联动}：发送或阅读私信\textbf{不改变}商品状态、成交记录、信用分或举报处理状态；已售出商品仍可继续沟通（UC-29），下架商品的私信保留可读（UC-30 辅事件流 B）。唯一跨对象约束是：\texttt{私信.接收人学号} 指向管理员时，该商品的下架原因必须是 \texttt{管理员违规下架}（BR-20）。
+
+
+
+\subsection*{6.5 数据可见性与最小必要原则}
+\addcontentsline{toc}{subsection}{6.5 数据可见性与最小必要原则}
+
+{\scriptsize
+\begin{longtable}{|p{2.54cm}|p{2.65cm}|p{3.35cm}|p{3.06cm}|p{4.40cm}|}
+\hline
+\textbf{数据范围} & \textbf{本人} & \textbf{其他学生 / 游客} & \textbf{管理员} & \textbf{依据} \\
+\hline
+\endfirsthead
+\hline
+\textbf{数据范围} & \textbf{本人} & \textbf{其他学生 / 游客} & \textbf{管理员} & \textbf{依据} \\
+\hline
+\endhead
+\hline
+\endfoot
+学生手机号、宿舍地址 & 可查看本人已提供信息 & \textbf{均不可查看，含成交对家} & 仅必要管理场景读取并审计（建议，待确认） & NFR-04 \\
+\hline
+学生信用分 & 可查看分数与本人变动明细 & 可查看分数（不含明细） & 可查看分数与明细 & BR-13 \\
+\hline
+学号、认证资料、登录计数与锁定时刻 & 展示范围待确认；不展示内部计数与密码 & 不随公开商品或评价暴露 & 仅必要管理范围 & 最小权限 \\
+\hline
+学生证图片 & 可查看本人已提交的图片 & 均不可查看 & \textbf{仅审核职责内的管理员}可读取 & NFR-08 \\
+\hline
+商品公开信息 & 与浏览者一致，另有管理入口 & 标题、价格、成色、图片、分类、商品状态、发布人昵称 & 可浏览；审核所需信息按职责限定 & 浏览许可 \\
+\hline
+成交记录 & 可查看本人作为买方或卖方的记录 & 不得读取他人记录 & 按职责限定 & 定案规则 \\
+\hline
+举报记录及举报人身份 & 举报人可见本人提交的举报进度 & 不公开举报人、处理人明细 & 可在处置职责范围内查看；管理员不可作为举报人 & 定案规则 \\
+\hline
+\textbf{被核实争议数} & 可查看本人被核实的争议数 & \textbf{公开可见}（任意已登录用户） & 可查看 & BR-04：让交易对方在成交前识别风险；\textbf{只显示计数，不显示具体争议内容与举报人} \\
+\hline
+\textbf{站内私信} & 可查看本人参与的会话与消息正文 & \textbf{不可查看}（非会话参与方读不到任何正文） & \textbf{仅处置异议会话}；不得读取学生之间的交易会话 & BR-20；§5.4 \\
+\hline
+\end{longtable}
+}
+
+
+手机号与宿舍地址不得通过商品文字、图片自动填充、成交页、评价、导出或错误提示绕过限制。用户主动在公开内容中披露隐私时的审核规则另需确认。
+
+
+
+\section*{7 状态需求}
+\addcontentsline{toc}{section}{7 状态需求}
+\markboth{7 状态需求}{7 状态需求}
+
+\subsection*{7.1 状态定义与总体说明}
+\addcontentsline{toc}{subsection}{7.1 状态定义与总体说明}
+
+本版只有\textbf{两套状态}：商品状态（§7.2，四态）与认证状态（§7.3，四态），外加一个独立的\textbf{账号状态}（三态，不是状态机）。\textbf{订单没有状态}；\textbf{私信也没有状态}。
+
+
+{\scriptsize
+\begin{longtable}{|p{1.50cm}|p{2.25cm}|p{12.25cm}|}
+\hline
+\textbf{对象} & \textbf{状态} & \textbf{含义} \\
+\hline
+\endfirsthead
+\hline
+\textbf{对象} & \textbf{状态} & \textbf{含义} \\
+\hline
+\endhead
+\hline
+\endfoot
+商品 & 待审核 & 已提交，尚未审核通过，只对发布者与管理员可见 \\
+\hline
+商品 & 在售 & 审核通过，可被下单 \\
+\hline
+商品 & 已售出 & 已被买家下单成交；\textbf{默认终态，但可经双方同意或管理员审批撤销回到「在售」}（ST-10 / ST-11，BR-21）；除此之外任何角色不可下架或重新提交 \\
+\hline
+商品 & 已下架 & 审核不通过、卖家撤回、卖家主动下架或管理员违规下架，不可下单；必须保存下架原因 \\
+\hline
+认证状态 & 未提交 & 已注册，尚未提交学生证核验申请；可浏览，不可发布与交易 \\
+\hline
+认证状态 & 待审核 & 已提交学生证，管理员尚未作出结论；可浏览，不可发布与交易 \\
+\hline
+认证状态 & 已认证 & 管理员核验通过；可发布、下单、评价、举报 \\
+\hline
+认证状态 & 已驳回 & 核验未通过，可修改后重新提交；可浏览，不可发布与交易 \\
+\hline
+账号状态 & 正常 / 受限 / 封禁 & 独立的管控标记，由管理员处置设置；\textbf{不是状态机}，不随商品或认证状态联动（BR-19） \\
+\hline
+订单 & \textbf{（无状态机，两个标记）} & 订单即成交记录，创建即成交。\textbf{不存在待支付、已支付、待交付、待确认、已完成、已取消、退款中、已退款等任何依赖站外支付与站外交付的状态}。标记一 \texttt{成交状态}（\texttt{有效}／\texttt{已撤销}）表达「这笔成交还在不在」，仅在双方同意或管理员审批通过后变更；标记二 \texttt{退货/撤销审批} 记录申请与处理结果（BR-21） \\
+\hline
+\textbf{私信} & \textbf{（无状态机，仅已读／未读）} & 每条消息只有 \texttt{未读}／\texttt{已读} 两个标记，由接收人置读。\textbf{会话不建表、无状态、不可关闭、不可撤回}（BR-20）。发送与阅读不改变任何商品、订单、信用分与举报状态 \\
+\hline
+\end{longtable}
+}
+
+
+
+
+\subsection*{7.2 商品状态机（SM-01）}
+\addcontentsline{toc}{subsection}{7.2 商品状态机（SM-01）}
+\begin{figure}[htbp]
+\centering
+\fbox{\begin{minipage}[c][6.2cm][c]{0.86\linewidth}
+\centering
+{\large\color{gray} 图位待补}\\[4pt]
+{\small\color{gray}待审核、在售、已售出、已下架四态及 ST-01～ST-13 转换。}
+\end{minipage}}
+\caption*{图 7-1\quad 商品状态机（SM-01）}
+\label{fig:sm01}
+\end{figure}
+
+
+\textbf{状态集合}：\texttt{待审核}、\texttt{在售}、\texttt{已售出}、\texttt{已下架}（4 态）。
+
+
+\textbf{允许的转换}：
+
+
+\begin{enumerate}[leftmargin=1.9em,itemsep=1pt,topsep=2pt]
+\item \texttt{待审核} → \texttt{在售}：管理员审核通过（ST-02）
+\item \texttt{待审核} → \texttt{已下架}：管理员审核拒绝（ST-03），或卖家撤回（ST-04）
+\item \texttt{在售} → \texttt{已售出}：买家下单成交（ST-05）
+\item \texttt{在售} → \texttt{已下架}：卖家主动下架（ST-06），或管理员违规处置（ST-07）
+\item \texttt{已下架} → \texttt{待审核}：卖家修改后重新提交（ST-08，下架原因不得为「管理员违规下架」或「撤销后不可交易」）
+\item \texttt{已下架} → \texttt{在售}：管理员撤销违规处置（ST-09，仅限下架原因为「管理员违规下架」）
+\item \textbf{\texttt{已售出} → \texttt{在售}：买卖双方同意或管理员审批撤销成交（ST-10，BR-21）；若撤销时卖家账号已封禁，则改为 \texttt{已售出} → \texttt{已下架}（ST-11，下架原因＝\texttt{撤销后不可交易}）}
+\item \textbf{\texttt{在售} → \texttt{待审核}：卖家编辑商品内容（ST-12，BR-22）——编辑后须重新审核才可再次对外展示}
+\item \textbf{\texttt{在售} / \texttt{待审核} → \texttt{已下架}：账号封禁联动（ST-13，BR-10）——执行封禁时，该卖家名下这两类商品一并下架}
+\end{enumerate}
+
+\textbf{终态}：\textbf{本版没有绝对终态。} \texttt{已售出} 默认即最终结果，但保留\textbf{唯一一条出口}——经双方同意或管理员审批撤销可回到 \texttt{在售}（ST-10）或转 \texttt{已下架}（ST-11），\textbf{除此之外任何角色都不能下架或重新提交}；\texttt{已下架} 非终态（可回到 \texttt{待审核} 或 \texttt{在售}）。
+
+
+
+\textbf{初始状态}：恒为 \texttt{待审核}。
+
+
+\textbf{不存在的转换}（出现即为缺陷）：\texttt{已售出} → 除 \texttt{在售}（仅 ST-10）、\texttt{已下架}（仅 ST-11）之外的任何状态；\texttt{已售出} → \texttt{待审核}；\texttt{已下架} → \texttt{已售出}；\texttt{待审核} → \texttt{已售出}。
+
+
+\subsection*{7.3 学生认证状态（SM-02）}
+\addcontentsline{toc}{subsection}{7.3 学生认证状态（SM-02）}
+\begin{figure}[htbp]
+\centering
+\fbox{\begin{minipage}[c][6.2cm][c]{0.86\linewidth}
+\centering
+{\large\color{gray} 图位待补}\\[4pt]
+{\small\color{gray}未提交、待审核、已认证、已驳回四态及 AT-01～AT-08 转换。}
+\end{minipage}}
+\caption*{图 7-2\quad 学生认证状态图（SM-02）}
+\label{fig:sm02}
+\end{figure}
+
+\begin{quote}\small
+认证状态与商品状态\textbf{完全独立}：任何一次认证状态转换都\textbf{不改变}商品状态与信用分（BR-19）；扣信用分只能由 BR-14 规定的事件触发。
+
+\end{quote}
+
+\textbf{状态集合}：\texttt{未提交}、\texttt{待审核}、\texttt{已认证}、\texttt{已驳回}（4 态）。
+
+
+\textbf{允许的转换}（详见 §7.4.2）：
+
+
+\begin{enumerate}[leftmargin=1.9em,itemsep=1pt,topsep=2pt]
+\item 无账号 → \texttt{未提交}：提交注册（AT-01）
+\item \texttt{未提交} → \texttt{待审核}：提交学生证核验申请（AT-02）
+\item \texttt{待审核} → \texttt{已认证}：管理员核验通过（AT-03）
+\item \texttt{待审核} → \texttt{已驳回}：管理员核验驳回（AT-04）
+\item \texttt{已驳回} → \texttt{待审核}：修改后重新提交（AT-05，重提未达 3 次）
+\item \texttt{已认证} → \texttt{已驳回}：事后核实证件伪造（AT-08）
+\end{enumerate}
+
+\textbf{状态保持}（不是转换）：AT-06（审核超 24 小时，\textbf{不得自动通过}）、AT-07（注册满 7 天未提交，\textbf{不得自动驳回或封禁}）。
+
+
+
+\subsection*{7.4 状态转换说明表}
+\addcontentsline{toc}{subsection}{7.4 状态转换说明表}
+
+\begin{quote}\small
+涉及两个对象变化的情况（本版仅有一处：下单时「订单创建 + 商品已售出」）必须作为\textbf{同一业务操作整体成功}；失败则两者均保持操作前状态。
+
+\textbf{拒绝操作可增加失败审计记录，但不改变商品状态与成交统计。} 系统判断使用服务端最新状态，不使用页面缓存状态。
+
+\end{quote}
+
+\subsubsection*{7.4.1 商品状态转换表（SM-01）}
+\addcontentsline{toc}{subsubsection}{7.4.1 商品状态转换表（SM-01）}
+
+{\scriptsize
+\begin{longtable}{|p{1.38cm}|p{1.38cm}|p{1.38cm}|p{1.71cm}|p{3.46cm}|p{3.53cm}|p{3.16cm}|}
+\hline
+\textbf{编号} & \textbf{当前状态} & \textbf{触发事件} & \textbf{执行角色} & \textbf{条件或判定依据} & \textbf{目标状态及业务结果} & \textbf{失败或拒绝时处理} \\
+\hline
+\endfirsthead
+\hline
+\textbf{编号} & \textbf{当前状态} & \textbf{触发事件} & \textbf{执行角色} & \textbf{条件或判定依据} & \textbf{目标状态及业务结果} & \textbf{失败或拒绝时处理} \\
+\hline
+\endhead
+\hline
+\endfoot
+ST-01 & 尚无发布记录 & 提交发布 & 卖家 & BR-01、BR-02、BR-03、BR-05、BR-13；已认证、账号未封禁、信用分 ≥ 60、在售未达 5 件、必填完整、价格合法 & \texttt{待审核}；创建商品记录 & 校验失败不生成商品，提示具体缺失或越界项 \\
+\hline
+ST-02 & 待审核 & 审核通过 & 管理员 & BR-03；管理员有权限，内容符合已采用的审核标准 & \texttt{在售}；对外展示，通知卖家 & 无权限或状态不符时保持 \texttt{待审核} \\
+\hline
+ST-03 & 待审核 & 审核拒绝 & 管理员 & BR-03、BR-04；理由完整 & \texttt{已下架}，下架原因＝\texttt{审核不通过}；通知卖家 & 理由缺失时不允许提交结论，保持 \texttt{待审核} \\
+\hline
+ST-04 & 待审核 & 卖家撤回 & 卖家 & BR-03；本人商品且仍待审核 & \texttt{已下架}，下架原因＝\texttt{卖家撤回}；保留商品编号 & 非本人或非待审核时保持 \texttt{待审核} \\
+\hline
+ST-05 & 在售 & 买家下单成交 & 买家 & BR-01、BR-06、BR-13；已认证、账号未封禁、信用分 ≥ 40、非本人商品、服务端状态仍为 \texttt{在售} & \texttt{已售出}；\textbf{同一事务内创建订单（成交记录）}，成交金额＝当前标价 & 商品已被他人成交时保持 \texttt{已售出}，本次不创建订单；事务失败则商品保持 \texttt{在售} 且不创建订单 \\
+\hline
+ST-06 & 在售 & 卖家主动下架 & 卖家 & BR-09；本人商品且在售 & \texttt{已下架}，下架原因＝\texttt{卖家主动下架}；通知已收藏买家 & 非本人或非在售时保持原状态 \\
+\hline
+ST-07 & 在售 & 管理员违规下架 & 管理员 & BR-04、BR-09、BR-14；违规成立、理由与证据完整 & \texttt{已下架}，下架原因＝\texttt{管理员违规下架}；卖家信用分 −10 并写信用记录；通知卖家 & 权限拒绝或证据不足时商品与信用分均保持原状，不重复扣分 \\
+\hline
+ST-08 & 已下架 & 修改后重新提交 & 卖家 & BR-03；本人商品、账号可用、下架原因为 \texttt{审核不通过} 或 \texttt{卖家撤回}（\textbf{不得为 \texttt{管理员违规下架}}）、在售未达上限 & \texttt{待审核}；沿用原商品编号，生成新审核记录 & 下架原因为违规处置时拒绝，提示联系管理员复核；其余不满足时保持 \texttt{已下架} \\
+\hline
+ST-09 & 已下架 & 管理员撤销违规处置 & 管理员 & BR-04、BR-09；下架原因为 \texttt{管理员违规下架}，复核确认原处置不成立，理由完整 & \texttt{在售}；清除下架原因，记录撤销理由与操作人，通知卖家 & 下架原因不符或证据不足时保持 \texttt{已下架} \\
+\hline
+ST-10 & 已售出 & 一方提交退货/撤销申请 & 买家或卖家，最终由双方同意或管理员审批 & BR-21；本人为当事人、\texttt{成交状态} 为 \texttt{有效}、\textbf{双方均未评价} & 双方同意或管理员审批通过后，商品转 \texttt{在售}，成交记录置 \texttt{已撤销}，解除原成交占用，记录申请与处理信息并通知双方 & 已评价、非当事人、或已是 \texttt{已撤销} 时保持原状；\textbf{不产生第二条撤销记录、不重复扣分} \\
+\hline
+ST-11 & 已售出 & 撤销成交时卖家账号已封禁 & 买家\textbf{或}卖家（单方） & BR-10、BR-21；同 ST-10 的前置条件，且卖家账号状态为 \texttt{封禁} & \texttt{已下架}，下架原因＝\texttt{撤销后不可交易}；成交记录置 \texttt{已撤销}、\texttt{退货/撤销审批} 置 \texttt{待判定}；通知双方 & 同 ST-10；条件不符时按 ST-10 处理或保持 \texttt{已售出} \\
+\hline
+ST-12 & 在售 & 卖家编辑商品内容 & 卖家 & BR-03、BR-22；本人商品且在售，字段与价格合法、图片 1～9 张 & \texttt{待审核}；清空下架原因；\textbf{保留商品编号}，刷新 \texttt{发布时间} 与审核排队时间，通知卖家「修改已提交，等待重新审核」 & 校验失败时保持 \texttt{在售}，\textbf{原内容不被覆盖}；编辑后商品立即从搜索与分类列表移除，直至重新审核通过 \\
+\hline
+ST-13 & 在售／待审核 & 账号封禁联动下架 & 系统（管理员执行封禁时触发） & BR-10、BR-18；卖家账号状态置为 \texttt{封禁}，商品处于「在售」或「待审核」 & \texttt{已下架}，下架原因＝\texttt{管理员违规下架}；与封禁在同一处置动作中完成；通知卖家 & 原子失败则封禁与下架一并回滚；\textbf{不得只封禁不下架}（否则被封者商品仍对外展示） \\
+\hline
+\end{longtable}
+}
+
+
+\textbf{状态保持（不绘制为转换箭头）}：
+
+
+\begin{itemize}[leftmargin=1.6em,itemsep=1pt,topsep=2pt]
+\item \texttt{已售出} 商品被下单 → 拒绝，保持 \texttt{已售出}，不创建订单，不重复统计成交。
+\item \texttt{待审核} / \texttt{已售出} / \texttt{已下架} 商品被下单 → 拒绝，保持原状态（UC-10 辅事件流 E）。
+\item 非本人下架 → 拒绝，商品保持原状态。
+\item 重复提交同一下单请求 → 仅第一次有效，其余返回同一订单结果，不重复成交（BR-06）。
+\item 管理员审核非 \texttt{待审核} 商品 → 拒绝，商品保持原状态。
+\item \textbf{已提交评价后撤销成交 → 拒绝，商品保持 \texttt{已售出}、成交记录保持 \texttt{有效}}（BR-08）。
+\item \textbf{对 \texttt{已撤销} 的成交记录再次撤销 → 拒绝，且不重复产生审批处理、不重复扣分}（BR-14 ④、BR-21）。
+\item \textbf{审批处理只影响信用分，不回滚撤销}：无论判 \texttt{已免责} 还是 \texttt{计违约}，商品都已在前一步回到 \texttt{在售}，不得因判定结果改变商品状态。
+\end{itemize}
+
+\subsubsection*{7.4.2 学生认证状态转换表（SM-02）}
+\addcontentsline{toc}{subsubsection}{7.4.2 学生认证状态转换表（SM-02）}
+
+{\scriptsize
+\begin{longtable}{|p{1.29cm}|p{1.29cm}|p{1.29cm}|p{1.29cm}|p{3.29cm}|p{5.06cm}|p{2.50cm}|}
+\hline
+\textbf{编号} & \textbf{当前状态} & \textbf{触发事件} & \textbf{执行角色} & \textbf{条件或判定依据} & \textbf{目标状态及业务结果} & \textbf{失败或拒绝时处理} \\
+\hline
+\endfirsthead
+\hline
+\textbf{编号} & \textbf{当前状态} & \textbf{触发事件} & \textbf{执行角色} & \textbf{条件或判定依据} & \textbf{目标状态及业务结果} & \textbf{失败或拒绝时处理} \\
+\hline
+\endhead
+\hline
+\endfoot
+AT-01 & 尚无账号 & 提交注册 & 学生 & \textbf{邮箱未被占用且格式合法}、密码符合强度、已填真实姓名、已勾选协议 & \texttt{未提交}；创建账号，账号状态置 \texttt{正常}，\textbf{学号为空（待核验时申报）} & 校验失败不创建账号，提示冲突或缺失字段 \\
+\hline
+AT-02 & 未提交 & 提交学生证核验申请 & 学生 & BR-16、BR-17；\textbf{已申报学号且该学号未被其他已认证账号占用}、已上传可辨认的学生证照片，重提次数未达上限 & \texttt{待审核}；生成一条认证申请（记录申报学号），通知管理员 & 图片不合规、学号已被占用、已存在待审核申请或超重提上限时保持 \texttt{未提交} \\
+\hline
+AT-03 & 待审核 & 核验通过 & 管理员 & BR-16；证件姓名、学号与账号所填学号一致，图片清晰可辨 & \texttt{已认证}；记录审核人与结论，通知学生 & 保持 \texttt{待审核}，记录失败原因，\textbf{不得自动通过} \\
+\hline
+AT-04 & 待审核 & 核验驳回 & 管理员 & BR-16、BR-18；证件模糊、信息不全、与所填学号不一致或疑似伪造 & \texttt{已驳回}；记录驳回原因与审核人，学生核验重提次数 +1，通知学生 & 保持 \texttt{待审核}；驳回原因缺失时不允许提交结论 \\
+\hline
+AT-05 & 已驳回 & 修改后重新提交 & 学生 & BR-17；重提次数未达上限 3 次 & \texttt{待审核}；生成新一条认证申请 & 超上限时保持 \texttt{已驳回}，提示联系管理员 \\
+\hline
+AT-06 & 待审核 & 审核时限到期检查 & 系统 & BR-16；申请提交满 24 小时仍未出结论 & \textbf{状态保持 \texttt{待审核}}；提醒管理员并计入审核超时统计 & 提醒失败重试；\textbf{不得自动通过或自动驳回} \\
+\hline
+AT-07 & 未提交 & 提交期限到期检查 & 系统 & BR-16；注册满 7 天仍未提交申请 & \textbf{状态保持 \texttt{未提交}}；每日提醒一次，账号仅可浏览 & 提醒失败重试；\textbf{不得自动驳回、不得封禁} \\
+\hline
+AT-08 & 已认证 & 事后核实证件伪造 & 管理员 & BR-18；有核实依据且理由完整 & \texttt{已驳回}；记录原因与操作人，通知学生；\textbf{同一处置动作中必须封禁账号（BR-18），并按 BR-10 连带把其「在售」与「待审核」商品转「已下架」（ST-13）}；仅当另有 BR-14 违规事件成立时才扣信用分 & 证据不足时保持 \texttt{已认证}，\textbf{不扣分、不封禁} \\
+\hline
+\end{longtable}
+}
+
+
+AT-06、AT-07 属于\textbf{状态保持}记录，不是成功转换，不绘制为转换箭头。
+
+
+
+\subsection*{7.5 场景走查与验收预期}
+\addcontentsline{toc}{subsection}{7.5 场景走查与验收预期}
+
+\begin{quote}\small
+状态判定统一依据 §7.2～§7.4。\textbf{SC-01～SC-12} 已由组长统一编号，实际执行的场景、参与者、实际结果与证据另行记录，不在本文件内填写。
+
+\end{quote}
+
+{\scriptsize
+\begin{longtable}{|p{1.50cm}|p{6.26cm}|p{6.02cm}|p{2.22cm}|}
+\hline
+\textbf{编号及类型} & \textbf{初始条件与操作顺序} & \textbf{预期状态与数据结果} & \textbf{关联规则／转换} \\
+\hline
+\endfirsthead
+\hline
+\textbf{编号及类型} & \textbf{初始条件与操作顺序} & \textbf{预期状态与数据结果} & \textbf{关联规则／转换} \\
+\hline
+\endhead
+\hline
+\endfoot
+SC-01 正常主流程 & 学生注册 → 上传学生证 → 管理员核验通过 → 发布商品 → 管理员审核通过 → 另一学生搜索到该商品 → 下单 → 双方互评 → 查看信用分 & 认证状态 \texttt{未提交}→\texttt{待审核}→\texttt{已认证}；商品 \texttt{待审核}→\texttt{在售}→\texttt{已售出}；生成 1 条成交记录；双方各生成 1 条评价，各 +2 分 & BR-01、BR-03、BR-06、BR-08、BR-14；ST-01、ST-02、ST-05；AT-01～AT-03 \\
+\hline
+SC-02 权限 & 未认证学生尝试发布与下单；管理员尝试发布、下单、评价、举报；已认证学生指定他人学号读取手机号 & 全部拒绝并给出对应提示；商品与成交记录均不新增；手机号不返回；信用分不变 & BR-01、BR-10、BR-19；§5.2 \\
+\hline
+SC-03 并发抢购 & 两名买家同时对同一「在售」商品下单 & \textbf{仅一笔成功}；商品 \texttt{已售出}；仅存在 1 条成交记录；失败方提示「该商品已售出」且不产生任何记录 & BR-06；ST-05 \\
+\hline
+SC-04 审核与重提 & 发布 → 管理员拒绝（审核不通过）→ 卖家修改后重新提交 → 管理员通过；另发布一件 → 卖家在待审核时撤回 & 拒绝后 \texttt{已下架（审核不通过）}；重提后回到 \texttt{待审核} 再转 \texttt{在售}；撤回后 \texttt{已下架（卖家撤回）}；两件商品编号不变 & BR-03；ST-03、ST-04、ST-08 \\
+\hline
+SC-05 违规处置与撤销 & 买家举报在售商品 → 管理员核实成立并强制下架、扣卖家 10 分 → 卖家提出异议 → 管理员复核后撤销处置 & 商品 \texttt{已下架（管理员违规下架）}，卖家 −10 并生成信用记录；撤销后商品回到 \texttt{在售}，下架原因清空；扣分\textbf{不回滚}（信用记录留档） & BR-04、BR-09、BR-14；ST-07、ST-09 \\
+\hline
+SC-06 浏览与自助管理 & 已认证学生搜索 → 按分类筛选 → 收藏商品 → 收藏页查看实际状态 → 在「我的商品」下架一件在售商品 → 在「我的订单」查看成交记录与评价入口 → 查看消息通知 & 搜索结果只含 \texttt{在售}；收藏不锁定商品，商品下架后收藏页显示「已失效」；卖家下架后商品 \texttt{已下架（卖家主动下架）}；已完成商品不可下架；上述事件按 BR-15 生成站内通知 & BR-09、BR-11、BR-15；ST-06 \\
+\hline
+SC-07 评价与信用分边界 & 一笔成交后：买方评价、卖方未评价；另一笔成交后双方均不评价；另有一名学生信用分降到 55 与 35 & 第一笔：\textbf{买方提交评价即 +2} 并展示，卖方 7 天后失去评价资格并 −1；第二笔：双方均未评价，7 天后\textbf{各自 −1}；信用分 55 时发布被拒、35 时下单被拒；已发布商品与已有成交不受影响 & BR-08、BR-13、BR-14；UC-10、UC-14 \\
+\hline
+SC-08 身份核验异常 & 注册后未提交即以「未提交」登录尝试发布 → 上传学生证（转 \texttt{待审核}）仍尝试下单 → 管理员驳回（转 \texttt{已驳回}，重提次数 +1）→ 修改后重提（转 \texttt{待审核}）→ 超 24 小时未审 → 管理员通过 & 三态期间发布与下单均被拒且提示对应；驳回后重提次数 +1；超时\textbf{保持 \texttt{待审核}、不自动通过}；全程商品状态与信用分不受认证状态影响 & BR-16、BR-17、BR-19；AT-02～AT-07 \\
+\hline
+SC-09 私信与沟通 & 未认证学生尝试联系卖家（应被拒）→ 已认证买家在「在售」商品发送首条私信 → 卖家收到通知并回复 → 双方约定见面地点 → 买家下单成交 → 继续在该会话确认取货 → 另一买家尝试就同一已售出商品发起私信（应被拒）→ 卖家商品被违规下架后在该商品私信中向管理员提出异议 → 第三方用户尝试按会话编号读取该会话 & 未认证不创建会话；首条私信创建会话并生成一条 \texttt{私信} 类型站内通知；\textbf{同一（商品，双方）只有一条会话}，重复进入复用；未读数与实际未读条数一致、读后清零；\textbf{平台不向任一方展示对方手机号与宿舍地址}；已售出后会话仍可继续；非成交买家被拒；卖家异议会话管理员可读，\textbf{第三方读取返回 0 条正文} & BR-20、BR-15；NFR-09；UC-29、UC-30 \\
+\hline
+\end{longtable}
+}
+
+
+{\scriptsize
+\begin{longtable}{|p{1.52cm}|p{5.87cm}|p{6.72cm}|p{1.89cm}|}
+\hline
+\textbf{SC-10 成交撤销与审批处理} & \textbf{买家下单成交 → 私信约不上时间 → 买家提交退货/撤销申请 → 卖家同意 → 商品回在售→ 另一买家再次下单 → 另测：卖家提交申请、买家拒绝；另测：任一方提交管理员审批并获批 → 商品回在售 → 另测：任一方已评价后撤销 → 另测：同一成交第二次撤销} & \textbf{商品 \texttt{已售出}→\texttt{在售}（ST-10），成交记录 \texttt{有效}→\texttt{已撤销}，申请 \texttt{待对方同意}／\texttt{待管理员审批}→\texttt{已同意}／\texttt{已拒绝}；同商品 \textbf{2 条成交记录但「有效」仅 1 条}；\textbf{撤销必须经双方同意或管理员审批}；管理员审批结果与处理意见留痕；已评价后撤销被拒；第二次撤销被拒且不重复扣分；已撤销记录不可再评价、不再触发 −1} & \textbf{BR-06、BR-08、BR-14、BR-21；ST-05、ST-10；UC-31} \\
+\hline
+\endfirsthead
+\hline
+\textbf{SC-10 成交撤销与审批处理} & \textbf{买家下单成交 → 私信约不上时间 → 买家提交退货/撤销申请 → 卖家同意 → 商品回在售→ 另一买家再次下单 → 另测：卖家提交申请、买家拒绝；另测：任一方提交管理员审批并获批 → 商品回在售 → 另测：任一方已评价后撤销 → 另测：同一成交第二次撤销} & \textbf{商品 \texttt{已售出}→\texttt{在售}（ST-10），成交记录 \texttt{有效}→\texttt{已撤销}，申请 \texttt{待对方同意}／\texttt{待管理员审批}→\texttt{已同意}／\texttt{已拒绝}；同商品 \textbf{2 条成交记录但「有效」仅 1 条}；\textbf{撤销必须经双方同意或管理员审批}；管理员审批结果与处理意见留痕；已评价后撤销被拒；第二次撤销被拒且不重复扣分；已撤销记录不可再评价、不再触发 −1} & \textbf{BR-06、BR-08、BR-14、BR-21；ST-05、ST-10；UC-31} \\
+\hline
+\endhead
+\hline
+\endfoot
+SC-11 在售编辑与重审 & 卖家发布 → 审核通过（在售）→ 卖家改价格提交编辑 → 商品回到「待审核」并从列表消失 → 管理员在队列中审核通过 → 重新在售 → 另测：卖家编辑「已售出」商品 → 另测：卖家尝试修改发布人／商品状态／下架原因／发布时间 & 商品 \texttt{在售}→\texttt{待审核}（ST-12），\texttt{下架原因} 清空、\texttt{发布时间} 刷新、\texttt{商品编号} 不变；编辑提交后立即从搜索与分类列表移除，重审通过前不可被下单；「已售出」商品编辑被拒且原内容不变；系统字段修改被丢弃、其余字段照常保存 & BR-03、BR-05、BR-22；ST-08、ST-12；UC-06、UC-32 \\
+\hline
+SC-12 封禁联动下架 & 卖家名下 1 件在售 + 1 件待审核 → 管理员因举报成立执行「封禁账号」→ 检查其商品 → 另测：被封卖家尝试发布／下单／编辑 & 账号置 \texttt{封禁}；\textbf{同一处置动作中}在售商品与待审核商品均转 \texttt{已下架（管理员违规下架）}（ST-13）；其「已售出」商品不受影响；封禁\textbf{不改变认证状态}（BR-19）；被封卖家发布／下单／编辑均被拒 & BR-10、BR-18、BR-19；ST-13；UC-13 \\
+\hline
+\end{longtable}
+}
+
+
+
+
+\section*{8 质量需求}
+\addcontentsline{toc}{section}{8 质量需求}
+\markboth{8 质量需求}{8 质量需求}
+
+\subsection*{8.1 验收测试共同前提}
+\addcontentsline{toc}{subsection}{8.1 验收测试共同前提}
+
+以下测试方案均为\textbf{未来验收设计，不是已经执行的真实系统测试}。建议测试前提、取样数量与观察窗口均为团队提议，不视为已有业务事实。
+
+
+性能共同前提建议（待确认）：使用拟验收版本和同一套事先登记的测试环境，记录客户端／服务环境配置、浏览器版本、校园网络条件、往返时延与可用带宽；建议受控网络往返时延 ≤ 50 毫秒、每客户端可用带宽 ≥ 10 Mbps。使用不含真实隐私的测试数据；图片建议每张 ≤ 500 KB。所有端到端时间均从\textbf{用户动作发起}计至\textbf{明确结果呈现}，不能只量内部处理时间。系统异常、超时及失败必须保留并单列，不得只对成功样本宣称整体达标。
+
+
+
+\subsection*{8.2 NFR-01 商品列表加载性能}
+\addcontentsline{toc}{subsection}{8.2 NFR-01 商品列表加载性能}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+需求编号 & NFR-01 \\
+\hline
+需求名称 & 商品列表加载性能 \\
+\hline
+需求描述与依据 & 原文要求：200 条商品、50 人同时使用时，响应时间 ≤ 2 秒 \\
+\hline
+测试前提／适用范围 & 200 条商品、50 人同时使用为固定验收条件。200 条是整个数据集还是单次展示量、是否包含图片完成呈现，原文未明确，均待确认；本文件不自行指定首屏数量或分页方式 \\
+\hline
+量化指标与统计口径 & 从用户发起列表访问到约定的商品列表内容呈现完毕；≤ 2 秒保留为\textbf{每次有效样本上限}，不降为平均值或只看 P95。建议值，待确认：持续 10 分钟、累计至少 500 次有效加载，分别报告冷启动与后续访问的最大值、P95 和失败率 \\
+\hline
+验收方式 & 准备 200 条完整测试商品，50 个会话同时浏览，采集每次端到端时间；检查全部有效样本是否 ≤ 2 秒。计时超限与系统失败不得删除 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{8.3 NFR-02 下单响应性能}
+\addcontentsline{toc}{subsection}{8.3 NFR-02 下单响应性能}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+需求编号 & NFR-02 \\
+\hline
+需求名称 & 下单成交响应性能 \\
+\hline
+需求描述与依据 & 原文要求：下单操作响应时间 ≤ 3 秒 \\
+\hline
+测试前提／适用范围 & 已认证学生、字段合法、商品处于「在售」；不把认证等待作为计时前提。建议值，待确认：50 个会话并发，每次选择可合法下单的不同商品，累计至少 100 次合法提交；同商品争抢另做一致性场景（SC-03） \\
+\hline
+量化指标与统计口径 & 从点击确认下单到\textbf{收到明确结果并看到订单编号或明确失败原因}。合法成功样本逐次 ≤ 3 秒，且应已形成一笔可查询的成交记录，商品应为「已售出」；失败不能冒充成功。建议值，待确认：权限或状态拒绝也在 3 秒内返回 \\
+\hline
+验收方式 & 记录提交时刻、结果展示时刻及订单编号，对照商品状态与成交记录；检查 ≤ 3 秒且\textbf{不产生无结果、重复成交或错误商品状态}（BR-06） \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{8.4 NFR-03 同时在线容量}
+\addcontentsline{toc}{subsection}{8.4 NFR-03 同时在线容量}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+需求编号 & NFR-03 \\
+\hline
+需求名称 & 同时在线容量 \\
+\hline
+需求描述与依据 & 原文人数留空并要求估算；本次按任务要求暂定同时在线 500 人（建议值，待确认），不宣称已有容量依据 \\
+\hline
+测试前提／适用范围 & 「在线」建议定义为保有有效会话且在测试期间持续活动的 500 个不同用户，不等于每秒 500 个下单请求。建议值，待确认：10 分钟逐步达到 500 人后稳定 30 分钟；每人每 30 秒执行一次操作，浏览占 90\%、合法下单占 10\% \\
+\hline
+量化指标与统计口径 & 建议值，待确认：500 人稳定期间无会话容量拒绝，无丢失或重复成交记录，技术失败率 ≤ 1\%；正常权限／状态拒绝单列、不作为技术失败。NFR-01 与 NFR-02 的阈值各自保留 \\
+\hline
+验收方式 & 使用 500 个独立测试账号／会话，保存活动用户数曲线、请求总数、技术失败数与成交记录核对表；技术失败含超时、异常、无结果 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{8.5 NFR-04 个人信息保护}
+\addcontentsline{toc}{subsection}{8.5 NFR-04 个人信息保护}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+需求编号 & NFR-04 \\
+\hline
+需求名称 & 个人信息保护 \\
+\hline
+需求描述与依据 & 原文要求：手机号、宿舍地址，非本人和非管理员不可见。\textbf{成交对家同样不得读取}。学生证照片另由 NFR-08 单独约束 \\
+\hline
+测试前提／适用范围 & 覆盖学生详情、商品发布人展示、成交页对方信息、评价、搜索、导出及错误提示等实际存在的入口；未实现的入口不虚构为功能 \\
+\hline
+量化指标与统计口径 & 所有非本人且非管理员的读取检查中，真实手机号与宿舍地址\textbf{泄露数为 0}；本人读取仅限自己已提供的信息。未经授权的返回内容不得含可还原真实值，不能只在界面遮挡而保留在后端返回中。审计不得含完整敏感值 \\
+\hline
+验收方式 & 至少用两名不同学生、游客与管理员覆盖身份组合；\textbf{特别覆盖「已成交的买卖双方」这一组合}，检查页面、实际数据返回、导出与错误信息 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{8.6 NFR-05 登录安全}
+\addcontentsline{toc}{subsection}{8.6 NFR-05 登录安全}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+需求编号 & NFR-05 \\
+\hline
+需求名称 & 登录安全 \\
+\hline
+需求描述与依据 & 原文要求：同一账号连续登录失败 5 次，锁定 15 分钟。\textbf{学生的「同一账号」指同一邮箱}，管理员的指同一管理员编号；均按账号计数，跨设备不能各自重新累计 \\
+\hline
+测试前提／适用范围 & 使用专用测试账号，从未锁定、失败计数为 0 开始；计时以系统可核对的时间为准。建议值，待确认：失败定义为凭据校验失败；成功后计数清零；锁定到期清零；锁定期间再次尝试不延长既有锁定截止时间 \\
+\hline
+量化指标与统计口径 & 第 1～4 次失败不触发锁定；第 5 次失败时记触发时刻 t，在 [t, t+15 分钟) 内即使凭据正确也不能新建登录会话。到达 t+15 分钟后允许重新验证凭据。提示「账号已暂时锁定，请稍后重试」，不回显密码；安全日志中的秘密出现数为 0 \\
+\hline
+验收方式 & 依次验证 4 次失败、第 5 次失败、锁定期内正确凭据、临近 15 分钟与满 15 分钟后的正确凭据；跨设备复查。\textbf{登录保护可变更计数与锁定时间，但不得改变认证状态、商品状态、信用分或账号状态}（§5.5 第 6 条） \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{8.7 NFR-06 新用户发布易用性}
+\addcontentsline{toc}{subsection}{8.7 NFR-06 新用户发布易用性}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+需求编号 & NFR-06 \\
+\hline
+需求名称 & 新用户发布易用性 \\
+\hline
+需求描述与依据 & 原文要求：新用户从登录到发布第一件商品，不超过 5 分钟。\textbf{本版明确限定为「已认证新用户」}——因为 BR-01 规定未认证学生不能发布，若把人工核验等待计入，5 分钟在任何人工审核机制下都不可能达成 \\
+\hline
+测试前提／适用范围 & 建议值，待确认：邀请 10 名未使用过系统的学生，事先提供\textbf{有效且已通过学生证核验}的测试账号、必需商品文字与图片；\textbf{不计学生证人工核验等待，但从开始执行登录动作计时}，包括登录、找入口、填写、提交和看到结果 \\
+\hline
+量化指标与统计口径 & 每位受试者在无他人代操作、无操作步骤提示的情况下 ≤ 5 分钟完成首次发布；不改成平均值。完成定义为\textbf{提交合法商品并收到成功反馈}，商品状态应为 \texttt{待审核}；不要求管理员已审核通过。建议样本 10 人全部成功 \\
+\hline
+验收方式 & 观察并计时每名受试者，记录操作起止、是否求助、是否成功、完成时长、主要错误；超时或需代操作计未通过。本文仅提出验收方法，\textbf{不声称已邀请真实学生测试} \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsection*{8.8 NFR-07 系统可用性}
+\addcontentsline{toc}{subsection}{8.8 NFR-07 系统可用性}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+需求编号 & NFR-07 \\
+\hline
+需求名称 & 系统可用性 \\
+\hline
+需求描述与依据 & 原文要求：可用性 ≥ 99\%，考试周等高峰期也要可用 \\
+\hline
+测试前提／适用范围 & 建议值，待确认：按校园当地时间每个自然月统计，服务窗口为全天 24 小时，计划维护也计入不可用时间；检查\textbf{公开浏览、登录与合法下单}三项关键功能。考试周按学校校历确定，另按完整考试周统计 \\
+\hline
+量化指标与统计口径 & 可用性 =（应服务总分钟数 − 不可用分钟数）÷ 应服务总分钟数 × 100\%，每月 ≥ 99\%；建议考试周单独同样 ≥ 99\%。以 30 天月为例共 43200 分钟，最多不可用 432 分钟。建议值，待确认：每 1 分钟检查一次，任一关键功能在可控正常条件下失败则该分钟不可用 \\
+\hline
+验收方式 & 核查监测原始记录、故障与维护时间并计算；真实权限拒绝、学生个人网络故障不算系统故障。统计周期未满只能提供阶段结果，\textbf{不得把短时压力测试等同月度 99\% 已达标} \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{8.9 NFR-08 学生证信息安全}
+\addcontentsline{toc}{subsection}{8.9 NFR-08 学生证信息安全}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+需求编号 & NFR-08 \\
+\hline
+需求名称 & 学生证信息安全 \\
+\hline
+需求描述与依据 & \textbf{本条为分析推导，待确认。} 学生证照片含姓名、学号、本人照片，属敏感个人信息。平台自建账号体系后，该信息由平台自己持有与保管，责任在平台一侧，故须单列 \\
+\hline
+测试前提／适用范围 & 覆盖学生证的上传、暂存、持久保存、管理员审核读取、日志、导出、备份与删除全链路。不适用于手机号与宿舍地址（见 NFR-04） \\
+\hline
+量化指标与统计口径 & ① 学生证图片仅\textbf{审核职责内的管理员}可读取；其他学生、非审核管理员、游客读取成功数为 \textbf{0}。② 学生证图片出现在公开页面、消息通知、导出文件、日志与审计正文中的次数为 \textbf{0}。③ 存储时须加密或采取等价保护，明文直链对外可达数为 \textbf{0}。④ 认证申请留存期限待确认；到期后应删除或匿名化。⑤ 登录密码只存不可逆哈希，明文回显次数为 0 \textbf{且任何场景不存储明文支付信息（BR-07）} \\
+\hline
+验收方式 & 用两名学生、一名审核管理员、一名非审核管理员与游客组成身份组合，交换申请编号与图片地址，检查页面、实际数据返回、导出与错误提示；检索日志、审计与备份。\textbf{留存期限与删除规则确认前，该项只能判定为「范围已覆盖、期限待确认」，不得宣称合规} \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{8.10 NFR-09 站内消息可达性}
+\addcontentsline{toc}{subsection}{8.10 NFR-09 站内消息可达性}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+需求编号 & NFR-09 \\
+\hline
+需求名称 & 站内消息与通知可达性 \\
+\hline
+需求描述与依据 & \textbf{本条为分析推导，待确认。} 私信是买卖双方\textbf{唯一}的沟通渠道（BR-20）——平台既不展示手机号，也没有其他联系方式入口。因此消息丢一条、未读算错一次，交易就可能卡住。V2.0 无此条，V2.1 补入 \\
+\hline
+测试前提／适用范围 & 两名已认证测试账号 + 一件「在售」商品；覆盖发起会话、双向收发、未读数、通知红点与已读回写。\textbf{不适用于}系统通知的到达时机（那是 BR-15 的触发逻辑，本指标只约束"已生成的通知可见"） \\
+\hline
+量化指标与统计口径 & 建议值，待确认：① 一条私信提交成功后，接收方的\textbf{会话列表与新未读数在 5 秒内可见}；② 会话未读数与该会话内本人未读消息条数\textbf{偏差为 0}，读后即清零；③ 同一条消息\textbf{不得重复投递}（接收方可见条数 = 1）；④ 消息正文\textbf{不得明文写入日志、审计与导出}；⑤ 网络中断期间发送的消息须返回\textbf{明确失败}，「显示已发送但实际未保存」的次数为 \textbf{0} \\
+\hline
+验收方式 & 两账号互发不少于 20 条消息（含并发与快速连发），逐条核对到达时间、未读数、重复投递与日志内容；人为断网复测指标⑤；再以\textbf{第三方账号}按会话编号与商品编号尝试越权读取，确认返回 0 条正文（对应 §5.6） \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{8.11 NFR-10 邮箱验证码安全}
+\addcontentsline{toc}{subsection}{8.11 NFR-10 邮箱验证码安全}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{内容} \\
+\hline
+\endhead
+\hline
+\endfoot
+需求编号 & NFR-10 \\
+\hline
+需求名称 & 邮箱验证码安全 \\
+\hline
+需求描述与依据 & \textbf{本条为分析推导，待确认。} 邮箱验证码是「邮箱真实性」与「账号找回」的唯一凭据。若可枚举、可重放、可绕频控，等于\textbf{账号可被他人接管}——这比交易纠纷严重得多 \\
+\hline
+测试前提／适用范围 & 覆盖注册（UC-01）与找回密码（UC-34）两条验证码路径；使用受控测试邮箱；\textbf{不适用于站内消息通知}（那是 NFR-09） \\
+\hline
+量化指标与统计口径 & ① 验证码为 \textbf{6 位数字}、\textbf{有效期 10 分钟}、\textbf{一次性}（验证通过后立即作废）；② \textbf{明文出现次数为 0}——存储只存哈希，且\textbf{不得写入日志、审计、导出、错误提示}；③ \textbf{同一邮箱 60 秒内最多请求 1 次、24 小时内最多 10 次}，超出返回明确失败；④ \textbf{同一验证码错误 5 次即作废}；⑤ \textbf{账号枚举防护}：找回密码接口对「邮箱存在」与「邮箱不存在」返回\textbf{相同提示}，且\textbf{响应时间差不得构成可判定信号}（建议值，待确认：两组各 20 次请求的均值差 ≤ 100 毫秒）；⑥ 密码重置成功后，\textbf{该账号所有既有会话立即失效} \\
+\hline
+验收方式 & 用两个测试邮箱分别走注册与找回；核对验证码长度／有效期／一次性；检索存储、日志、审计、导出确认无明文；连续请求触发 60 秒与 24 小时双重频控；连续错误 5 次验证作废；对不存在邮箱与存在邮箱各请求 20 次，比对提示文案与响应时间分布；重置密码后用旧会话请求受保护资源，确认已被拒绝 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{8.12 与数据及权限的对应}
+\addcontentsline{toc}{subsection}{8.12 与数据及权限的对应}
+
+{\scriptsize
+\begin{longtable}{|p{2.00cm}|p{4.26cm}|p{9.74cm}|}
+\hline
+\textbf{质量需求} & \textbf{涉及数据／权限} & \textbf{必须同步检查的行为} \\
+\hline
+\endfirsthead
+\hline
+\textbf{质量需求} & \textbf{涉及数据／权限} & \textbf{必须同步检查的行为} \\
+\hline
+\endhead
+\hline
+\endfoot
+NFR-01 & 商品、分类；所有角色浏览权限 & 不因速度目标泄露发布人隐私；50 人条件不被 500 人建议替换 \\
+\hline
+NFR-02、NFR-03 & 学生、商品、订单；已认证学生下单 & 权限或状态拒绝不产生业务变动；不能用失败响应凑达标样本；\textbf{并发下不得产生重复成交} \\
+\hline
+NFR-04 & 学生手机号、宿舍地址 & \textbf{成交双方也不能互相读取}手机号与宿舍地址；校内学生可查看他人信用分，但不能查看变动明细 \\
+\hline
+NFR-05 & 学生、管理员连续失败计数及锁定截止时间 & 账号锁定与认证状态、账号状态分离，不因失败扣信用分 \\
+\hline
+NFR-06 & 已认证学生发布商品；商品初始状态 & 商品创建时状态恒为 \texttt{待审核}；完成发布不等于完成审核 \\
+\hline
+NFR-07 & 浏览、登录、合法下单关键功能 & 正常业务拒绝单列；考试周统计与维护口径待确认 \\
+\hline
+NFR-08 & 认证申请、学生证图片；审核管理员访问范围 & 学生证图片仅审核管理员可见，不进入日志、导出与审计正文；认证状态变化不改变商品状态与信用分（BR-19） \\
+\hline
+\textbf{NFR-09} & \textbf{私信；会话参与方范围} & 非参与方读不到任何消息正文；私信不改变商品状态、成交记录、信用分与举报状态；手机号与宿舍地址\textbf{不因私信而放开}（NFR-04 不变） \\
+\hline
+\textbf{NFR-10} & \textbf{邮箱验证码；邮箱、验证码哈希、会话} & 验证码不存明文、不进日志；频控与错误次数生效；找回密码不泄露邮箱是否存在；重置后既有会话失效；\textbf{封禁账号仍可重置密码但登录仍被拒} \\
+\hline
+\end{longtable}
+}
+
+
+本文不包含任何缓存、数据库产品、部署或容量实现方案。性能容量能否实现须由后续项目验证。
+
+
+
+\section*{附录 A　图源文件与证据清单}
+\addcontentsline{toc}{section}{附录 A　图源文件与证据清单}
+\markboth{附录 A　图源文件与证据清单}{附录 A　图源文件与证据清单}
+
+\subsection*{A.1 图形交付物清单}
+\addcontentsline{toc}{subsection}{A.1 图形交付物清单}
+
+
+{\footnotesize
+\begin{longtable}{|p{1.49cm}|p{3.03cm}|p{1.66cm}|p{8.34cm}|p{1.49cm}|}
+\hline
+\textbf{图号} & \textbf{图名} & \textbf{当前状态} & \textbf{需重出原因} & \textbf{负责人} \\
+\hline
+\endfirsthead
+\hline
+\textbf{图号} & \textbf{图名} & \textbf{当前状态} & \textbf{需重出原因} & \textbf{负责人} \\
+\hline
+\endhead
+\hline
+\endfoot
+图 3-1 & 用例图 & ⚠️ 待重出 & 旧图含已删除的支付、交付、确认收货、物品流转等 11 个用例；\textbf{且缺 UC-29、UC-30 两个私信用例} & 赵俊豪 \\
+\hline
+图 6-1 & UML 概念类图 & ⚠️ 待重出 & 旧图含「交付方式」字段；订单应为成交记录 + \texttt{成交状态} 标记；\textbf{缺「私信」实体及其与商品、学生的关联} & 马歆远 \\
+\hline
+图 7-1 & 商品状态机（SM-01） & ⚠️ 待重出 & 旧图为五状态且含「已预订」，本版为四状态 & 吕锦浩 \\
+\hline
+图 7-2 & 学生认证状态机（SM-02） & ⚠️ 待出 & V1.2.1 即未出图，本版仍未出 & 林初仁 \\
+\hline
+图 7-3 & 物品流转状态机（SM-03） & \textbf{已删除} & 捐赠、回收、借用三条路径整体下线（§2.2.2） & — \\
+\hline
+\end{longtable}
+}
+
+
+
+\subsection*{A.2 原型与走查证据}
+\addcontentsline{toc}{subsection}{A.2 原型与走查证据}
+
+{\footnotesize
+\begin{longtable}{|p{1.58cm}|p{11.43cm}|p{1.50cm}|p{1.49cm}|}
+\hline
+\textbf{证据类型} & \textbf{内容} & \textbf{位置} & \textbf{负责人} \\
+\hline
+\endfirsthead
+\hline
+\textbf{证据类型} & \textbf{内容} & \textbf{位置} & \textbf{负责人} \\
+\hline
+\endhead
+\hline
+\endfoot
+原型 & 可点击页面：首页 / 商品详情 / 下单 / 后台审核。\textbf{V2.0 起需补：注册登录页、学生证上传页、后台「学生证审核」tab；需删除：支付页、交付页、确认收货页、物品流转各页。V2.1 新增需补：商品详情页「联系卖家」按钮、私信会话页、私信列表页、未读红点} & 原型工程 & 过振宇 \\
+\hline
+原型走查记录 & 页面流程走查、状态流转走查 & 走查记录表 & 过振宇 \\
+\hline
+场景走查记录 & \textbf{SC-01～SC-12} 场景走查（按 §7.5 定义执行） & 走查记录表 & 过振宇 \\
+\hline
+AI 交互原始记录 & 各成员使用 AI 的实际提示词与对话记录 & 各成员自行保存 & 全员 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{A.3 文档版本记录}
+\addcontentsline{toc}{subsection}{A.3 文档版本记录}
+
+{\scriptsize
+\begin{longtable}{|p{1.33cm}|p{1.33cm}|p{12.01cm}|p{1.33cm}|}
+\hline
+\textbf{版本} & \textbf{日期} & \textbf{修订内容} & \textbf{修订人} \\
+\hline
+\endfirsthead
+\hline
+\textbf{版本} & \textbf{日期} & \textbf{修订内容} & \textbf{修订人} \\
+\hline
+\endhead
+\hline
+\endfoot
+v0.1 & 2026-10-15 & 各成员分工初稿 & 赵俊豪、吕锦浩、马歆远 \\
+\hline
+v0.2 & 2026-10-22 & 组长合稿冲突检查，发出改稿清单 & 林初仁 \\
+\hline
+v0.3 & 2026-10-25 & 各成员第一次修改版回收 & 赵俊豪、吕锦浩、马歆远 \\
+\hline
+v1.0 & 2026-10-25 & 合稿定稿；统一场景走查编号 & 林初仁 \\
+\hline
+v1.1 & 2026-10-26 & 全稿版本号统一 & 林初仁 \\
+\hline
+v1.2 & 2026-10-26 & 身份方案改为「平台自建账号 + 学生证人工核验」；移除自提点；新增 UC-26～28、BR-24～27、SM-04、SC-11、NFR-09 & 林初仁 \\
+\hline
+V1.2.1 & 2026-10-31 & 合稿修订，整合 BR-01～BR-23，补 ST/FT 完整表与认证 AT 编号 & 林初仁 \\
+\hline
+\textbf{V2.0} & \textbf{2026-11-04} & \textbf{简化重构：交易链压缩为「发布→审核→在售→下单成交」，取消支付、交付、确认收货、取消、退款；删除捐赠、回收、借用三条物品流转；订单八状态机整体取消，商品由五态减为四态；用例 28→18，BR 27→19，NFR 9→8，SC 11→8} & 林初仁（裁定）、全员（分章） \\
+\hline
+\textbf{V2.1} & \textbf{2026-11-05} & \textbf{① 新增「联系卖家 / 站内私信」：UC-29（联系卖家与沟通）、UC-30（查看我的私信）、BR-20（私信范围与准入）、NFR-09（站内消息可达性）、SC-09（私信与沟通）与「私信」实体（用例 18→20、BR 19→20、NFR 8→9、SC 8→9、实体 10→11，新用例编号跳过 UC-19～UC-28 以与 V1.2.1 零冲突）；② 补齐长期缺失的 §4.3 禁售品类清单（BR-04 附表，A1–E2 共 18 类 + 5 条判定口径），关闭「审核无判据」这一最大空洞；③ UC-10 第 6 步由「互发展示联系渠道」改为「引导进入商品私信会话」；④ 举报类型「联系方式引流」更名为「站外导流」并收窄定义；}⑤ 补「成交撤销」回滚回路：UC-31、BR-21、ST-10／ST-11、SC-10，订单记录增加 \texttt{成交状态}（有效/已撤销）三字段，商品「已售出」不再是无出口的硬终态；⑥ 第二轮边界检查：补商品 \texttt{描述} 字段、图片改为 1～9 张必填、信用分越界截断、举报组合唯一、§4.1.1 时间口径统一、§5.5 并发总则、§6.4.1 双向一致性、私信不落库、撤销两种竞态；新增 UC-32 编辑商品 + BR-22 + ST-12（在售编辑重审）、ST-13（封禁联动下架），BR-10 补封禁连带处置、BR-18 改为「应封禁」（用例 22、BR 22、ST 13）** & 林初仁（裁定）、全员（分章） \\
+\hline
+\end{longtable}
+}
+
+
+
+\section*{附录 B　术语表}
+\addcontentsline{toc}{section}{附录 B　术语表}
+\markboth{附录 B　术语表}{附录 B　术语表}
+
+\begin{quote}\small
+用途：数据字典、用例描述、类图、状态图、权限表\textbf{必须使用本表用词}。
+
+发现本表缺词或定义不合适，找组长补充，\textbf{不要各自另起一套}。
+
+维护：林初仁（组长）　版本：v2.1　日期：2026-11-05
+
+\end{quote}
+
+
+\subsection*{一、角色与身份}
+\addcontentsline{toc}{subsection}{一、角色与身份}
+
+{\footnotesize
+\begin{longtable}{|p{1.54cm}|p{8.71cm}|p{5.76cm}|}
+\hline
+\textbf{术语} & \textbf{定义} & \textbf{备注} \\
+\hline
+\endfirsthead
+\hline
+\textbf{术语} & \textbf{定义} & \textbf{备注} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{游客} & 未登录的访问者，只能浏览商品，不能交易 &  \\
+\hline
+\textbf{学生} & 在本平台以\textbf{学号注册}的在校学生；其交易资格由\textbf{认证状态}决定，未完成核验者虽已注册仍不具备发布与交易权限 & \textbf{不再把「已通过核验」写进「学生」的定义}，否则「未认证学生」在逻辑上不成立 \\
+\hline
+\textbf{未认证学生} & 已注册但\textbf{尚未通过}学生证核验的学生，含「未提交」「待审核」「已驳回」三态；三态基础权限相同，均不能发布、下单、评价、举报（\textbf{可收藏}） & 账号的认证状态，不是新角色 \\
+\hline
+\textbf{已认证学生} & 学生证核验已通过的学生，可发布、下单、评价、举报 &  \\
+\hline
+\textbf{管理员} & 负责商品审核、学生证审核与违规处置的平台运营人员 & \textbf{独立编号，不由学生身份升级而来} \\
+\hline
+\textbf{参与者} & 位于系统边界之外、与系统交互的人、设备或外部系统 & 用例图用词 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{二、身份与认证}
+\addcontentsline{toc}{subsection}{二、身份与认证}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endfirsthead
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{平台账号} & 平台\textbf{自建}的账号体系。学生以\textbf{邮箱}为唯一键注册，用\textbf{密码}登录；\textbf{学号不参与登录}（见「学号」词条）。平台\textbf{不接入}任何学校认证或学籍数据库接口 \\
+\hline
+\textbf{注册} & 学生填写\textbf{邮箱、昵称、真实姓名}、手机号（可选）并设置登录密码，在平台建立账号的动作。\textbf{学号不在注册时填写}，而在提交核验时申报 \\
+\hline
+\textbf{学号} & 由学校分配的学生唯一标识。\textbf{不再作为登录账号}——学号在提交学生证核验时申报，\textbf{核验通过后才与账号绑定}且全局唯一。原因：若以学号登录，知道他人学号即可抢注占位，本人反而无法注册 \\
+\hline
+\textbf{邮箱} & 学生的登录账号，注册时必填、全局唯一、须符合邮箱格式。\textbf{与学号解耦}，保证他人无法通过抢先注册学号阻塞本人 \\
+\hline
+\textbf{登录密码} & 学生或管理员进入平台的凭据（学生为\textbf{邮箱 + 密码}）。\textbf{只存不可逆哈希}，任何场景不得回显。\textbf{学生忘记密码时通过 UC-34 用邮箱验证码重置}；管理员密码由系统维护方重置 \\
+\hline
+\textbf{邮箱验证码} & 系统发送到学生邮箱的 \textbf{6 位数字}一次性凭据，用于\textbf{注册}与\textbf{找回密码}。\textbf{有效期 10 分钟、只能使用一次、错误 5 次即作废}；只存哈希不存明文，不进日志（NFR-10） \\
+\hline
+\textbf{找回密码} & 学生在无法登录时，凭邮箱验证码证明身份并设置新密码的流程（UC-34）。\textbf{重置成功后该账号所有登录会话立即失效}；封禁账号也可重置，但登录仍被拒绝 \\
+\hline
+\textbf{学生证核验} & 学生上传学生证照片，由\textbf{管理员人工核对}证件姓名、学号与账号所填学号是否一致的过程。\textbf{核验通过是取得发布与交易资格的前提} \\
+\hline
+\textbf{认证状态} & 学生账号的核验状态，取值：\texttt{未提交}、\texttt{待审核}、\texttt{已认证}、\texttt{已驳回}（四态，见 §7.3） \\
+\hline
+\textbf{账号状态} & 独立于认证状态的管控标记，取值：\texttt{正常}、\texttt{受限}、\texttt{封禁}。\textbf{认证状态变化不改变账号状态，反之亦然}（BR-19）；\textbf{不是状态机} \\
+\hline
+\textbf{核验重提次数} & 学生累计重新提交核验的次数，上限 3 次（BR-17）。\textbf{存于学生实体，全生命周期累计} \\
+\hline
+\textbf{认证申请} & 一次学生证核验的提交记录，含证件图片、提交时间、审核状态、审核人、驳回原因 \\
+\hline
+\textbf{管理员账号} & 系统\textbf{预置}的后台账号，不开放注册、\textbf{不由学生账号升级}；与学生账号相互独立，须分别登录 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+⚠️ \textbf{自 v1.2 起不再使用「学校统一身份认证」方案。} 它需接入学校认证系统（需审批、注册应用、配置回调域名），课程项目不具备条件；且统一认证只核验学生身份，\textbf{无法覆盖管理员登录}。
+
+\end{quote}
+
+\subsection*{三、商品}
+\addcontentsline{toc}{subsection}{三、商品}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endfirsthead
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{商品} & 学生发布的一件待售二手物品，是平台的核心交易对象 \\
+\hline
+\textbf{分类} & 商品所属的类别，\textbf{用分类实体承载}，一件商品属于且仅属于 1 个分类；同一分类下可有 0..* 件商品。分类\textbf{不分层（单层）} \\
+\hline
+\textbf{商品状态} & 商品在其生命周期中所处的状态，共 \textbf{4 种}（见下） \\
+\hline
+\textbf{在售} & 商品已通过审核、未被成交，可被下单 \\
+\hline
+\textbf{在售上限} & 同一学号可同时处于「在售」状态的商品数量上限，数值见 BR-02（5 件） \\
+\hline
+\textbf{成色} & 商品新旧程度，封闭四值：全新、九成新、七成新、其他 \\
+\hline
+\textbf{下架原因} & 商品进入「已下架」的原因，\textbf{五值}：审核不通过、卖家撤回、卖家主动下架、管理员违规下架、撤销后不可交易（与 §6.4.1 的转换映射一一对应） \\
+\hline
+\textbf{编辑} & 卖家修改本人「待审核」或「在售」商品的标题、描述、价格、成色、图片、分类（BR-22、UC-32）。\textbf{「在售」商品编辑后必须回到「待审核」重审}（ST-12），防止"先过审再改成禁售品"绕过审核 \\
+\hline
+\textbf{浏览数} & 某件商品被查看的次数，非负整数、公开字段；统计口径与是否冗余存储于商品实体待确认（建议值） \\
+\hline
+\textbf{收藏} & 学生对某件商品表达的保留意向，\textbf{不锁定商品、不产生订单、不要求认证}（BR-11、UC-09） \\
+\hline
+\textbf{收藏上限} & 同一学生可同时保有的收藏记录数量上限，数值见 BR-11（建议值 100 件） \\
+\hline
+\textbf{已失效} & 收藏列表中商品已「已售出」或「已下架」时的展示标记；\textbf{收藏记录本身不删除}，只标记不可下单（BR-11） \\
+\hline
+\end{longtable}
+}
+
+
+\subsubsection*{商品状态取值（4 种，三处必须一致）}
+\addcontentsline{toc}{subsubsection}{商品状态取值（4 种，三处必须一致）}
+
+{\footnotesize
+\begin{longtable}{|p{1.78cm}|p{12.02cm}|p{2.19cm}|}
+\hline
+\textbf{状态} & \textbf{含义} & \textbf{可否下单} \\
+\hline
+\endfirsthead
+\hline
+\textbf{状态} & \textbf{含义} & \textbf{可否下单} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{待审核} & 已发布但尚未通过管理员审核，仅发布者与管理员可见 & 否 \\
+\hline
+\texttt{在售} & 已通过审核，可被下单 & \textbf{是} \\
+\hline
+\texttt{已售出} & 已被买家下单成交；\textbf{默认终态，可经双方同意或管理员审批撤销回到「在售」}（ST-10 / ST-11） & 否 \\
+\hline
+\texttt{已下架} & 审核不通过、卖家撤回、卖家主动下架或被管理员违规下架 & 否 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+\textbf{初始状态恒为 \texttt{待审核}。} 一件商品\textbf{同时最多拥有一条「有效」成交记录}（BR-06）；\texttt{已售出} 默认即最终结果，\textbf{唯一出口是双方同意或管理员审批撤销}（BR-21），撤销后可再次成交，形成多条历史成交记录。
+
+\end{quote}
+
+\subsection*{四、交易与订单}
+\addcontentsline{toc}{subsection}{四、交易与订单}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endfirsthead
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{订单} & \textbf{成交记录}。买家对一件商品下单成功时生成的记录。\textbf{订单没有状态机}，只有 \texttt{成交状态}（\texttt{有效}／\texttt{已撤销}）一个标记，表达双方是否一致同意终止（BR-21） \\
+\hline
+\textbf{成交} & 买家下单成功的那一刻。\textbf{「成交」只表示下单成功，不表示已付款或已交货}（BR-07） \\
+\hline
+\textbf{成交金额} & 订单记录的金额，\textbf{必须等于下单当时商品的标价}（BR-05） \\
+\hline
+\textbf{自购} & 买家下单自己发布的商品，\textbf{平台禁止}（BR-01） \\
+\hline
+\textbf{价格} & 商品的标价。平台不做议价，下单即以标价成交；合法区间为大于 0 且不超过 50000 元 \\
+\hline
+\textbf{有效成交记录} & 一件商品\textbf{同时最多 1 条}；由商品状态 \texttt{在售}→\texttt{已售出} 的原子切换保证唯一性（BR-06）。撤销后该记录转为「已撤销」，商品可再次成交，此时同商品存在多条\textbf{历史}记录但有效记录仍 ≤ 1（BR-21） \\
+\hline
+\textbf{成交状态} & 成交记录上的标记，取值 \texttt{有效}、\texttt{已撤销}。\textbf{不是订单状态机}——它只表达「这笔成交还在不在」，不涉及支付与交付事实（BR-21）。\texttt{已撤销} 仅在双方同意或管理员审批通过后置入 \\
+\hline
+\textbf{退货/撤销审批} & 退货或撤销申请的处理标记，取值 \texttt{待对方同意}、\texttt{待管理员审批}、\texttt{已同意}、\texttt{已拒绝}。双方同意或管理员审批通过后，成交状态才可变为 \texttt{已撤销}。 \\
+\hline
+\textbf{撤销成交} & 任一方当事人可发起退货/撤销申请。只有双方明确同意，或管理员审批通过后，\texttt{成交状态} 才置 \texttt{已撤销}，商品由 \texttt{已售出} 回到 \texttt{在售}（ST-10）。任一方已评价后不得申请（BR-21、UC-31） \\
+\hline
+\textbf{违约（撤销）} & 撤销成交后由对方判定或超时默认产生的一次责任认定，公开计入信用分变动。\textbf{不等同于举报成立的违规处置}，也不等同于封禁 \\
+\hline
+\textbf{历史订单} & 超过保留期或已结束的成交记录（\texttt{已完成}／\texttt{已撤销}）的状态称谓，仅本人可查，不参与统计与评价（UC-16 辅事件流 D/E） \\
+\hline
+\textbf{保留期} & 各类记录在正常业务视图中保留的时长：成交记录 3 年、消息通知 90 天、认证申请留存期限待确认（NFR-08）。\textbf{到期后转入历史或匿名化，不等于物理删除}（逐项值均为建议值，待确认） \\
+\hline
+\textbf{归档} & 记录超过保留期后移出正常业务视图、仍可本人查阅的处理方式；\textbf{与删除不同}，归档不销毁数据 \\
+\hline
+\end{longtable}
+}
+
+
+\begin{quote}\small
+⚠️ **本版不记录线下交付事实；退货/撤销仅通过双方同意或管理员审批改变平台成交记录。文档不新增支付、退款状态。
+
+\end{quote}
+
+⚠️ \textbf{本版不存在「交付」「见面交付」「交付确认」「确认收货」「交付记录」「取消订单」「退款」「退款中」「已退款」「标记已付款」「确认收款」等术语。} 出现即为残留，必须删除。理由见 §2.1 边界声明：平台既拿不到支付回调，也没有任何交付观测点，这些状态无法被验证，写进需求就是不可实现的空条款。
+
+
+\subsection*{五、信用与评价}
+\addcontentsline{toc}{subsection}{五、信用与评价}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endfirsthead
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{信用分} & 反映学生交易行为的分数，用于限制其发布与下单权限。初始值 100，取值范围 0\textasciitilde{}150（BR-13）。\textbf{变动事件与幅度见 BR-14}，不由本条定义 \\
+\hline
+\textbf{信用分阈值} & \texttt{信用分 < 60} → \textbf{禁止发布新商品}（已发布商品仍可交易到底）；\texttt{信用分 < 40} → \textbf{禁止下单}（已有成交记录不受影响） \\
+\hline
+\textbf{信用记录} & 信用分的一次变动流水，含变动值、原因、时间、关联订单编号。\textbf{每次变动必须留一条}，不可直接改分数 \\
+\hline
+\textbf{评价} & 成交后，买方与卖方可对对方作出的文字评价。\textbf{双向}、每方每单 1 次、\textbf{不可修改}、\textbf{只有文字不设星级} \\
+\hline
+\textbf{评价资格} & 为该笔成交的买方或卖方，且距成交不超过 7 天，且尚未评价过该订单（BR-08） \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{六、治理}
+\addcontentsline{toc}{subsection}{六、治理}
+
+{\scriptsize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endfirsthead
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{举报} & 已认证学生对\textbf{商品}或\textbf{学生}发起的违规申告。\textbf{对象为商品}时用于违规内容处置；\textbf{对象为学生}时仅限「与该学生的成交或沟通中发生的行为」，不得举报无关个人 \\
+\hline
+\textbf{举报类型} & 封闭\textbf{六值}：违禁品、虚假描述、价格欺诈、\textbf{站外导流}、\textbf{收款不履约}、其他。前四类只能用于\textbf{商品}举报，\texttt{收款不履约} 只能用于\textbf{学生}举报，\texttt{其他} 两者皆可。\textbf{「站外导流」}指在商品描述或图片中发布与本次交易无关的联系方式或广告（加群、卖课、代购），把流量引出平台；\textbf{不包含}交易双方在站内私信内为完成取货而互留电话（V2.1 由「联系方式引流」更名并收窄） \\
+\hline
+\textbf{收款不履约} & 举报类型之一，专指\textbf{成交后收款却不交货或失联}的行为。只能作为对\textbf{学生}的举报提交，且须与举报人存在过成交记录或私信会话（UC-12 辅事件流 C）——这是买家线下转账后被跑路时\textbf{唯一可用的救济入口} \\
+\hline
+\textbf{被核实争议数} & 某学生名下的「对人举报经核实成立」的累计次数，\textbf{公开显示}在其主页，供他人在成交前识别风险。\textbf{只显示计数，不公开具体争议内容与举报人}（§6.5、BR-04） \\
+\hline
+\textbf{审核} & 管理员对 \texttt{待审核} 商品做上架前准入判断，结论：通过 / 不通过 \\
+\hline
+\textbf{处置} & 管理员对违规作出的处理，\textbf{手段固定为五项}：警告、强制下架、限制发布、封禁账号、扣信用分 \\
+\hline
+\textbf{强制下架} & 管理员处置导致的商品下架，与卖家主动下架\textbf{执行角色不同}，在转换表中分两行记录（ST-06 / ST-07） \\
+\hline
+\textbf{禁售品类} & 不允许在平台发布的商品类别。\textbf{完整清单见 §4.3（A1–E2 共 18 类，闭集）}，是本项目审核用例的核心判据。管理员审核时须按类目编号判定并引用 \\
+\hline
+\textbf{排队时间} & 商品提交审核后进入队列的等待时长，由 \texttt{发布时间} 起算（§4.1.1）。\textbf{编辑或重新提交会刷新该起算点}，使 24 小时审核时限重新计时（BR-22） \\
+\hline
+\textbf{交易争议} & 撤销成交后一方主张「已实际交付或已付款」而提出的异议，\textbf{通过 UC-12 举报对方学生（类型=\texttt{收款不履约}）}，由 UC-13 核实处置并计入 \texttt{被核实争议数}（BR-21、BR-04）。平台不冻结已生效的撤销，也不追回货物或款项 \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{七、沟通（站内私信与消息通知）}
+\addcontentsline{toc}{subsection}{七、沟通（站内私信与消息通知）}
+
+\begin{quote}\small
+⚠️ \textbf{「消息通知」与「私信」是两个不同对象，不得混用。} 前者是系统单向推送，后者是用户双向对话。
+
+\end{quote}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endfirsthead
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{私信} & 学生与学生（或与管理员，仅限处置异议）之间围绕\textbf{一件具体商品}的双向文字消息。\textbf{必须绑定商品}、\textbf{只有已认证学生可发起}、\textbf{纯文本}、\textbf{无附件、无撤回、无群聊}（BR-20） \\
+\hline
+\textbf{会话} & 同一（商品，双方）下的全部私信消息构成的对话。\textbf{会话不是实体，不单独建表、无状态、不可关闭}（§6.2.1、§7.1），由应用层聚合出列表、未读数与最后消息时间 \\
+\hline
+\textbf{未读数} & 某会话中\textbf{发给本人且未被本人阅读}的消息条数。以会话侧统计为准，与通知红点不一致时取会话侧（NFR-09） \\
+\hline
+\textbf{联系卖家} & 已认证学生在商品详情页发起与该商品发布人的会话的入口动作（UC-29）。\textbf{不是「查看手机号」}——平台不提供这一能力 \\
+\hline
+\textbf{消息通知} & 由\textbf{系统}在 BR-15 事件发生时推送给用户的\textbf{单向}消息，见 UC-18。与私信分属两个实体、两个用例 \\
+\hline
+\textbf{消息类型} & 消息通知的分类，封闭六值：核验、商品审核、成交、处置、信用、\textbf{私信}。其中 \texttt{私信} 类通知携带会话定位，点击后跳转到会话（UC-30） \\
+\hline
+\textbf{通知红点} & 导航栏上的未读提示，数值等于该用户全部未读消息通知数；\textbf{与私信会话的未读数相互独立}，不一致时私信以会话侧为准（NFR-09） \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{八、文档与过程用语}
+\addcontentsline{toc}{subsection}{八、文档与过程用语}
+
+{\footnotesize
+\begin{longtable}{|p{2.75cm}|p{13.25cm}|}
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endfirsthead
+\hline
+\textbf{术语} & \textbf{定义} \\
+\hline
+\endhead
+\hline
+\endfoot
+\textbf{需求} & 系统必须满足的条件或具备的能力 \\
+\hline
+\textbf{用例} & 参与者为达成某个目标而与系统进行的一次完整交互 \\
+\hline
+\textbf{业务规则} & 限制或指导业务处理的条件，编号 \texttt{BR-xx} \\
+\hline
+\textbf{状态转换} & 由事件触发的状态变化，编号 \texttt{ST-xx}（商品）或 \texttt{AT-xx}（认证） \\
+\hline
+\textbf{状态保持} & 操作被拒绝或失败时状态没有改变。\textbf{不得写成转换成功} \\
+\hline
+\textbf{场景走查} & 按业务情境逐步推演流程、查找需求漏洞的活动，编号 \texttt{SC-xx} \\
+\hline
+\textbf{待确认} & 尚未取得确认的候选值或候选规则，\textbf{不得写成已确认} \\
+\hline
+\textbf{教学模拟} & 由学生扮演业务方或教师所做的确认。\textbf{必须注明，不代表真实确认} \\
+\hline
+\end{longtable}
+}
+
+
+
+\section*{附录 C　与 V1.2.1 的差异及编号映射}
+\addcontentsline{toc}{section}{附录 C　与 V1.2.1 的差异及编号映射}
+\markboth{附录 C　与 V1.2.1 的差异及编号映射}{附录 C　与 V1.2.1 的差异及编号映射}
+
+\subsection*{C.1 用例映射（旧 28 → 新 24）}
+\addcontentsline{toc}{subsection}{C.1 用例映射（旧 28 → 新 24）}
+
+
+{\scriptsize
+\begin{longtable}{|p{2.44cm}|p{4.03cm}|p{2.44cm}|p{7.09cm}|}
+\hline
+\textbf{旧编号} & \textbf{旧名称} & \textbf{新编号} & \textbf{处理} \\
+\hline
+\endfirsthead
+\hline
+\textbf{旧编号} & \textbf{旧名称} & \textbf{新编号} & \textbf{处理} \\
+\hline
+\endhead
+\hline
+\endfoot
+UC-01 & 注册、登录并提交学生证核验 & UC-01 + UC-02 & \textbf{拆分}（原与 UC-26 重复，重提上限两处不一致） \\
+\hline
+UC-02 & 发布二手物品 & UC-05 & 保留（改名为「发布商品」） \\
+\hline
+UC-03 & 搜索商品 & UC-07 & 保留 \\
+\hline
+UC-04 & 按分类浏览商品 & UC-08 & 保留，\textbf{删除「子分类下钻」}（与「分类不分层」冲突） \\
+\hline
+UC-05 & 收藏商品 & UC-09 & 保留 \\
+\hline
+UC-06 & 下单 & UC-10 & 改写为「下单成交」 \\
+\hline
+UC-07 & 完成支付 & — & \textbf{删除}（无支付） \\
+\hline
+UC-08 & 约定见面交付 & — & \textbf{删除}（无交付流程） \\
+\hline
+UC-09 & 送到自提点 & — & 旧版已取消，不再保留占位编号 \\
+\hline
+UC-10 & 确认收货 & — & \textbf{删除}（无交付确认） \\
+\hline
+UC-11 & 评价交易 & UC-14 & 保留，\textbf{删除星级} \\
+\hline
+UC-12 & 举报违规商品 & UC-12 & 保留，\textbf{V2.1 扩展为「举报违规商品或学生」} \\
+\hline
+UC-13 & 审核商品 & UC-06 & 保留（编号前移） \\
+\hline
+UC-14 & 下架自己的商品 & UC-11 & 保留 \\
+\hline
+UC-15 & 处理举报、申诉与违规处置 & UC-13 & 保留，\textbf{删除申诉流程}，处置手段统一 \\
+\hline
+UC-16 & 查看信用分 & UC-15 & 保留，\textbf{删除「等级」} \\
+\hline
+UC-17 & 捐赠物品 & — & \textbf{删除}（无代收点、无仓库） \\
+\hline
+UC-18 & 申请回收 & — & \textbf{删除}（无回收人员） \\
+\hline
+UC-19 & 申请借用 & — & \textbf{删除}（期外精简） \\
+\hline
+UC-20 & 取消订单 & — & \textbf{删除}（无支付，无款可退） \\
+\hline
+UC-21 & 查看我的订单 & UC-16 & 保留，\textbf{改为查看成交记录} \\
+\hline
+UC-22 & 查看我的商品 & UC-17 & 保留，\textbf{五状态分组改四状态} \\
+\hline
+UC-23 & 查看消息通知 & UC-18 & 保留 \\
+\hline
+UC-24 & 领取捐赠物品 & — & \textbf{删除} \\
+\hline
+UC-25 & 归还借用物品 & — & \textbf{删除} \\
+\hline
+UC-26 & 提交学生证核验申请 & UC-02 & 合并（与 UC-01 拆分后的提交部分合并） \\
+\hline
+UC-27 & 审核学生证 & UC-03 & 保留 \\
+\hline
+UC-28 & 管理员登录 & UC-04 & 保留 \\
+\hline
+（V2.1 新增） & 无对应旧用例 & \textbf{UC-29} & \textbf{新增：联系卖家与沟通}（跳过已删除的 UC-19～UC-28，零冲突） \\
+\hline
+（V2.1 新增） & 无对应旧用例 & \textbf{UC-30} & \textbf{新增：查看我的私信}（跳过已删除的 UC-19～UC-28，零冲突） \\
+\hline
+（V2.1 新增） & 无对应旧用例 & \textbf{UC-31} & \textbf{新增：撤销成交}（跳过已删除的 UC-19～UC-28，零冲突） \\
+\hline
+（V2.1 新增） & 无对应旧用例 & \textbf{UC-32} & \textbf{新增：编辑商品}（跳过已删除的 UC-19～UC-28，零冲突） \\
+\hline
+（V2.1 新增） & 无对应旧用例 & \textbf{UC-33} & \textbf{新增：查看个人主页}（跳过已删除的 UC-19～UC-28，零冲突） \\
+\hline
+（V2.1 新增） & 无对应旧用例 & \textbf{UC-34} & \textbf{新增：找回密码}（跳过已删除的 UC-19～UC-28，零冲突） \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{C.2 业务规则映射（旧 27 → 新 22）}
+\addcontentsline{toc}{subsection}{C.2 业务规则映射（旧 27 → 新 22）}
+
+{\scriptsize
+\begin{longtable}{|p{5.97cm}|p{7.83cm}|p{2.20cm}|}
+\hline
+\textbf{旧编号} & \textbf{处理} & \textbf{新编号} \\
+\hline
+\endfirsthead
+\hline
+\textbf{旧编号} & \textbf{处理} & \textbf{新编号} \\
+\hline
+\endhead
+\hline
+\endfoot
+BR-01 & 保留 & BR-01 \\
+\hline
+BR-02 & 保留 & BR-02 \\
+\hline
+BR-03 支付超时自动取消 & \textbf{删除} & — \\
+\hline
+BR-04 禁售品类 & 保留 & BR-04 \\
+\hline
+BR-05 信用分 & \textbf{拆分}：定义与阈值 & BR-13 \\
+\hline
+BR-06 价格合法 & 保留，\textbf{补上明确上限 50000 元} & BR-05 \\
+\hline
+BR-07 举报核实 & 合并入 & BR-04 \\
+\hline
+BR-08 发布待审核 & 保留 & BR-03 \\
+\hline
+BR-09 唯一有效订单 & \textbf{改写为「下单即成交」原子性} & BR-06 \\
+\hline
+BR-10 付款确认 & \textbf{删除} & — \\
+\hline
+BR-11 交付记录 & \textbf{删除} & — \\
+\hline
+BR-12 取消与退款 & \textbf{删除} & — \\
+\hline
+BR-13 商品恢复在售 & \textbf{删除}（无取消后恢复场景） & — \\
+\hline
+BR-14 确认收货与自动确认 & \textbf{删除} & — \\
+\hline
+BR-15 评价资格 & 保留，并吸收旧 BR-15 的举报关联部分 & BR-08 \\
+\hline
+BR-16 下架权限 & 保留 & BR-09 \\
+\hline
+BR-17 封禁后权限 & 保留 & BR-10 \\
+\hline
+BR-18 搜索与收藏 & 保留 & BR-11 \\
+\hline
+BR-19 成交统计 & 保留 & BR-12 \\
+\hline
+BR-20 物品流转 & \textbf{删除} & — \\
+\hline
+BR-21 信用分变动 & \textbf{拆分}：变动事件 & BR-14 \\
+\hline
+BR-22 主动通知 & 保留，\textbf{事件清单同步精简} & BR-15 \\
+\hline
+BR-23 人工处置标记 & \textbf{删除}（无未结束订单可标记） & — \\
+\hline
+BR-24 核验期限 & 保留 & BR-16 \\
+\hline
+BR-25 重提上限 & 保留 & BR-17 \\
+\hline
+BR-26 伪造处置 & 保留 & BR-18 \\
+\hline
+BR-27 认证与账号状态分离 & 保留 & BR-19 \\
+\hline
+（新增） & 平台不参与资金与交付 & \textbf{BR-07} \\
+\hline
+（V2.1 新增） & 私信范围与准入 & \textbf{BR-20} \\
+\hline
+（V2.1 新增） & 成交撤销（双方同意、回滚商品） & \textbf{BR-21} \\
+\hline
+（V2.1 新增） & 商品编辑与重审 & \textbf{BR-22} \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{C.3 状态编号映射}
+\addcontentsline{toc}{subsection}{C.3 状态编号映射}
+
+{\footnotesize
+\begin{longtable}{|p{2.11cm}|p{5.79cm}|p{8.11cm}|}
+\hline
+\textbf{类别} & \textbf{V1.2.1} & \textbf{V2.0 / V2.1} \\
+\hline
+\endfirsthead
+\hline
+\textbf{类别} & \textbf{V1.2.1} & \textbf{V2.0 / V2.1} \\
+\hline
+\endhead
+\hline
+\endfoot
+订单状态机 & SM-01，8 状态，ST-01～ST-14、ST-29、ST-31～ST-34 & \textbf{整体删除}，订单无状态机，仅保留 \texttt{有效}／\texttt{已撤销} 标记（BR-21） \\
+\hline
+商品状态机 & 5 状态（含「已预订」），ST-01、ST-15～ST-28、ST-35～ST-37 & \textbf{4 状态}，ST-01～ST-13（V2.1 新增 ST-10／ST-11 成交回滚、ST-12 编辑重审、ST-13 封禁联动下架） \\
+\hline
+物品流转状态机 & SM-03，FT-01～FT-16 & \textbf{整体删除} \\
+\hline
+认证状态 & AT-01～AT-08 & \textbf{原样保留} AT-01～AT-08（仅改内部 BR 引用） \\
+\hline
+私信 & 无 & \textbf{无状态机}，仅 \texttt{未读}／\texttt{已读}（V2.1 新增，不需要状态图） \\
+\hline
+\end{longtable}
+}
+
+
+\subsection*{C.4 其他口径变化清单}
+\addcontentsline{toc}{subsection}{C.4 其他口径变化清单}
+
+{\scriptsize
+\begin{longtable}{|p{2.71cm}|p{4.12cm}|p{3.26cm}|p{5.91cm}|}
+\hline
+\textbf{项目} & \textbf{V1.2.1} & \textbf{V2.0} & \textbf{\textbf{V2.1}} \\
+\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{V1.2.1} & \textbf{V2.0} & \textbf{\textbf{V2.1}} \\
+\hline
+\endhead
+\hline
+\endfoot
+用例数 & 28（含 UC-09 占位） & 18 & \textbf{24}（+UC-29～UC-34） \\
+\hline
+业务规则数 & 27 & 19 & \textbf{22}（+BR-20、BR-21、BR-22） \\
+\hline
+状态机数 & 4（订单/商品/流转/认证） & 2（商品/认证） & \textbf{2}（订单只有「有效/已撤销」标记，仍不算状态机） \\
+\hline
+状态转换条目 & ST 36 + FT 16 = 52 & ST 9 + AT 8 = 17 & \textbf{ST 13 + AT 8 = 21}（+ST-10～ST-13） \\
+\hline
+场景走查数 & 11 & 8 & \textbf{12}（+SC-09 私信、SC-10 撤销与审批处理、SC-11 编辑重审、SC-12 封禁联动） \\
+\hline
+NFR 数 & 9 & 8（原 NFR-05 支付信息安全删除） & \textbf{10}（+NFR-09 站内消息可达性、NFR-10 邮箱验证码安全） \\
+\hline
+实体数 & 10 & 10 & \textbf{13}（+私信、+收藏、+邮箱验证码；会话不建表） \\
+\hline
+\textbf{沟通载体} & 无（V1.2.1 靠线下自行联系，平台无通道） & \textbf{无}（V2.0 的硬缺陷） & \textbf{站内私信，绑定商品} \\
+\hline
+\textbf{成交撤销} & 无 & \textbf{无}（\texttt{已售出} 硬终态，商品锁死） & \textbf{双方同意或管理员审批撤销，商品回滚在售} \\
+\hline
+\textbf{禁售品类清单} & 无 & 无 & \textbf{18 个类目（§4.3）} \\
+\hline
+成功指标与用例频率 & 数量级不一致 & 已对齐（M-01/M-02 重算） & 未变 \\
+\hline
+价格上限 & 数据字典 100000 / BR 写「不设上限」（矛盾） & 统一为 50000 元 & 未变 \\
+\hline
+图片张数 & UC-02 写 1–9 / 数据字典写 0–9（矛盾） & 统一为 0～9 张 & \textbf{改为 1～9 张必填}（无图商品无法审核，见 BR-22／数据字典） \\
+\hline
+星级评价 & UC-11 有星级 / 数据字典无（矛盾） & 删除星级，只保留文字 & 未变 \\
+\hline
+分类层级 & UC-04 有子分类 / 术语表不分层（矛盾） & 统一为单层 & 未变 \\
+\hline
+处置手段 & UC-15 / 术语表 / BR-21 三套（矛盾） & 统一为五项 & 未变 \\
+\hline
+订单「下一步」 & 术语表漏「→退款中」边 & 订单无状态，问题消失 & 未变 \\
+\hline
+\textbf{举报类型「联系方式引流」} & 存在 & 存在（与私信语义冲突） & \textbf{更名「站外导流」并收窄定义} \\
+\hline
+\textbf{举报对象} & 仅限「商品」（无法举报人） & 仅限「商品」（无法举报人） & \textbf{扩展为「商品／学生」，新增 \texttt{收款不履约} 类型与 \texttt{被核实争议数} 公开计数} \\
+\hline
+\textbf{登录凭据} & 学号 + 密码（\textbf{学号可被抢注}） & 学号 + 密码（同） & \textbf{邮箱 + 密码；学号改为核验时申报、通过后绑定} \\
+\hline
+\textbf{真实姓名} & 无此字段（核验无姓名可比对） & 无此字段（同） & \textbf{新增字段，核验时与证件姓名比对} \\
+\hline
+\textbf{个人主页} & 被 4 处引用但无定义 & 同 & \textbf{新增 UC-33 与公开字段清单} \\
+\hline
+\textbf{商品删除} & 无（只能下架） & 无 & \textbf{支持删除「已下架」商品（软删除）} \\
+\hline
+\textbf{信用记录} & 变动原因为自由文本 & 同 & \textbf{新增 \texttt{变动事件类型} 枚举} \\
+\hline
+\textbf{举报处置} & 处理结果为自由文本 & 同 & \textbf{新增 \texttt{处置手段} 枚举集合} \\
+\hline
+\end{longtable}
+}
+
+
+
+
+\clearpage
+\section*{附录 D\quad 变更说明与批注归并表}
+\addcontentsline{toc}{section}{附录 D\quad 变更说明与批注归并表}
+\markboth{附录 D}{附录 D}
+
+本附录集中登记原散落在各章节的演进说明、答辩口径与走查提醒。
+这些内容不属于需求条目，因此正文不再保留；此处按类别归并，便于评审与答辩时统一查阅。
+涉及需求本身的约束（如分类单层、禁售清单闭集、会话不是实体）仍保留在对应章节。
+
+\subsection*{D.1 版本演进}
+\addcontentsline{toc}{subsection}{D.1 版本演进}
+{\small\textbf{〔1.2 现状问题〕} \textbf{P-03 说明}：V1.2.1 中的「流程无保障（交易全程无记录、交付与付款靠口头约定）」问题，在本版下线。平台只做\textbf{撮合与成交登记}，不介入资金与交付，因此不宣称解决该问题——这一点必须在答辩时讲清楚，不能把「不做的部分」说成「已解决」。}\par
+\vspace{0.35em}
+{\small\textbf{〔1.3 业务目标分解〕} ⚠️ \textbf{G-03 措辞变化（重要）}：V1.2.1 的 G-03 指「捐赠、回收、借用」三条非买卖路径，本版已删除，故 G-03 改为「通过买卖让闲置转手」。若评审问「为什么不做捐赠」，标准回答是：\textbf{学校不提供代收点、回收人员与仓库，捐赠与回收的实物归集环节不成立；平台的边界是不碰实物、不碰资金}。}\par
+\vspace{0.35em}
+{\small\textbf{〔1.4 主要成功指标〕} \textbf{口径对齐说明}：M-02 的 1000 笔/月与 §3 中下单用例「约 50 次/天」（按 30 天约 1500 笔）同量级；M-01 的 1000 人与 §3 中注册「约 40 次/天」同量级。\textbf{指标与用例发生频率必须保持同一数量级}，这是 V1.2.1 存在的问题之一。}\par
+\vspace{0.35em}
+{\small\textbf{〔2.3 功能清单〕} 共 \textbf{24 个用例}。\textbf{编号不连续：UC-01～UC-18 为 V2.0 原有，UC-29～UC-34 为 V2.1 新增，中间 UC-19～UC-28 空缺。} 这是\textbf{有意留空}，目的是与 V1.2.1 的旧编号\textbf{零冲突}（旧 UC-19～UC-28 已全部删除，见附录 C.1），\textbf{不得被误判为缺号或笔误}。V1.2.1 的 28 个用例（含已取消的 UC-09）中删除 11 个、拆分 1 个。旧新编号映射见\textbf{附录 C.1}。}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-01 注册与登录〕} \textbf{与 V1.2.1 的差异}：原 UC-01 把「注册」与「提交学生证核验」写在同一用例里，又与 UC-26 重复描述提交核验流程，且两处对「重提上限」的表述不一致。本版拆为 UC-01（注册登录）+ UC-02（提交核验），\textbf{提交核验只在一处定义}。}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-06 审核商品〕} \textbf{判据已补齐}：V2.0 时本用例写着「已知缺口：禁售品类清单仍未定案，是本版最重要的待补项」。V2.1 已在 \textbf{§4.3} 给出 18 个类目的闭集清单与 5 条判定口径，该缺口关闭。审核走查按类目逐条构造测试商品即可验收。}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-08 按分类浏览商品〕} \textbf{与 V1.2.1 的差异}：原 UC-04 写「展示一级分类」「可继续下钻子分类」，与术语表「分类不分层」直接冲突。本版\textbf{定案为单层分类}，删除下钻。}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-12 举报违规商品或学生〕} \textbf{举报类型口径变更（V2.1）}：V2.0 的「联系方式引流」与新增的站内私信存在语义冲突——在本版里，双方在私信中互留电话是\textbf{正常履约}，不是违规。故该类型更名为\textbf{「站外导流」}，定义收窄为：*在商品描述或图片中发布与本次交易无关的联系方式或广告（加群、卖课、代购等），把流量引出平台*。\textbf{不包含}交易双方在私信内为完成取货而互留电话。}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-13 处理举报与违规处置〕} \textbf{处置手段口径统一}：V1.2.1 中 UC-15 的手段清单（警告 / 下架 / 限制发布 / 封禁）与术语表「处置」定义（强制下架 / 扣信用分 / 驳回举报）互不一致，且清单里\textbf{漏了扣信用分}，而 BR-21 又规定违规下架要扣 -10。本版在 UC-13 与附录 B 中使用\textbf{同一份五项清单}：警告、强制下架、限制发布、封禁账号、扣信用分。}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-14 评价交易〕} \textbf{与 V1.2.1 的差异}：原 UC-11 主事件流写「星级 + 文字评价」「填写评分」，而数据字典写「不额外引入星级评分」且评价实体无评分字段。本版\textbf{定案：只有文字评价，无星级}。}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-15 查看信用分〕} \textbf{与 V1.2.1 的差异}：原 UC-16 主事件流写「展示当前信用分、\textbf{等级}与近期变更记录」，但「等级」在全文无定义、数据字典无字段、BR 无规则。本版\textbf{删除「等级」}，只留分数与明细。若确需等级，须先在 BR-13 补定义并加数据字段。}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-16 查看我的订单〕} \textbf{注意}：本版\textbf{没有订单状态}。列表不按状态分组，只有一条时间倒序列表——这是与 V1.2.1 最直观的差别，走查时不要按旧八状态去找分组。}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-31 撤销成交〕} \textbf{为什么必须补这一条}：V2.0～V2.1 早期把 \texttt{已售出} 定为\textbf{硬终态}（任何角色不可再变更），于是「买家下单后不来 / 反悔」这一最常见情形\textbf{没有出口}——商品被永久锁死，卖家无法重新上架，而 BR-07 只写「纠纷由双方自行协商」，协商不成即死局。UC-31 是「下单即成交」这个设计\textbf{必须自带的回滚路径}，不是功能扩张。 \textbf{为什么不用「双方同意」}：早期版本要求对方同意才可撤销，会制造新的死锁——\textbf{对方拒绝或失联，商品就永久卡在「已售出」}，等于把刚打开的口子又锁回去。本版改为 \textbf{「行为不设闸、声誉记账」}：申请期间状态保持不变，对方拒绝或管理员拒绝时不撤销，避免未经授权改变成交结果。 \textbf{它不是订单状态机}：订单仍然没有「待支付 / 已支付 / 待交付 / 待确认 / 退款中 / 已退款」这些依赖站外支付与站外交付的状态；只有「\texttt{有效}／\texttt{已撤销}」与「退货/撤销审批」两个标记。区别在于：前者要求平台观测它观测不到的东西，后者只要求平台记录\textbf{谁撤的、对方认不认}——那是平台能够确认的事实。 \\ {\footnotesize\color{gray}【注】此条为 V1.2.1 单方撤销口径的残留表述，与现行 BR-21「双方同意或管理员审批」冲突，已不适用，待清理。}}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-33 查看个人主页〕} \textbf{为什么必须补这一条}：V2.1 早期有 4 处引用「主页」——UC-14「在对方主页与商品页展示评价」、UC-15「在他人主页查看对方信用分」、术语表 \texttt{被核实争议数}「公开显示在其主页」——\textbf{但既没有这个用例，也没有定义主页包含哪些字段}。补上后，这些引用才有落点，也才能回答「买家怎么在成交前判断卖家靠不靠谱」。 \textbf{主页公开什么、不公开什么，以 §6.5 为准}：昵称、认证标识、信用分、评价数、被核实争议数、在售商品、已公开评价 → \textbf{公开}；真实姓名、手机号、宿舍地址、成交记录、举报明细 → \textbf{不公开}。}\par
+\vspace{0.35em}
+{\small\textbf{〔UC-34 找回密码〕} \textbf{为什么必须补这一条}：V2.1 早期 UC-01 辅流 B 写着「引导\textbf{找回密码}」，但全文\textbf{没有任何找回密码的用例}——学生一旦忘记密码，账号就永久废掉，只能换邮箱重新注册再走一遍核验。这是与「交易争议」同类的悬空引用。 \textbf{为什么用邮箱验证码而不是安全问题或密保手机}：邮箱是注册时的唯一标识且\textbf{已经过验证码验证}（UC-01），是唯一可用的可信回信道；安全问题可被社工，密保手机在注册时非必填。}\par
+\vspace{0.35em}
+{\small\textbf{〔4.1 业务规则表〕} 共 \textbf{22 条}业务规则，编号连续无空号。V1.2.1 的 27 条中删除 10 条、合并 2 组、改写 6 条；\textbf{V2.1 新增 BR-20（私信）、BR-21（成交撤销）、BR-22（商品编辑与重审）}。映射见\textbf{附录 C.2}。}\par
+\vspace{0.35em}
+{\small\textbf{〔4.1 业务规则表〕} \textbf{口径修正（重要）}：V1.2.1 中 BR-05 与 BR-21 \textbf{重复定义}了信用分初始值、范围与阈值，且措辞略有差异（「已发布和进行中的订单」vs「既有发布和订单」）。本版拆为 \textbf{BR-13（分值定义与阈值）+ BR-14（变动事件）}，两者不重叠，术语表只引用 BR-14。}\par
+\vspace{0.35em}
+{\small\textbf{〔4.2 系统主动通知规则〕} \textbf{与 V1.2.1 的差异}：通知事件清单同步精简——删除「买家标记已付款、卖家确认收款、订单取消、进入退款、退款完成、交付安排变更、申诉复核结果、捐赠入库与领取发放、借用到期与逾期」共 3 类 9 项，因为对应流程在本版已不存在。\textbf{保留通知清单与保留流程必须同步，否则就是悬空引用。}}\par
+\vspace{0.35em}
+{\small\textbf{〔4.3 禁售品类清单（BR-04 附表）〕} \textbf{本节是 BR-04 的可判定附表。} BR-04 只说「禁售品类在审核时拒绝」，但「什么算禁售品类」不给封闭清单，审核用例就没有判据、无法验收——这是 V1.2.1 一路挂到 V2.1 的最大空洞，本节予以补齐。 本清单是\textbf{闭集}，类目编号规则为「字母段 + 两位序号」（A1、B2……），全文档统一用该类目编号引用。管理员审核时按此判定，并在驳回原因中\textbf{引用具体类目编号}（如「禁售品类 A1：管制刀具」）。}\par
+\vspace{0.35em}
+{\small\textbf{〔5.4 本人数据与他人数据〕} \textbf{口径统一（重要）}：V1.2.1 的 §5.4 在「手机号 / 宿舍地址—管理员」一栏写「原文允许；\textbf{建议}限定必要管理场景并审计，\textbf{待确认}」，表末却写「上述权限为\textbf{已定案需求}」，自相矛盾。本版统一为：\textbf{手机号与宿舍地址对管理员＝仅必要管理场景可见且须审计（建议值，待确认）；其余各行均为已定案}。}\par
+\vspace{0.35em}
+{\small\textbf{〔学生〕} \textbf{与 V1.2.1 的差异}：新增 \texttt{账号状态}（旧版术语表已定义、BR-17/27 反复引用，但数据字典里一直\textbf{缺这个字段}，导致规则无法验收）；新增 \texttt{核验重提次数} 并置于学生实体（旧版挂在认证申请上，但语义是「该生累计」，会导致多条申请各存一份、需保持一致）；\texttt{手机号} 明确为注册时非必填（旧版数据字典标「非必填」而 UC-01 列为注册填写项，矛盾）。}\par
+\vspace{0.35em}
+{\small\textbf{〔收藏〕} \textbf{本实体是第二轮边界检查发现的缺口补齐物}：V2.0～V2.1 早期，收藏在正文出现 39 次、功能全套（唯一性、上限 100 件、失效标记、下架通知收藏者），但 §6 数据需求里\textbf{一次都没出现}，等于功能齐全而模型空白。}\par
+\vspace{0.35em}
+{\small\textbf{〔私信〕} \textbf{与 V2.0 的关系}：V2.0 没有任何沟通载体，导致成交后双方无法联系（见文档说明第 2 条）。本实体即为该缺口的最小补齐：\textbf{一个实体、七个个字段、不建会话表、不加状态机}。}\par
+\vspace{0.35em}
+{\small\textbf{〔6.4.1 状态联动数据约束〕} \textbf{本版数据字典的完整性声明}：V1.2.1 中「交付记录」「取消申请与同意记录」「退款标记」「物品流转记录（捐赠/借用/回收）」「人工处置标记」等实体与字段，因对应流程已删除而在本版\textbf{一并删除}，不是遗漏。反之，旧版被状态表反复引用却始终缺失的 \texttt{账号状态}、\texttt{订单—商品}的成交记录、\texttt{举报类型} 枚举，本版已补齐。}\par
+\vspace{0.35em}
+{\small\textbf{〔7.1 状态定义与总体说明〕} \textbf{这是本版与 V1.2.1 差异最大的地方。} 旧版有订单八状态机（SM-01）、商品五状态（含「已预订」）、三条物品流转状态机（SM-03）。本版：\textbf{订单状态机整体取消}；商品由五态减为四态（删除「已预订」，因为下单即成交，不存在「被占用但未成交」的中间态）；\textbf{物品流转状态机整体删除}。}\par
+\vspace{0.35em}
+{\small\textbf{〔7.2 商品状态机（SM-01）〕} \textbf{为什么给 \texttt{已售出} 开口子}：V2.0 把 \texttt{已售出} 定为硬终态，导致「买家下单后不来 / 反悔」无出口，商品永久锁死。这条口子只对\textbf{双方合意}开放，不对单方开放——见 BR-21。}\par
+\vspace{0.35em}
+{\small\textbf{〔7.4.2 学生认证状态转换表（SM-02）〕} \textbf{与 V1.2.1 的差异}：AT 编号与内容原样保留（旧版 AT-01～AT-08 是唯一没有被简化波及的状态机），仅把引用从 BR-21 改为 BR-14、从旧 BR-24/25/26 改为新 BR-16/17/18。}\par
+\vspace{0.35em}
+{\small\textbf{〔8.1 验收测试共同前提〕} \textbf{本版删除 NFR-05「支付信息安全」的原始形态}：平台已确定不涉及任何资金与支付信息（BR-07），该指标转为 §2.1 的边界声明与 §5.5 的审计禁令，不再作为独立 NFR。V1.2.1 的 NFR-05 自相矛盾（正文说「原文未明确平台是否提供在线支付」，而边界声明已定案不接入），本版一并消解。}\par
+\vspace{0.35em}
+{\small\textbf{〔8.7 NFR-06 新用户发布易用性〕} \textbf{与 V1.2.1 的差异}：旧版 NFR-07 的需求描述写「新用户从登录到发布」，而依据 BR-01 未认证用户根本不能发布，只能靠测试前提绕开矛盾。本版在\textbf{需求描述本身}就限定为「已认证新用户」，矛盾消除。}\par
+\vspace{0.35em}
+{\small\textbf{〔A.1 图形交付物清单〕} \textbf{本版所有图均待按 V2.1 重出。} 旧图仍按 V1.2.1 的八状态订单、五状态商品（含「已预订」）与三条物品流转路径绘制，且\textbf{完全不含私信}，与本版正文冲突。\textbf{冲突时以正文表格为准。}}\par
+\vspace{0.35em}
+{\small\textbf{〔A.1 图形交付物清单〕} \textbf{V1.2.1 中另有 SM-01 订单状态机图（八状态）}，本版\textbf{整体废弃}，不再列入交付物。 \textbf{私信不需要状态机图}：会话无状态、不可关闭、不可撤回（§7.1），只需在类图上画出实体与两条关联，不必新增状态图。}\par
+\vspace{0.35em}
+{\small\textbf{〔C.1 用例映射（旧 28 → 新 24）〕} ⚠️ \textbf{编号规则说明（务必注意）}：下表的「旧编号」列指 \textbf{V1.2.1} 的编号。V1.2.1 的 \textbf{UC-19（申请借用）、UC-20（取消订单）……直到 UC-28 均已删除}；V2.1 新增的两个用例\textbf{刻意跳过这些已用过的号，改用 UC-29、UC-30}，以保证\textbf{与 V1.2.1 零冲突}。因此本文档的用例编号为 \textbf{UC-01～UC-18 + UC-29～UC-30}，\textbf{UC-19～UC-28 永久留空，不得复用}。}\par
+\vspace{0.35em}
+{\small\textbf{〔C.4 其他口径变化清单〕} \textbf{本版遗留待确认项（交付时必须如实说明）} 1. **禁售品类清单**（BR-04） → \textbf{V2.1 已定义，见 §4.3（18 个类目 + 5 条判定口径）}。仍需学校学工/保卫部门或指导教师对清单的合法性依据做最终确认（尤其 A1、A3、E1、E2 涉及校内管理规定）。 2. 分类目录的具体类别与数量。 3. 举报处理时限、商品审核时限（暂按 24 小时）、评价时限（7 天）、消息保留天数（90 天）、收藏上限（100 件）、成交记录保留期（3 年）、\textbf{退货/撤销审批的窗口（暂按 7 天，超时默认计违约）与违约扣分幅度（暂按 −2，与互评 +2 对称）}——这两个值直接决定撤销的成本，须按实际回收节奏定，不要照抄。 4. 学生手机号、宿舍地址的管理员可见场景与审计范围。 5. 认证申请留存期限与删除规则（NFR-08）。 6. \textbf{私信相关阈值}：单条消息长度上限（暂按 500 字）、同一天同一用户对同一商品的发送条数是否设上限（防骚扰）、私信记录保留期。以上均为建议值，待确认。 7. \textbf{私信本身仍不是举报对象}：举报对象已扩展为「商品／学生」，但\textbf{私信内容}尚未作为可举报对象。若上线后出现骚扰，需评估是否把单条私信也纳入——这会改动 BR-04 与举报记录实体，故列为后续议题，本期不做。 8. 全部 UML 图待按 \textbf{V2.1} 重出（附录 A.1）；原型需补「联系卖家」按钮、私信会话页与私信列表页。 9. **边界条件待拍板** → \textbf{已于 2026-11-08 第二轮边界检查中全部定案}：①「在售」商品\textbf{可编辑，但任何编辑都回到「待审核」重审}（UC-32、BR-22、ST-12）；② \textbf{封禁即连带下架}该卖家全部「在售」与「待审核」商品（BR-10、ST-13）；③ 伪造证件查实后\textbf{应强制封禁}（BR-18 由「可」改「应」）；④ 图片改为 \textbf{1～9 张必填}。 10. \textbf{撤销的不可追回风险（须主动说明）}：平台不碰钱、不碰货、无交付观测，因此\textbf{撤销一旦生效不可回滚}。若一方已实际交货或已转账，其救济只有「判对方违约 −2」与「提交交易争议由管理员核实」，\textbf{无法追回货物或款项}。这是 §2.1 边界的必然代价，不是实现缺陷。 11. \textbf{NFR-10 的建议值待确认}：验证码 6 位/10 分钟、60 秒与 24 小时双重频控、错误 5 次作废、枚举防护的响应时间差 ≤ 100 毫秒——均为团队提议值。\textbackslash{}n> 12. \textbf{邮箱验证码依赖 SMTP 邮件服务}，课程环境需配置一个可发信账号；此为本项目唯一的外部服务依赖。\textbackslash{}n> 13. 本版简化口径由团队裁定，属「教学模拟」，\textbf{未经真实业务方确认}。}\par
+\vspace{0.35em}
+
+\subsection*{D.2 走查提醒}
+\addcontentsline{toc}{subsection}{D.2 走查提醒}
+{\small\textbf{〔2.4 需求优先级〕} \textbf{优先级与确认状态是两回事}：优先级回答「能不能砍」，确认状态回答「有没有人签字」。一条\textbf{基本需求}完全可能是\textbf{待确认}状态（例如 BR-16 的 7 天/24 小时阈值）——这不矛盾，走查时要分别标注。}\par
+\vspace{0.35em}
+{\small\textbf{〔4.3.3 与状态机、举报的对应关系〕} \textbf{可测试性说明}：每个类目都给了「典型物品」举例，审核走查时按清单\textbf{逐类目构造一个测试商品}（共 18 个），期望结果为全部驳回并记录正确类目编号。这是 BR-04 从形容词变成可验收需求的关键。}\par
+\vspace{0.35em}
+{\small\textbf{〔7.5 场景走查与验收预期〕} \textbf{覆盖度自查}：24 个用例中，SC-01 覆盖 UC-01/02/03/05/06/07/10/14/15，SC-02 覆盖权限面，SC-03 覆盖 UC-10 并发，SC-04 覆盖 UC-05/06，SC-05 覆盖 UC-12/13，SC-06 覆盖 UC-07/08/09/11/16/17/18，SC-07 覆盖 UC-14/15，SC-08 覆盖 UC-01/02/03，SC-09 覆盖 UC-29/UC-30 与私信权限面，SC-10 覆盖 UC-31 撤销与审批处理，SC-11 覆盖 UC-32 编辑重审（ST-12），SC-12 覆盖 UC-13 的封禁联动下架（ST-13）。\textbf{仍无独立场景的用例：UC-04（管理员登录，由权限场景间接覆盖）、UC-11 的「删除」分支、UC-33（查看个人主页）、UC-34（找回密码）}——走查时须按 §3.2 的辅事件流单独确认；其中 \textbf{UC-34 的账号枚举防护与频控须按 NFR-10 的验收方式单独测}。}\par
+\vspace{0.35em}
+
+\subsection*{D.3 图件状态}
+\addcontentsline{toc}{subsection}{D.3 图件状态}
+{\small\textbf{〔3.1 用例图〕} ⚠️ \textbf{图 3-1 待按 V2.1 重出}：旧图仍含已删除的 UC-07 支付、UC-08 交付、UC-09 自提、UC-10 确认收货、UC-17～UC-25 物品流转等，且\textbf{不含 UC-29、UC-30 两个私信用例}，与本版功能清单冲突。\textbf{本版以 §2.3 与 §3.2 为准，图仅作参考。}}\par
+\vspace{0.35em}
+{\small\textbf{〔6.1 概念类图〕} ⚠️ \textbf{图 6-1 待按 V2.1 重出}：旧图含「订单—交付方式」字段与物品流转相关结构，且不含私信、收藏、邮箱验证码，与本版冲突。本版共 \textbf{13 个实体类}：学生、认证申请、商品、分类、\textbf{收藏}、订单（成交记录）、评价、举报记录、信用记录、消息通知、私信、管理员、\textbf{邮箱验证码}。\textbf{本版以 §6.2 数据字典为准。}}\par
+\vspace{0.35em}
+{\small\textbf{〔7.2 商品状态机（SM-01）〕} ⚠️ \textbf{图 7-1 待按 V2.1 重出}（旧图仍为五状态且含「已预订」）。\textbf{以本节文字与 §7.4 转换表为准。}}\par
+\vspace{0.35em}
+{\small\textbf{〔7.3 学生认证状态（SM-02）〕} ⚠️ \textbf{图 7-2（SM-04 学生认证状态机）待出}。V1.2.1 即已标注「仅定状态集合与转换表，图待出」，本版仍未出图。}\par
+\vspace{0.35em}
+
+\subsection*{D.4 答辩与评审}
+\addcontentsline{toc}{subsection}{D.4 答辩与评审}
+{\small\textbf{〔UC-10 下单成交〕} \textbf{本版最关键的一条}：UC-10 是本平台交易链的\textbf{成交点}。它之后没有支付、没有交付、没有确认收货、没有退款（§2.2.2）。\texttt{已售出} 默认即最终结果，\textbf{唯一出口是买卖双方同意或管理员审批撤销（UC-31 / ST-10，BR-21）}；除此之外，成交记录创建后不再变化。\textbf{答辩时必须主动说明：平台只能证明「有人下单成功」，不能证明「货已交付」与「钱已支付」}——这是需求的有意取舍，不是遗漏。}\par
+\vspace{0.35em}
+
+\subsection*{D.5 设计取舍}
+\addcontentsline{toc}{subsection}{D.5 设计取舍}
+{\small\textbf{〔UC-32 编辑商品〕} \textbf{为什么在售编辑必须重审}：如果允许在售商品自由编辑，卖家可以\textbf{先发一件合规商品通过审核，再把它改成禁售品继续卖}——§4.3 的整个审核机制就被绕过了。因此本版定案：\textbf{「在售」商品任何编辑都回到「待审核」重审}（BR-22 ①）。代价是改个错别字也要重新排队，但这是审核可信的必要成本。 \textbf{注意与「已下架」编辑的区别}：已下架商品走 \textbf{ST-08}（重新提交，可沿用原编号，但能否重提受下架原因限制）；在售商品走 \textbf{ST-12}（先降级为待审核）。两者都不新增商品编号。}\par
+\vspace{0.35em}
+{\small\textbf{〔7.1 状态定义与总体说明〕} \textbf{为什么可以删掉「已预订」}：旧版「已预订」存在的理由是「商品被下单但交易未完成，需要锁定」。本版下单即成交，商品立刻就是「已售出」，不存在锁定等待期，因此该状态没有存在意义。并发抢购由 BR-06 的「在售→已售出 原子切换」保证，不需要中间态。}\par
+\vspace{0.35em}
+
+\subsection*{D.6 说明}
+\addcontentsline{toc}{subsection}{D.6 说明}
+{\small\textbf{〔订单（成交记录）〕} \textbf{撤销的两个标记}：\texttt{成交状态} 决定「这笔成交还在不在」，\texttt{退货/撤销审批} 决定「这次撤销要不要记账」。\textbf{撤销本身永远即时成立}——不存在"等对方同意"的中间态，因此也不会因为一方失联而卡住。对方能决定的\textbf{只是责任}，不是撤销能否生效（BR-21）。 \\ {\footnotesize\color{gray}【注】此条为 V1.2.1 单方撤销口径的残留表述，与现行 BR-21「双方同意或管理员审批」冲突，已不适用，待清理。}}\par
+\vspace{0.35em}
+
+
+\end{document}
